@@ -1,0 +1,23 @@
+﻿/* Scoped styles para _Layout - tema neon (aislamiento CSS).
+   NOTA: el bundle *.styles.css no se sirve en este proyecto, así que
+   estos estilos solo aplican si el bundle existe. El tema real vive en wwwroot/css/site.css */
+
+a.navbar-brand {
+  white-space: normal;
+  text-align: center;
+  word-break: break-all;
+}
+
+/* No forzar colores claros: heredar del tema neon */
+a {
+  color: inherit;
+}
+
+.box-shadow {
+  box-shadow: 0 0 24px rgba(0, 240, 255, .12);
+}
+
+button.accept-policy {
+  font-size: 1rem;
+  line-height: inherit;
+}

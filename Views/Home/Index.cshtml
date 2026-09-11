@@ -1,0 +1,133 @@
+﻿@{
+    ViewData["Title"] = "Inicio";
+}
+
+<section class="hero-neon">
+    <div class="row align-items-center g-4">
+        <div class="col-lg-7">
+            <span class="badge-neon"><span class="pulse-dot"></span><span data-i18n="home.hero_badge">Temporada 2026 · Drops cada viernes</span></span>
+            <h1 class="display-neon display-4 mt-3" id="hero-title">
+                <span data-i18n="home.hero_l1">Sube de nivel</span><br />
+                <span data-i18n="home.hero_l2a">tu</span> <span class="text-cyan-neon" data-i18n="home.hero_l2b">setup</span><br />
+                <span class="text-magenta-neon" data-i18n="home.hero_l3">domina el juego</span>
+            </h1>
+            <p class="lead-muted mt-3" data-i18n="home.hero_lead">
+                Periféricos, PC gamer y gear con estética neón. Conectado en vivo con APIs externas
+                y con la comunidad en Steam, Twitch y Discord.
+            </p>
+            <div class="d-flex flex-wrap gap-3 mt-4">
+                <a class="btn-neon" asp-controller="Home" asp-action="Plataforma" data-i18n="home.hero_cta1">⚡ Explorar la plataforma</a>
+                <a class="btn-neon-outline" href="https://store.steampowered.com" target="_blank" rel="noopener" data-i18n="home.hero_cta2">Explorar en Steam ↗</a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat"><b data-count="240">0</b><span data-i18n="home.hero_s1">FPS estables</span></div>
+                <div class="stat"><b data-count="12">0</b><span data-i18n="home.hero_s2">k jugadores</span></div>
+                <div class="stat"><b data-count="350">0</b><span data-i18n="home.hero_s3">Productos</span></div>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="hero-visual">
+                <div class="hero-card-float" id="hero-card">
+                    <span class="card-tag tag-magenta" data-i18n="home.card_tag">Drop exclusivo</span>
+                    <h4 class="text-white" style="font-family:var(--font-display)">AURORA X9 · RTX NEON</h4>
+                    <p class="text-secondary mb-2" data-i18n="home.card_desc">PC Gamer · 32GB · 2TB NVMe · RGB sincronizado</p>
+                    <div class="d-flex align-items-end gap-2">
+                        <span class="price">$1,899</span>
+                        <span class="price-old text-muted">$2,299</span>
+                    </div>
+                    <div class="mt-2 fps-tag" data-i18n="home.card_fps">▲ +17% FPS EN WARZONE</div>
+                    <a class="btn-neon btn-neon-magenta mt-3 w-100 text-center" asp-controller="Home" asp-action="Plataforma" data-i18n="home.card_btn">Ver la plataforma</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="marquee" aria-hidden="true">
+    <div class="marquee-track">
+        <span><b>◆</b> <span data-i18n="home.m1">ENVÍO 24H</span></span><span><b>◆</b> <span data-i18n="home.m2">GARANTÍA 2 AÑOS</span></span><span><b>◆</b> <span data-i18n="home.m3">PAGA CON TARJETA / PAYPAL / CRIPTO</span></span><span><b>◆</b> <span data-i18n="home.m4">SOPORTE DISCORD 24/7</span></span>
+        <span><b>◆</b> <span data-i18n="home.m1">ENVÍO 24H</span></span><span><b>◆</b> <span data-i18n="home.m2">GARANTÍA 2 AÑOS</span></span><span><b>◆</b> <span data-i18n="home.m3">PAGA CON TARJETA / PAYPAL / CRIPTO</span></span><span><b>◆</b> <span data-i18n="home.m4">SOPORTE DISCORD 24/7</span></span>
+    </div>
+</div>
+
+<section id="plataforma" class="my-5">
+    <h2 class="section-title reveal"><small data-i18n="home.plat_eyebrow">// Nuestra plataforma</small><span data-i18n="home.plat_ta">Nuestra</span> <span class="text-magenta-neon" data-i18n="home.plat_tb">plataforma</span></h2>
+    <p class="text-secondary reveal" data-i18n="home.plat_lead">INNOVATE INDUSTRIES WEB STORE no es solo una tienda: es una plataforma gamer que combina catálogo, datos en vivo de otras webs y comunidad en un solo hub neón.</p>
+    <div class="row g-3 mt-1">
+        <div class="col-md-4 reveal"><div class="neon-card p-4 h-100"><span class="card-tag tag-cyan" data-i18n="home.plat_c1tag">01 · Catálogo</span><h6 class="text-white" data-i18n="home.plat_c1t">Gear seleccionado</h6><small class="text-secondary" data-i18n="home.plat_c1d">Periféricos, PC, setup y streaming curados para competir.</small></div></div>
+        <div class="col-md-4 reveal"><div class="neon-card p-4 h-100"><span class="card-tag tag-magenta" data-i18n="home.plat_c2tag">02 · Tiempo real</span><h6 class="text-white" data-i18n="home.plat_c2t">API en vivo</h6><small class="text-secondary" data-i18n="home.plat_c2d">Productos sincronizados con webs externas vía HttpClient.</small></div></div>
+        <div class="col-md-4 reveal"><div class="neon-card p-4 h-100"><span class="card-tag tag-green" data-i18n="home.plat_c3tag">03 · Comunidad</span><h6 class="text-white" data-i18n="home.plat_c3t">Multiverso gamer</h6><small class="text-secondary" data-i18n="home.plat_c3d">Steam, Twitch y Discord conectados desde un solo lugar.</small></div></div>
+    </div>
+    <div class="mt-4 d-flex flex-wrap gap-3 reveal">
+        <a class="btn-neon" asp-controller="Home" asp-action="Plataforma" data-i18n="home.plat_btn">Explorar la plataforma</a>
+    </div>
+</section>
+
+@{
+    var latestNews = ViewBag.LatestNews as List<INNOVATE_INDUSTRIES_WEB_STORE.Models.NewsItem>;
+}
+@if (latestNews != null && latestNews.Count > 0)
+{
+    <section id="noticias" class="my-5">
+        <h2 class="section-title reveal"><small data-i18n="news.eyebrow">// Desarrollo</small><span data-i18n="news.ta">Sigue el</span> <span class="text-cyan-neon" data-i18n="news.tb">desarrollo</span></h2>
+        <p class="text-secondary reveal" data-i18n="news.lead">Últimas noticias del equipo, directo del panel interno.</p>
+        <div class="row g-4 mt-1">
+            @foreach (var n in latestNews)
+            {
+                <div class="col-md-4 reveal">
+                    <div class="neon-card h-100">
+                        @if (!string.IsNullOrEmpty(n.ImagePath))
+                        {
+                            <img class="card-img-top" src="@n.ImagePath" alt="" loading="lazy" style="height:170px;object-fit:cover" />
+                        }
+                        <div class="card-body">
+                            <small class="text-muted">@n.CreatedAtUtc.ToString("dd/MM/yyyy")</small>
+                            <h5 class="text-white mt-1">@n.Title</h5>
+                            <p class="text-secondary small" style="white-space:pre-wrap">@(n.Body.Length > 140 ? n.Body.Substring(0, 140) + "…" : n.Body)</p>
+                            @if (!string.IsNullOrEmpty(n.LinkUrl))
+                            {
+                                @if (string.IsNullOrEmpty(n.LinkText))
+                                {
+                                    <a class="btn-neon-outline btn-sm px-3 py-2" href="@n.LinkUrl" target="_blank" rel="noopener"><span data-i18n="news.open">Abrir enlace ↗</span></a>
+                                }
+                                else
+                                {
+                                    <a class="btn-neon-outline btn-sm px-3 py-2" href="@n.LinkUrl" target="_blank" rel="noopener">@n.LinkText</a>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="mt-4 reveal">
+            <a class="btn-neon-outline" asp-controller="Home" asp-action="Noticias" data-i18n="nw.all">Ver todas ↗</a>
+        </div>
+    </section>
+}
+
+<section id="comunidad" class="my-5">
+    <h2 class="section-title reveal"><small data-i18n="home.com_eyebrow">// Conexión multiverso</small><span data-i18n="home.com_ta">Conectado con</span> <span class="text-magenta-neon" data-i18n="home.com_tb">otras webs</span></h2>
+    <p class="text-secondary reveal" data-i18n="home.com_lead">Esta plataforma no vive aislada: el Launcher se sincroniza en vivo desde itch.io y la comunidad vive en Steam, Twitch y Discord.</p>
+    <div class="row g-3 mt-1">
+        <div class="col-md-4 reveal">
+            <a class="neon-card ext-card p-3" href="https://store.steampowered.com" target="_blank" rel="noopener">
+                <span class="card-tag tag-cyan" data-i18n="home.com_s_tag">Tienda externa</span><h6 class="text-white" data-i18n="home.com_s_t">Steam ↗</h6><small class="text-secondary" data-i18n="home.com_s_d">Compara precios y wishlist</small>
+            </a>
+        </div>
+        <div class="col-md-4 reveal">
+            <a class="neon-card ext-card p-3" href="https://www.twitch.tv" target="_blank" rel="noopener">
+                <span class="card-tag tag-magenta" data-i18n="home.com_t_tag">Streaming</span><h6 class="text-white" data-i18n="home.com_t_t">Twitch ↗</h6><small class="text-secondary" data-i18n="home.com_t_d">Drops y reviews en vivo</small>
+            </a>
+        </div>
+        <div class="col-md-4 reveal">
+            <a class="neon-card ext-card p-3" href="https://discord.com" target="_blank" rel="noopener">
+                <span class="card-tag tag-green" data-i18n="home.com_d_tag">Comunidad</span><h6 class="text-white" data-i18n="home.com_d_t">Discord ↗</h6><small class="text-secondary" data-i18n="home.com_d_d">Soporte y torneos 24/7</small>
+            </a>
+        </div>
+    </div>
+    <div class="mt-4 d-flex flex-wrap gap-3 reveal">
+        <a class="btn-neon" asp-controller="Home" asp-action="Plataforma" data-i18n="home.com_btn1">Abrir INNOVATE Launcher</a>
+        <a class="btn-neon-outline" href="https://rawg.io" target="_blank" rel="noopener" data-i18n="home.com_btn2">Ver RAWG Games API ↗</a>
+    </div>
+</section>

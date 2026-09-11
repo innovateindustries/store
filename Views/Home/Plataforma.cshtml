@@ -1,0 +1,73 @@
+@model INNOVATE_INDUSTRIES_WEB_STORE.Models.ItchPageInfo
+@{
+    ViewData["Title"] = "Nuestra Plataforma";
+}
+
+<section class="hero-neon" style="padding-top:50px">
+    <span class="badge-neon"><span class="pulse-dot"></span><span data-i18n="plat.badge">En vivo · itch.io · sincronizado</span></span>
+    <h1 class="section-title mt-3"><small data-i18n="plat.eyebrow">// Nuestra plataforma</small><span data-i18n="plat.ta">Nuestra</span> <span class="text-magenta-neon" data-i18n="plat.tb">plataforma</span></h1>
+    <p class="lead-muted">
+        <span data-i18n="plat.sync_a">Contenido sincronizado en vivo con</span> <code>@Model.PageUrl</code>.
+        <span data-i18n="plat.sync_b">Última sincronización:</span> <b class="text-white">@Model.FetchedAtUtc.ToString("HH:mm") UTC</b>
+        <span class="text-muted" data-i18n="plat.sync_c">(se actualiza cada 5 min)</span>
+    </p>
+</section>
+
+@if (!Model.Success)
+{
+    <div class="alert alert-danger" style="background:rgba(255,42,109,.1);border:1px solid var(--magenta-500);color:#ffd7e3">
+        <span data-i18n="plat.err_t">⚠️ No se pudo sincronizar con itch.io ahora mismo:</span> @Model.ErrorMessage<br />
+        <small><a href="@Model.PageUrl" target="_blank" rel="noopener" style="color:#fff" data-i18n="plat.err_link">Abrir la página directamente en itch.io ↗</a></small>
+    </div>
+}
+else
+{
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="neon-card p-4 h-100">
+                <span class="card-tag tag-magenta" data-i18n="plat.live_tag">Fuente live · itch.io</span>
+                <h3 class="text-white" style="font-family:var(--font-display)" data-i18n-live>@Model.Title</h3>
+                @if (!string.IsNullOrWhiteSpace(Model.Description))
+                {
+                    <p class="text-secondary" data-i18n-live>@Model.Description</p>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+                {
+                    <img src="@Model.ImageUrl" alt="Portada en itch.io" data-i18n-alt="plat.cover_alt" class="img-fluid rounded mt-2" loading="lazy" />
+                }
+                @if (Model.IsPasswordProtected)
+                {
+                    <div class="mt-3 p-3 rounded" style="border:1px solid rgba(252,238,10,.5);background:rgba(252,238,10,.06)">
+                        <span class="card-tag tag-green" data-i18n="plat.locked_tag">🔒 Estado detectado en vivo</span>
+                        <p class="text-secondary small mb-0" data-i18n="plat.locked">Esta página de itch.io pide <b class="text-white">contraseña</b>. El contenido completo (descripción, descargas, capturas) solo se ve tras desbloquearla en itch.io. En cuanto la publiques sin contraseña, esta sección mostrará portada y datos completos automáticamente.</p>
+                    </div>
+                }
+                <div class="d-flex flex-wrap gap-3 mt-4">
+                    <a class="btn-neon btn-neon-magenta" href="@Model.PageUrl" target="_blank" rel="noopener" data-i18n="plat.open">⚡ Abrir INNOVATE Launcher ↗</a>
+                    <a class="btn-neon-outline" asp-action="Index" data-i18n="plat.back">← Inicio</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="neon-card p-4 h-100">
+                <span class="card-tag tag-cyan" data-i18n="plat.eco_tag">El ecosistema</span>
+                <h6 class="text-white" data-i18n="plat.eco_t">Todo INNOVATE en un hub</h6>
+                <ul class="text-secondary small">
+                    <li data-i18n="plat.eco_li1"><b class="text-white">Launcher</b> hospedado en itch.io (esta página, en vivo).</li>
+                    <li data-i18n="plat.eco_li2"><b class="text-white">Ficha técnica</b> con specs oficiales: Windows, gratis, en desarrollo.</li>
+                    <li data-i18n="plat.eco_li3"><b class="text-white">Comunidad</b> en Steam, Twitch y Discord.</li>
+                </ul>
+                <a class="btn-neon-outline w-100 text-center" href="@Model.PageUrl" target="_blank" rel="noopener" data-i18n="plat.eco_btn">Abrir en itch.io ↗</a>
+                <p class="text-muted mt-3 mb-0" style="font-size:.75rem" data-i18n="plat.note">Nota técnica: itch.io bloquea incrustar su página en un iframe, por eso la mostramos vía sincronización servidor + enlace directo. Es la única integración permitida por itch.io.</p>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="section-title mt-5"><small data-i18n="plat.specs_eyebrow">// Ficha técnica</small><span data-i18n="plat.specs">Especificaciones</span></h2>
+    <div class="row g-3 mt-1">
+        <div class="col-6 col-md-3"><div class="cat-tile"><div class="icon">🪟</div><h6 class="text-white" data-i18n="plat.s1t">WINDOWS 10 / 11</h6><small class="text-secondary" data-i18n="plat.s1d">64 BITS</small></div></div>
+        <div class="col-6 col-md-3"><div class="cat-tile"><div class="icon">🎁</div><h6 class="text-white" data-i18n="plat.s2t">GRATIS</h6><small class="text-secondary" data-i18n="plat.s2d">Descarga gratuita</small></div></div>
+        <div class="col-6 col-md-3"><div class="cat-tile"><div class="icon">🛠️</div><h6 class="text-white" data-i18n="plat.s3t">EN DESARROLLO</h6><small class="text-secondary" data-i18n="plat.s3d">Acceso anticipado</small></div></div>
+        <div class="col-6 col-md-3"><div class="cat-tile" style="border-color:var(--magenta-500)"><div class="icon">🚀</div><h6 class="text-white" data-i18n="plat.s4t">LAUNCHER OFICIAL</h6><small class="text-secondary" data-i18n="plat.s4d">DE INNOVATE INDUSTRIES</small></div></div>
+    </div>
+}

@@ -1,0 +1,41 @@
+@model INNOVATE_INDUSTRIES_WEB_STORE.Models.RegisterViewModel
+@{
+    ViewData["Title"] = "Crear cuenta";
+}
+
+<section class="hero-neon" style="padding-top:50px">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="neon-card p-4">
+                <span class="badge-neon"><span class="pulse-dot"></span><span data-i18n="acc.reg_badge">Nuevo jugador</span></span>
+                <h1 class="section-title mt-3"><small data-i18n="acc.reg_eyebrow">// Únete</small><span data-i18n="acc.reg_title">Crear cuenta</span></h1>
+                <p class="text-secondary" data-i18n="acc.reg_lead">Gratis, en 30 segundos. Tu progreso te espera.</p>
+                <form asp-action="Register" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label text-white" data-i18n="acc.email">Email</label>
+                        <input asp-for="Email" class="form-control" autocomplete="email" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label text-white" data-i18n="acc.password">Contraseña</label>
+                        <input asp-for="Password" class="form-control" autocomplete="new-password" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="ConfirmPassword" class="form-label text-white" data-i18n="acc.confirm">Repite la contraseña</label>
+                        <input asp-for="ConfirmPassword" class="form-control" autocomplete="new-password" />
+                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                    </div>
+                    <button type="submit" class="btn-neon w-100 text-center" data-i18n="acc.btn_register">Crear cuenta</button>
+                </form>
+                <p class="text-secondary mt-3 mb-0"><span data-i18n="acc.have_account">¿Ya tienes cuenta?</span> <a asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" data-i18n="acc.login_link">Entra</a></p>
+                <p class="mt-2 mb-0"><a asp-action="Plans" class="btn-neon-outline w-100 text-center" data-i18n="acc.plans_btn">Ver planes</a></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,40 @@
+@model INNOVATE_INDUSTRIES_WEB_STORE.Models.InternalRegisterViewModel
+@{
+    ViewData["Title"] = "Registro interno";
+}
+
+<section class="hero-neon" style="padding-top:50px">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="neon-card p-4" style="border-color:var(--magenta-500)">
+                <span class="badge-neon"><span class="pulse-dot"></span><span data-i18n="intr.badge">Key verificada</span></span>
+                <h1 class="section-title mt-3"><small data-i18n="intr.eyebrow">// Equipo interno</small><span data-i18n="intr.title">Completa tu perfil</span></h1>
+                <p class="text-secondary" data-i18n="intr.lead">Tus datos de trabajador. Tu contraseña es tu key de invitación.</p>
+                <form asp-action="InternalRegister" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="mb-3">
+                        <label asp-for="WorkEmail" class="form-label text-white" data-i18n="intr.email">Correo principal o de trabajo</label>
+                        <input asp-for="WorkEmail" class="form-control" autocomplete="email" />
+                        <span asp-validation-for="WorkEmail" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Nombres" class="form-label text-white" data-i18n="intr.nombres">Nombres</label>
+                        <input asp-for="Nombres" class="form-control" autocomplete="name" />
+                        <span asp-validation-for="Nombres" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="UserName" class="form-label text-white" data-i18n="intr.username">Nombre de usuario</label>
+                        <input asp-for="UserName" class="form-control" autocomplete="username" />
+                        <span asp-validation-for="UserName" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label text-white" data-i18n="acc.password">Contraseña</label>
+                        <input asp-for="Password" class="form-control" readonly />
+                        <small class="text-muted" data-i18n="intr.note">Es tu key: no se puede cambiar aquí.</small>
+                    </div>
+                    <button type="submit" class="btn-neon btn-neon-magenta w-100 text-center" data-i18n="intr.btn">Crear perfil interno</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>

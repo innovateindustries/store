@@ -1,0 +1,214 @@
+@model INNOVATE_INDUSTRIES_WEB_STORE.Models.AdminIndexViewModel
+@{
+    ViewData["Title"] = "Administración";
+    Layout = "_AdminLayout";
+    ViewData["AdminSection"] = "users";
+}
+
+<section class="hero-neon">
+    <span class="badge-neon"><span class="pulse-dot"></span><span data-i18n="adm.badge">Panel interno</span></span>
+    <h1 class="section-title mt-3"><small data-i18n="adm.eyebrow">// Equipo</small><span data-i18n="adm.title">Administración</span></h1>
+</section>
+
+<h2 class="section-title mt-2"><span data-i18n="adm.users_t">Usuarios registrados</span> (@Model.TotalUsers)</h2>
+<div class="row g-4 mt-1">
+    <div class="col-lg-4">
+        <div class="neon-card p-3 h-100" style="border-color:var(--magenta-500)">
+            <h5 class="text-white" style="font-family:var(--font-display)"><span data-i18n="adm.col_internos">INTERNOS</span> (@Model.Internos.Count)</h5>
+            @foreach (var u in Model.Internos)
+            {
+                <div class="p-2 mb-2 rounded" style="border:1px solid rgba(255,42,109,.25);background:rgba(0,0,0,.25)">
+                    <div class="d-flex justify-content-between align-items-center gap-2">
+                        <b class="text-white">@u.UserName</b>
+                        @if (u.IsBanned)
+                        {
+                            <span class="text-danger" data-i18n="adm.st_banned">● Baneado</span>
+                        }
+                        else
+                        {
+                            <span class="text-green-neon" data-i18n="adm.st_activeu">○ Activo</span>
+                        }
+                    </div>
+                    <small class="text-secondary">@u.Nombres · @u.Email</small><br />
+                    <small><span class="card-tag tag-magenta">@(string.IsNullOrEmpty(u.Roles) ? "—" : u.Roles)</span></small>
+                    @if (Model.CanManageKeys && !u.IsSelf)
+                    {
+                        @if (u.IsBanned)
+                        {
+                            <form asp-action="UnbanUser" method="post" class="d-inline ms-2">
+                                <input type="hidden" name="id" value="@u.Id" />
+                                <button type="submit" class="btn btn-sm btn-neon-outline" data-i18n="adm.unban">Desbanear</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form asp-action="BanUser" method="post" class="d-inline ms-2">
+                                <input type="hidden" name="id" value="@u.Id" />
+                                <button type="submit" class="btn btn-sm btn-neon-magenta" data-i18n="adm.ban">Banear</button>
+                            </form>
+                        }
+                    }
+                </div>
+            }
+            @if (Model.Internos.Count == 0)
+            {
+                <p class="text-secondary small mb-0" data-i18n="adm.empty_col">Sin usuarios aquí.</p>
+            }
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="neon-card p-3 h-100" style="border-color:rgba(0,240,255,.35)">
+            <h5 class="text-white" style="font-family:var(--font-display)"><span data-i18n="adm.col_usuarios">USUARIOS</span> (@Model.Usuarios.Count)</h5>
+            @foreach (var u in Model.Usuarios)
+            {
+                <div class="p-2 mb-2 rounded" style="border:1px solid rgba(0,240,255,.2);background:rgba(0,0,0,.25)">
+                    <div class="d-flex justify-content-between align-items-center gap-2">
+                        <b class="text-white">@u.UserName</b>
+                        @if (u.IsBanned)
+                        {
+                            <span class="text-danger" data-i18n="adm.st_banned">● Baneado</span>
+                        }
+                        else
+                        {
+                            <span class="text-green-neon" data-i18n="adm.st_activeu">○ Activo</span>
+                        }
+                    </div>
+                    <small class="text-secondary">@u.Nombres · @u.Email</small><br />
+                    <small><span class="card-tag tag-cyan">@(string.IsNullOrEmpty(u.Roles) ? "—" : u.Roles)</span></small>
+                    @if (Model.CanManageKeys && !u.IsSelf)
+                    {
+                        @if (u.IsBanned)
+                        {
+                            <form asp-action="UnbanUser" method="post" class="d-inline ms-2">
+                                <input type="hidden" name="id" value="@u.Id" />
+                                <button type="submit" class="btn btn-sm btn-neon-outline" data-i18n="adm.unban">Desbanear</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form asp-action="BanUser" method="post" class="d-inline ms-2">
+                                <input type="hidden" name="id" value="@u.Id" />
+                                <button type="submit" class="btn btn-sm btn-neon-magenta" data-i18n="adm.ban">Banear</button>
+                            </form>
+                        }
+                    }
+                </div>
+            }
+            @if (Model.Usuarios.Count == 0)
+            {
+                <p class="text-secondary small mb-0" data-i18n="adm.empty_col">Sin usuarios aquí.</p>
+            }
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="neon-card p-3 h-100" style="border-color:rgba(5,255,161,.35)">
+            <h5 class="text-white" style="font-family:var(--font-display)"><span data-i18n="adm.col_publishers">PUBLISHERS</span> (@Model.Publishers.Count)</h5>
+            @foreach (var u in Model.Publishers)
+            {
+                <div class="p-2 mb-2 rounded" style="border:1px solid rgba(5,255,161,.25);background:rgba(0,0,0,.25)">
+                    <div class="d-flex justify-content-between align-items-center gap-2">
+                        <b class="text-white">@u.UserName</b>
+                        @if (u.IsBanned)
+                        {
+                            <span class="text-danger" data-i18n="adm.st_banned">● Baneado</span>
+                        }
+                        else
+                        {
+                            <span class="text-green-neon" data-i18n="adm.st_activeu">○ Activo</span>
+                        }
+                    </div>
+                    <small class="text-secondary">@u.Nombres · @u.Email</small><br />
+                    <small><span class="card-tag tag-green">@(string.IsNullOrEmpty(u.Roles) ? "—" : u.Roles)</span></small>
+                    @if (Model.CanManageKeys && !u.IsSelf)
+                    {
+                        @if (u.IsBanned)
+                        {
+                            <form asp-action="UnbanUser" method="post" class="d-inline ms-2">
+                                <input type="hidden" name="id" value="@u.Id" />
+                                <button type="submit" class="btn btn-sm btn-neon-outline" data-i18n="adm.unban">Desbanear</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form asp-action="BanUser" method="post" class="d-inline ms-2">
+                                <input type="hidden" name="id" value="@u.Id" />
+                                <button type="submit" class="btn btn-sm btn-neon-magenta" data-i18n="adm.ban">Banear</button>
+                            </form>
+                        }
+                    }
+                </div>
+            }
+            @if (Model.Publishers.Count == 0)
+            {
+                <p class="text-secondary small mb-0" data-i18n="adm.empty_col">Sin usuarios aquí.</p>
+            }
+        </div>
+    </div>
+</div>
+
+@if (Model.CanManageKeys)
+{
+    <h2 class="section-title mt-5"><span data-i18n="adm.keys_t">Keys de invitación</span></h2>
+    @if (!string.IsNullOrEmpty(Model.JustCreatedCode))
+    {
+        <div class="alert mt-2" style="background:rgba(5,255,161,.08);border:1px solid var(--green-500);color:#d0ffe0">
+            <span data-i18n="adm.newkey">Nueva key generada (cópiala ahora):</span>
+            <b style="font-family:var(--font-display);font-size:1.3rem">@Model.JustCreatedCode</b>
+        </div>
+    }
+    <form asp-action="GenerateKey" method="post" class="mt-2">
+        <button type="submit" class="btn-neon" data-i18n="adm.btn_gen">Generar key</button>
+    </form>
+    <div class="table-responsive">
+        <table class="table table-dark table-hover align-middle mt-3" style="--bs-table-bg:rgba(18,20,29,.9)">
+            <thead>
+                <tr>
+                    <th data-i18n="adm.col_code">Key</th>
+                    <th data-i18n="adm.col_status">Estado</th>
+                    <th data-i18n="adm.col_used">Usada por</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var k in Model.Keys)
+                {
+                    <tr>
+                        <td class="text-white" style="font-family:var(--font-display)">@k.Code</td>
+                        <td>
+                            @if (k.IsActive)
+                            {
+                                <span class="text-green-neon" data-i18n="adm.st_active">● Activa</span>
+                            }
+                            else if (!string.IsNullOrEmpty(k.UsedBy))
+                            {
+                                <span class="text-muted" data-i18n="adm.st_used">○ Usada</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted" data-i18n="adm.st_off">○ Desactivada</span>
+                            }
+                        </td>
+                        <td>@(string.IsNullOrEmpty(k.UsedBy) ? "—" : k.UsedBy)</td>
+                        <td>
+                            @if (k.IsActive)
+                            {
+                                <form asp-action="DeactivateKey" method="post" class="d-inline">
+                                    <input type="hidden" name="id" value="@k.Id" />
+                                    <button type="submit" class="btn btn-sm btn-neon-outline" data-i18n="adm.btn_off">Desactivar</button>
+                                </form>
+                            }
+                            <form asp-action="DeleteKey" method="post" class="d-inline ms-1">
+                                <input type="hidden" name="id" value="@k.Id" />
+                                <button type="submit" class="btn btn-sm btn-outline-danger" data-i18n="adm.btn_del">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    @if (Model.Keys.Count == 0)
+    {
+        <p class="text-secondary" data-i18n="adm.empty_keys">Aún no hay keys. Genera la primera.</p>
+    }
+}

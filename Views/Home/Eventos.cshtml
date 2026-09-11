@@ -1,0 +1,112 @@
+@model INNOVATE_INDUSTRIES_WEB_STORE.Models.EventosPageInfo
+@{
+    ViewData["Title"] = "Eventos";
+}
+
+<section class="hero-neon" style="padding-top:50px">
+    <span class="badge-neon"><span class="pulse-dot"></span><span data-i18n="ev.badge">En vivo · web de eventos · sincronizado</span></span>
+    <h1 class="section-title mt-3"><small data-i18n="ev.eyebrow">// En vivo</small><span data-i18n="ev.ta">Eventos</span> <span class="text-cyan-neon" data-i18n="ev.tb">en vivo</span></h1>
+    <p class="lead-muted">
+        <span data-i18n="ev.sync_a">Sincronizado en vivo con</span> <code>@Model.PageUrl</code>.
+        <span data-i18n="ev.sync_b">Última sincronización:</span> <b class="text-white">@Model.FetchedAtUtc.ToString("HH:mm") UTC</b>
+        <span class="text-muted" data-i18n="ev.sync_c">(se actualiza cada 5 min)</span>
+    </p>
+    <div class="d-flex flex-wrap gap-3 mt-3">
+        <a class="btn-neon" href="@Model.PageUrl" target="_blank" rel="noopener" data-i18n="ev.btn_origin">Ver web original ↗</a>
+        <a class="btn-neon-outline" asp-action="Index" data-i18n="ev.btn_home">← Inicio</a>
+    </div>
+</section>
+
+@if (!Model.Success)
+{
+    <div class="alert alert-danger" style="background:rgba(255,42,109,.1);border:1px solid var(--magenta-500);color:#ffd7e3">
+        <span data-i18n="ev.err_t">⚠️ No se pudo sincronizar con la web de eventos ahora mismo:</span> @Model.ErrorMessage<br />
+        <small><a href="@Model.PageUrl" target="_blank" rel="noopener" style="color:#fff" data-i18n="ev.err_link">Abrir la web de eventos directamente ↗</a></small>
+    </div>
+}
+else
+{
+    @if (!string.IsNullOrWhiteSpace(Model.SectionTitle))
+    {
+        <h2 class="section-title mt-2" data-i18n-live>@Model.SectionTitle</h2>
+        @if (!string.IsNullOrWhiteSpace(Model.SectionDesc))
+        {
+            <p class="text-secondary" data-i18n-live>@Model.SectionDesc</p>
+        }
+    }
+
+    @if (Model.NextEventDate.HasValue)
+    {
+        <div class="neon-card p-4 mt-3" id="ev-countdown" data-target="@Model.NextEventDate.Value.ToString("o")">
+            <span class="card-tag tag-magenta" data-i18n="ev.cd_tag">Próximo evento · cuenta regresiva en vivo</span>
+            <div class="d-flex gap-4 flex-wrap mt-2" style="font-family:var(--font-display)">
+                <div class="stat"><b data-u="d">--</b><span data-i18n="ev.cd_d">días</span></div>
+                <div class="stat"><b data-u="h">--</b><span data-i18n="ev.cd_h">hrs</span></div>
+                <div class="stat"><b data-u="m">--</b><span data-i18n="ev.cd_m">min</span></div>
+                <div class="stat"><b data-u="s">--</b><span data-i18n="ev.cd_s">seg</span></div>
+            </div>
+            <small class="text-muted"><span data-i18n="ev.cd_note">Fecha publicada por la web de eventos:</span> @Model.NextEventDate.Value.ToString("dd/MM/yyyy HH:mm") (@Model.NextEventDate.Value.ToString("zzz"))</small>
+        </div>
+    }
+
+    <div class="row g-4 mt-1">
+        @foreach (var ev in Model.Events)
+        {
+            <div class="col-md-6">
+                <div class="neon-card p-4 h-100">
+                    @if (!string.IsNullOrWhiteSpace(ev.Tag))
+                    {
+                        <span class="card-tag @(ev.HasCountdown ? "tag-magenta" : "tag-cyan")" data-i18n-live>@ev.Tag</span>
+                    }
+                    <h4 class="text-white" style="font-family:var(--font-display)" data-i18n-live>@ev.Name</h4>
+                    <p class="text-secondary" data-i18n-live>@ev.Description</p>
+                    @if (ev.HasCountdown)
+                    {
+                        <span class="text-green-neon" style="font-family:var(--font-display);font-size:.8rem;letter-spacing:2px" data-i18n="ev.active">● CUENTA REGRESIVA ACTIVA</span>
+                    }
+                    else if (!string.IsNullOrWhiteSpace(ev.StatusText))
+                    {
+                        <span class="text-muted" style="font-family:var(--font-display);font-size:.8rem;letter-spacing:2px" data-i18n-live>@ev.StatusText</span>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Model.LauncherName))
+    {
+        <div class="neon-card p-4 mt-4">
+            <span class="card-tag tag-green" data-i18n-live>@Model.LauncherVersion</span>
+            <h5 class="text-white" style="font-family:var(--font-display)" data-i18n-live>@Model.LauncherName</h5>
+            <p class="text-secondary" data-i18n-live>@Model.LauncherDesc</p>
+            <a class="btn-neon-outline" asp-action="Plataforma" data-i18n="ev.launcher_btn">Abrir launcher oficial</a>
+        </div>
+    }
+}
+
+@section Scripts {
+<script>
+(function () {
+  var box = document.getElementById('ev-countdown');
+  if (!box) return;
+  var target = new Date(box.getAttribute('data-target')).getTime();
+  function pad(n) { return String(n).padStart(2, '0'); }
+  function liveText() {
+    if (window.__t) { var v = window.__t("ev.live_now"); if (v) return v; }
+    return "¡EVENTO EN VIVO AHORA!";
+  }
+  function tick() {
+    var diff = target - Date.now();
+    if (diff <= 0) {
+      box.querySelector('.d-flex').innerHTML = '<span class="text-green-neon" style="font-size:1.4rem">' + liveText() + '</span>';
+      return;
+    }
+    box.querySelector('[data-u="d"]').textContent = pad(Math.floor(diff / 86400000));
+    box.querySelector('[data-u="h"]').textContent = pad(Math.floor(diff / 3600000) % 24);
+    box.querySelector('[data-u="m"]').textContent = pad(Math.floor(diff / 60000) % 60);
+    box.querySelector('[data-u="s"]').textContent = pad(Math.floor(diff / 1000) % 60);
+  }
+  tick(); setInterval(tick, 1000);
+})();
+</script>
+}

@@ -1,0 +1,40 @@
+@model INNOVATE_INDUSTRIES_WEB_STORE.Models.LoginViewModel
+@{
+    ViewData["Title"] = "Entrar";
+}
+
+<section class="hero-neon" style="padding-top:50px">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="neon-card p-4">
+                <span class="badge-neon"><span class="pulse-dot"></span><span data-i18n="acc.login_badge">Bienvenido de vuelta</span></span>
+                <h1 class="section-title mt-3"><small data-i18n="acc.login_eyebrow">// Acceso</small><span data-i18n="acc.login_title">Entrar</span></h1>
+                <p class="text-secondary" data-i18n="acc.login_lead">Conecta tu cuenta para continuar.</p>
+                <form asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label text-white" data-i18n="acc.login_id">Email o usuario</label>
+                        <input asp-for="Email" class="form-control" autocomplete="email" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label text-white" data-i18n="acc.password">Contraseña</label>
+                        <input asp-for="Password" class="form-control" autocomplete="current-password" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input asp-for="RememberMe" class="form-check-input" />
+                        <label asp-for="RememberMe" class="form-check-label text-secondary" data-i18n="acc.remember">Recuérdame</label>
+                    </div>
+                    <button type="submit" class="btn-neon w-100 text-center" data-i18n="acc.btn_login">Entrar</button>
+                </form>
+                <p class="text-secondary mt-3 mb-0"><span data-i18n="acc.no_account">¿Nuevo aquí?</span> <a asp-action="Register" asp-route-returnUrl="@ViewData["ReturnUrl"]" data-i18n="acc.register_link">Crea tu cuenta</a></p>
+                <p class="mt-2 mb-0"><a asp-action="Plans" class="btn-neon-outline w-100 text-center" data-i18n="acc.plans_btn">Ver planes</a></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,50 @@
+@model List<INNOVATE_INDUSTRIES_WEB_STORE.Models.NewsItem>
+@{
+    ViewData["Title"] = "Noticias";
+}
+
+<section class="hero-neon" style="padding-top:50px">
+    <span class="badge-neon"><span class="pulse-dot"></span><span data-i18n="nw.badge">Noticias · sincronizado</span></span>
+    <h1 class="section-title mt-3"><small data-i18n="news.eyebrow">// Desarrollo</small><span data-i18n="news.ta">Sigue el</span> <span class="text-cyan-neon" data-i18n="news.tb">desarrollo</span></h1>
+    <p class="lead-muted" data-i18n="news.lead">Últimas noticias del equipo, directo del panel interno.</p>
+    <div class="d-flex flex-wrap gap-3 mt-3">
+        <a class="btn-neon-outline" asp-action="Index" data-i18n="nw.home">← Inicio</a>
+    </div>
+</section>
+
+@if (Model.Count == 0)
+{
+    <p class="text-secondary" data-i18n="nw.empty">Aún no hay noticias. Vuelve pronto.</p>
+}
+else
+{
+    <div class="row g-4">
+        @foreach (var n in Model)
+        {
+            <div class="col-md-6 col-lg-4">
+                <div class="neon-card h-100">
+                    @if (!string.IsNullOrEmpty(n.ImagePath))
+                    {
+                        <img class="card-img-top" src="@n.ImagePath" alt="" loading="lazy" style="height:180px;object-fit:cover" />
+                    }
+                    <div class="card-body">
+                        <small class="text-muted">@n.CreatedAtUtc.ToString("dd/MM/yyyy HH:mm") UTC</small>
+                        <h5 class="text-white mt-1">@n.Title</h5>
+                        <p class="text-secondary small" style="white-space:pre-wrap">@n.Body</p>
+                        @if (!string.IsNullOrEmpty(n.LinkUrl))
+                        {
+                            @if (string.IsNullOrEmpty(n.LinkText))
+                            {
+                                <a class="btn-neon-outline btn-sm px-3 py-2" href="@n.LinkUrl" target="_blank" rel="noopener"><span data-i18n="news.open">Abrir enlace ↗</span></a>
+                            }
+                            else
+                            {
+                                <a class="btn-neon-outline btn-sm px-3 py-2" href="@n.LinkUrl" target="_blank" rel="noopener">@n.LinkText</a>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

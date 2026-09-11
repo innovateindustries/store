@@ -1,0 +1,53 @@
+@model INNOVATE_INDUSTRIES_WEB_STORE.Models.ShowcasePageInfo
+@{
+    ViewData["Title"] = "Showcase";
+    var playerSrc = $"https://player.twitch.tv/?channel={Model.ChannelName}&parent={Model.ParentHost}&muted=true";
+    var chatSrc = $"https://www.twitch.tv/embed/{Model.ChannelName}/chat?parent={Model.ParentHost}&darkpopout";
+}
+
+<section class="hero-neon" style="padding-top:50px">
+    <span class="badge-neon"><span class="pulse-dot"></span><span data-i18n="sc.badge">En vivo · Twitch · directo</span></span>
+    <h1 class="section-title mt-3"><small data-i18n="sc.eyebrow">// Showcase en Twitch</small><span data-i18n="sc.ta">Showcase</span> <span class="text-magenta-neon" data-i18n="sc.tb">en vivo</span></h1>
+    <p class="lead-muted" data-i18n="sc.lead">El directo de INNOVATE INDUSTRIES en Twitch, sin salir de aquí. Si estamos en vivo lo ves abajo; si no, el player avisa y puedes seguirnos para no perdértelo.</p>
+    <div class="d-flex flex-wrap align-items-center gap-3 mt-3">
+        @if (Model.IsLive == true)
+        {
+            <span class="badge-neon" style="border-color:rgba(5,255,161,.5);color:var(--green-500)"><span class="pulse-dot"></span><span data-i18n="sc.live_on">● EN VIVO AHORA</span></span>
+            @if (!string.IsNullOrWhiteSpace(Model.UptimeText))
+            {
+                <small class="text-muted"><span data-i18n="sc.uptime">Tiempo en directo:</span> @Model.UptimeText</small>
+            }
+        }
+        else if (Model.IsLive == false)
+        {
+            <span class="badge-neon" style="border-color:rgba(178,183,199,.4);color:var(--text-secondary)"><span data-i18n="sc.live_off">○ OFFLINE — avisamos en el próximo directo</span></span>
+        }
+        else
+        {
+            <span class="badge-neon" style="border-color:rgba(178,183,199,.4);color:var(--text-secondary)"><span data-i18n="sc.live_unknown">○ Estado del directo no disponible</span></span>
+        }
+    </div>
+    <div class="d-flex flex-wrap gap-3 mt-3">
+        <a class="btn-neon btn-neon-magenta" href="@Model.ChannelUrl" target="_blank" rel="noopener" data-i18n="sc.follow">Seguir en Twitch ↗</a>
+        <a class="btn-neon-outline" asp-action="Index" data-i18n="sc.home">← Inicio</a>
+    </div>
+</section>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="neon-card p-2 h-100">
+            <div class="ratio ratio-16x9">
+                <iframe src="@playerSrc" title="Twitch live: @Model.ChannelName" allowfullscreen loading="lazy"
+                        style="border:0;border-radius:8px"></iframe>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="neon-card p-3 h-100">
+            <span class="card-tag tag-magenta" data-i18n="sc.chat">Chat en vivo</span>
+            <iframe src="@chatSrc" title="Twitch chat" loading="lazy"
+                    style="border:0;border-radius:8px;width:100%;height:480px"></iframe>
+            <a class="btn-neon-outline w-100 text-center mt-2" href="@Model.ChannelUrl" target="_blank" rel="noopener" data-i18n="sc.open">Abrir en Twitch ↗</a>
+        </div>
+    </div>
+</div>

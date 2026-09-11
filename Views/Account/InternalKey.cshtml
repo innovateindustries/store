@@ -1,0 +1,26 @@
+@model INNOVATE_INDUSTRIES_WEB_STORE.Models.InternalKeyViewModel
+@{
+    ViewData["Title"] = "Acceso interno";
+}
+
+<section class="hero-neon" style="padding-top:50px">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="neon-card p-4" style="border-color:var(--magenta-500)">
+                <span class="badge-neon"><span class="pulse-dot"></span><span data-i18n="intk.badge">Solo equipo</span></span>
+                <h1 class="section-title mt-3"><small data-i18n="intk.eyebrow">// Invitación</small><span data-i18n="intk.title">Key de acceso</span></h1>
+                <p class="text-secondary" data-i18n="intk.lead">Escribe la key que te entregó tu CEO o FOUNDER. Es de un solo uso.</p>
+                <form asp-action="InternalKey" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="mb-3">
+                        <label asp-for="Key" class="form-label text-white" data-i18n="intk.label">Key de invitación</label>
+                        <input asp-for="Key" class="form-control" placeholder="INN-XXXXXXXX" autocomplete="off" style="text-transform:uppercase" />
+                        <span asp-validation-for="Key" class="text-danger"></span>
+                    </div>
+                    <button type="submit" class="btn-neon btn-neon-magenta w-100 text-center" data-i18n="intk.btn">Validar key</button>
+                </form>
+                <p class="text-secondary mt-3 mb-0"><a asp-action="Plans" data-i18n="intk.back">← Ver planes</a></p>
+            </div>
+        </div>
+    </div>
+</section>

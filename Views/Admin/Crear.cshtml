@@ -1,0 +1,53 @@
+@model INNOVATE_INDUSTRIES_WEB_STORE.Models.CrearNoticiaViewModel
+@{
+    ViewData["Title"] = "Nueva noticia";
+    Layout = "_AdminLayout";
+    ViewData["AdminSection"] = "news";
+}
+
+<h2 class="section-title mt-2"><span data-i18n="adm.new_t">Nueva noticia</span></h2>
+
+<div class="neon-card p-4 mt-2">
+    <form asp-action="Crear" method="post" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="mb-3">
+            <label asp-for="Title" class="form-label text-white" data-i18n="adm.f_title">Título</label>
+            <input asp-for="Title" class="form-control" maxlength="120" />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Body" class="form-label text-white" data-i18n="adm.f_body">Contenido</label>
+            <textarea asp-for="Body" class="form-control" rows="6"></textarea>
+            <span asp-validation-for="Body" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Image" class="form-label text-white" data-i18n="adm.f_image">Imagen (opcional, JPG/PNG/GIF/WEBP, máx 5 MB)</label>
+            <input asp-for="Image" type="file" accept="image/*" class="form-control" />
+            <span asp-validation-for="Image" class="text-danger"></span>
+        </div>
+        <div class="row g-3">
+            <div class="col-md-7 mb-3">
+                <label asp-for="LinkUrl" class="form-label text-white" data-i18n="adm.f_link">Enlace (opcional)</label>
+                <input asp-for="LinkUrl" class="form-control" placeholder="https://…" />
+                <span asp-validation-for="LinkUrl" class="text-danger"></span>
+            </div>
+            <div class="col-md-5 mb-3">
+                <label asp-for="LinkText" class="form-label text-white" data-i18n="adm.f_linktext">Texto del enlace</label>
+                <input asp-for="LinkText" class="form-control" maxlength="120" />
+                <span asp-validation-for="LinkText" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="mb-3 form-check">
+            <input asp-for="IsPublished" class="form-check-input" />
+            <label asp-for="IsPublished" class="form-check-label text-secondary" data-i18n="adm.f_pub">Publicada (visible en el Inicio)</label>
+        </div>
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn-neon" data-i18n="adm.btn_save">Publicar noticia</button>
+            <a class="btn-neon-outline" asp-action="Noticias" data-i18n="adm.btn_back">Volver</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

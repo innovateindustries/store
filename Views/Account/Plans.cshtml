@@ -1,0 +1,36 @@
+@{
+    ViewData["Title"] = "Planes";
+}
+
+<section class="hero-neon" style="padding-top:50px">
+    <span class="badge-neon"><span class="pulse-dot"></span><span data-i18n="plans.badge">Elige tu camino</span></span>
+    <h1 class="section-title mt-3"><small data-i18n="plans.eyebrow">// Planes</small><span data-i18n="plans.ta">Nuestros</span> <span class="text-magenta-neon" data-i18n="plans.tb">planes</span></h1>
+    <p class="lead-muted" data-i18n="plans.lead">Tres formas de entrar a INNOVATE INDUSTRIES. Elige la tuya.</p>
+</section>
+
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="neon-card p-4 h-100">
+            <span class="card-tag tag-green" data-i18n="plans.u_tag">Gratis</span>
+            <h4 class="text-white" style="font-family:var(--font-display)" data-i18n="plans.u_t">USUARIO</h4>
+            <p class="text-secondary" data-i18n="plans.u_d">Cuenta normal: comunidad, eventos, directos y todo el contenido. Sin costo, para siempre.</p>
+            <a class="btn-neon w-100 text-center" asp-action="Register" data-i18n="plans.u_btn">Registrarse gratis</a>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="neon-card p-4 h-100" style="border-color:var(--magenta-500)">
+            <span class="card-tag tag-magenta" data-i18n="plans.i_tag">Por invitación</span>
+            <h4 class="text-white" style="font-family:var(--font-display)" data-i18n="plans.i_t">TRABAJADOR INTERNO</h4>
+            <p class="text-secondary" data-i18n="plans.i_d">Acceso al panel de administración. Solo con key de invitación entregada por un CEO o FOUNDER.</p>
+            <a class="btn-neon btn-neon-magenta w-100 text-center" asp-action="InternalKey" data-i18n="plans.i_btn">Tengo una key</a>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="neon-card p-4 h-100" style="opacity:.85">
+            <span class="card-tag tag-cyan" data-i18n="plans.p_tag">100 USD / juego</span>
+            <h4 class="text-white" style="font-family:var(--font-display)" data-i18n="plans.p_t">PUBLISHER</h4>
+            <p class="text-secondary" data-i18n="plans.p_d">Publica tus juegos en la plataforma. 100 USD por publicación.</p>
+            <button class="btn-neon-outline w-100 text-center" disabled data-i18n="plans.p_btn">Próximamente</button>
+        </div>
+    </div>
+</div>
