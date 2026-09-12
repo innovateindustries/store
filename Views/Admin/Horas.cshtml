@@ -1,0 +1,47 @@
+@model INNOVATE_INDUSTRIES_WEB_STORE.Models.HorasViewModel
+@{
+    ViewData["Title"] = "Horas de juego";
+    Layout = "_AdminLayout";
+    ViewData["AdminSection"] = "horas";
+}
+
+<section class="hero-neon">
+    <span class="badge-neon"><span class="pulse-dot"></span><span>Panel interno</span></span>
+    <h1 class="section-title mt-3"><small>// Equipo</small><span>Horas de juego</span></h1>
+    <p class="text-secondary">Tiempo reportado por el launcher, por usuario y juego.</p>
+</section>
+
+<div class="neon-card p-3">
+    @if (Model.Filas.Count == 0)
+    {
+        <p class="text-secondary mb-0">Aún no hay sesiones registradas. Abre un juego desde el launcher.</p>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-dark table-striped align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Juego</th>
+                        <th>Total</th>
+                        <th>Sesiones</th>
+                        <th>Última vez (UTC)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var f in Model.Filas)
+                    {
+                        <tr>
+                            <td><b class="text-white">@f.UserName</b></td>
+                            <td>@f.GameTitle <small class="text-secondary">(@f.GameSlug)</small></td>
+                            <td><span class="card-tag tag-cyan">@f.TotalHoras</span></td>
+                            <td>@f.Sessions</td>
+                            <td><small>@(f.LastPlayedUtc?.ToString("dd MMM yyyy HH:mm") ?? "—")</small></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

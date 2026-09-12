@@ -99,6 +99,27 @@ using (var scope = app.Services.CreateScope())
         "\"CreatedAtUtc\" TEXT NOT NULL, " +
         "\"CreatedByUserId\" TEXT NULL)");
 
+    // Tablas del launcher: sesiones de juego y tokens de API.
+    db.Database.ExecuteSqlRaw(
+        "CREATE TABLE IF NOT EXISTS \"PlaySessions\" (" +
+        "\"Id\" INTEGER NOT NULL CONSTRAINT \"PK_PlaySessions\" PRIMARY KEY AUTOINCREMENT, " +
+        "\"UserId\" TEXT NOT NULL, " +
+        "\"GameSlug\" TEXT NOT NULL, " +
+        "\"GameTitle\" TEXT NOT NULL, " +
+        "\"StartedAtUtc\" TEXT NOT NULL, " +
+        "\"EndedAtUtc\" TEXT NULL, " +
+        "\"Seconds\" INTEGER NOT NULL)");
+    db.Database.ExecuteSqlRaw(
+        "CREATE TABLE IF NOT EXISTS \"LauncherTokens\" (" +
+        "\"Id\" INTEGER NOT NULL CONSTRAINT \"PK_LauncherTokens\" PRIMARY KEY AUTOINCREMENT, " +
+        "\"UserId\" TEXT NOT NULL, " +
+        "\"TokenHash\" TEXT NOT NULL, " +
+        "\"CreatedAtUtc\" TEXT NOT NULL, " +
+        "\"ExpiresAtUtc\" TEXT NOT NULL, " +
+        "\"Revoked\" INTEGER NOT NULL)");
+    db.Database.ExecuteSqlRaw(
+        "CREATE UNIQUE INDEX IF NOT EXISTS \"IX_LauncherTokens_TokenHash\" ON \"LauncherTokens\" (\"TokenHash\")");
+
     // Roles del sistema.
     var roles = sp.GetRequiredService<RoleManager<IdentityRole>>();
     foreach (var r in new[] { "CEO", "FOUNDER", "INTERNO", "PUBLISHER" })

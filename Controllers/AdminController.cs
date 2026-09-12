@@ -158,6 +158,29 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // ---- Horas de juego (reportadas por el launcher) ----
+
+        public IActionResult Horas()
+        {
+            var nombres = _users.Users.ToDictionary(u => u.Id, u => u.UserName ?? u.Email ?? "?");
+            var vm = new HorasViewModel();
+            foreach (var g in _db.PlaySessions.AsEnumerable()
+                .GroupBy(s => new { s.UserId, s.GameSlug })
+                .OrderByDescending(g => g.Sum(s => s.Seconds)))
+            {
+                vm.Filas.Add(new HorasRow
+                {
+                    UserName = nombres.TryGetValue(g.Key.UserId, out var n) ? n : "?",
+                    GameTitle = g.Select(s => s.GameTitle).FirstOrDefault(t => !string.IsNullOrWhiteSpace(t)) ?? g.Key.GameSlug,
+                    GameSlug = g.Key.GameSlug,
+                    TotalSeconds = g.Sum(s => s.Seconds),
+                    Sessions = g.Count(),
+                    LastPlayedUtc = g.Max(s => s.EndedAtUtc ?? s.StartedAtUtc)
+                });
+            }
+            return View(vm);
+        }
+
         // ---- Noticias ----
 
         public IActionResult Noticias()
