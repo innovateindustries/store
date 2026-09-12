@@ -38,3 +38,8 @@ Documento vivo de la evolución del proyecto. Última actualización: checkpoint
 - `Publish/index.html`: portada estática que se copia a la carpeta de publicación vía target MSBuild.
 - `.gitignore`: excluye `bin/`, `obj/`, `.vs/`, `*.user`, `*.db*` y secretos.
 - Credenciales del fundador entregadas por chat (no están en este repo).
+
+## Aportes en paralelo (autor: usuario, incluidos en este checkpoint)
+- API del launcher `api/launcher`: register, login, ping, me, heartbeat, session/end (`Controllers/Api/LauncherApiController.cs`, `Models/LauncherModels.cs`).
+- Vista admin **Horas de juego** (`Views/Admin/Horas.cshtml`).
+- Cableado asociado en `Program.cs`, `AdminController.cs`, `AppDbContext.cs` y `.csproj`.
