@@ -2,6 +2,18 @@
 
 Documento vivo de la evolución del proyecto. Última actualización: checkpoint actual.
 
+## 2026-09-18 — Pages: vitrina estática REAL de la tienda
+- `docs/` ya no es un cartel de "ejecuta dotnet run": es un snapshot de la tienda real
+  (mismo `_Layout`, `site.css`, i18n 8 idiomas, noticias y build publicados): `index/store/
+  plataforma/showcase/noticias/privacidad/login/registro.html` + `css/js/lib/favicon/uploads`.
+- Generado con `scripts/snapshot-pages.ps1` (requiere servidor en `http://localhost:5215`):
+  reescribe rutas MVC→`.html`, absolutas→relativas, Twitch `parent=innovateindustries.github.io`,
+  botón Descargar→zip real de `uploads/launcher`, expone Showcase en el nav y añade banner
+  "VISTA ESTÁTICA DEMOSTRATIVA". Showcase se construye desde `Showcase.cshtml` porque en
+  anónimo `[CategoryEnabled]` redirige a Ajustes. Regenerar tras cada cambio visual.
+- Límite honesto: sin login/compras/admin/descargas con contador ni `api/launcher` (Pages es
+  estático; la app interactiva corre en local con `dotnet run` → `http://localhost:5215`).
+
 ## 2026-09-18 — Pages: portada corregida (categorías reales)
 - `Publish/index.html` + `docs/index.html`: chips INICIO/STORE/PLATAFORMA/SHOWCASE/NOTICIAS/AJUSTES
   (fuera EVENTOS/ROBLOX/VLOG eliminados el 2026-09-14, entra STORE). Fuera links itch.io y Eventos
