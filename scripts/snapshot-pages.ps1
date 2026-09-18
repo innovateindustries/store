@@ -71,10 +71,9 @@ foreach ($p in $pages) {
         $h = $h -replace '<a class="nav-link" data-i18n="nav.noticias" href="noticias.html">Noticias</a>',
             '<a class="nav-link" data-i18n="nav.noticias" href="noticias.html">Noticias</a></li><li class="nav-item"><a class="nav-link" data-i18n="nav.showcase" href="showcase.html">Showcase</a>'
     }
-    # CSS del banner + banner tras abrir <main>
+    # CSS del banner (solo la usa el aviso de formularios) tras </head>
     # (Razor inyecta atributos de CSS con ambito tipo b-xxxxxxx: no asumir tag exacto)
     $h = $h -replace '</head>', $bannerCss
-    $h = $h -replace '<main[^>]*>', ('$0' + $banner)
     # Formularios: en Pages no hay backend; interceptar el envio y explicarlo
     # en vez de caer en un 404 (login/registro solo existen en la app local).
     $formJs = '<script>document.addEventListener("submit",function(e){var f=e.target;if(f&&f.tagName==="FORM"){e.preventDefault();var n=document.getElementById("static-form-msg");if(!n){n=document.createElement("div");n.id="static-form-msg";n.className="static-banner";f.parentNode.insertBefore(n,f);}n.innerHTML="Las cuentas solo funcionan en la app local: <code>dotnet run</code> &#8594; http://localhost:5215";if(n.scrollIntoView){n.scrollIntoView();}}});</script></body>'
@@ -150,7 +149,7 @@ $showcaseBody = @'
 $shell = [IO.File]::ReadAllText((Join-Path $docs 'index.html'))
 $openTag = [regex]::Match($shell, '<main[^>]*>').Value
 $rxMain = New-Object regex('<main[^>]*>.*</main>', 'Singleline')
-$show = $rxMain.Replace($shell, ($openTag + $banner + $showcaseBody + '</main>'), 1)
+$show = $rxMain.Replace($shell, ($openTag + $showcaseBody + '</main>'), 1)
 $show = $show -replace '<title>.*?</title>', '<title>Showcase - INNOVATE INDUSTRIES WEB STORE (vista est&#225;tica)</title>'
 [IO.File]::WriteAllText((Join-Path $docs 'showcase.html'), $show, [Text.UTF8Encoding]::new($false))
 Write-Output 'OK showcase.html (estatico desde la vista real)'
