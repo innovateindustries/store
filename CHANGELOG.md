@@ -2,6 +2,12 @@
 
 Documento vivo de la evolución del proyecto. Última actualización: checkpoint actual.
 
+## 2026-09-18 — Pages: portada corregida (categorías reales)
+- `Publish/index.html` + `docs/index.html`: chips INICIO/STORE/PLATAFORMA/SHOWCASE/NOTICIAS/AJUSTES
+  (fuera EVENTOS/ROBLOX/VLOG eliminados el 2026-09-14, entra STORE). Fuera links itch.io y Eventos
+  (Plataforma sirve builds del Admin, sin itch). URL principal `http://localhost:5215` (+ `https://localhost:7009`).
+- Reportado por captura del usuario en `innovateindustries.github.io/store/`.
+
 ## 2026-09-18 — GitHub Pages (link gratuito)
 - Portada estática en `docs/index.html` (espejo de `Publish/index.html`) + `docs/.nojekyll`
   para activar Pages desde `main`/`docs`. URL gratuita: https://innovateindustries.github.io/store/
