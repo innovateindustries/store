@@ -16,18 +16,12 @@ $pages = @(
     @('/Home/Store', 'store.html'),
     @('/Home/Plataforma', 'plataforma.html'),
     @('/Home/Noticias', 'noticias.html'),
-    @('/Home/Privacy', 'privacidad.html'),
-    @('/Account/Login', 'login.html'),
-    @('/Account/Register', 'registro.html'),
-    @('/Account/Plans', 'planes.html'),
-    @('/Account/InternalKey', 'interno.html'),
-    @('/Account/InternalRegister', 'registro-interno.html')
+    @('/Home/Privacy', 'privacidad.html')
 )
+# Sin cuentas en Pages (a peticion): no se generan login/registro/planes/interno.
+# El nav anonimo trae Entrar/Crear cuenta/Ajustes: se eliminan del snapshot.
 # Showcase se construye aparte: en anonimo el filtro [CategoryEnabled] redirige
 # a Ajustes, asi que el GET directo no trae el player de Twitch.
-
-$banner = '<div class="static-banner">VISTA EST&Aacute;TICA DEMOSTRATIVA &#9679; la app interactiva (cuentas, compras, descargas, admin) corre en local con <code>dotnet run</code> &#8594; http://localhost:5215</div>'
-$bannerCss = '<style>.static-banner{margin:0 0 16px;padding:10px 14px;text-align:center;font-size:.8rem;letter-spacing:1px;color:#ffd166;border:1px dashed rgba(255,209,102,.55);border-radius:8px;background:rgba(255,209,102,.06)}.static-banner code{color:#05ffa1;font-size:.8rem}</style></head>'
 
 foreach ($p in $pages) {
     $url = $base + $p[0]
@@ -45,19 +39,15 @@ foreach ($p in $pages) {
     $h = $h -replace 'href="/Home/Showcase"', 'href="showcase.html"'
     $h = $h -replace 'href="/Home/Noticias"', 'href="noticias.html"'
     $h = $h -replace 'href="/Home/Privacy"', 'href="privacidad.html"'
-    $h = $h -replace 'href="/Account/Login"', 'href="login.html"'
-    $h = $h -replace 'href="/Account/Register"', 'href="registro.html"'
-    $h = $h -replace 'href="/Account/Plans"', 'href="planes.html"'
-    $h = $h -replace 'href="/Account/InternalKey"', 'href="interno.html"'
-    $h = $h -replace 'href="/Account/InternalRegister"', 'href="registro-interno.html"'
-    $h = $h -replace 'href="/Account/Ajustes"', 'href="login.html"'
-    $h = $h -replace 'href="/Admin"', 'href="login.html"'
-    $h = $h -replace 'href="/Account/Logout"', 'href="login.html"'
     $h = $h -replace 'href="/"', 'href="index.html"'
     # Absolutas del sitio -> relativas (proyecto Pages vive en /store/)
     $h = $h -replace 'href="/', 'href="./'
     $h = $h -replace 'src="/', 'src="./'
-    $h = $h -replace 'action="/Account/(Login|Register|InternalKey|InternalRegister)"', 'action="#"'
+    # Sin cuentas en Pages: se eliminan del nav Entrar / Crear cuenta / Ajustes
+    # (los <li> traen atributo de CSS con ambito b-xxxxxxx: no asumir tag exacto)
+    $h = $h -replace '<li[^>]*>\s*<a class="nav-link" data-i18n="nav.ajustes"[^<]*</a>\s*</li>', ''
+    $h = $h -replace '<li[^>]*>\s*<a class="nav-link" data-i18n="acc.login_link"[^<]*</a>\s*</li>', ''
+    $h = $h -replace '<li[^>]*>\s*<a class="btn btn-sm btn-neon" data-i18n="acc.register_link"[^<]*</a>\s*</li>', ''
     # Twitch embed: parent localhost no vale en Pages
     $h = $h -replace 'parent=localhost[^"&]*', ('parent=' + $pagesHost)
     # Descarga del launcher: accion MVC -> zip real copiado a docs/uploads
@@ -70,15 +60,6 @@ foreach ($p in $pages) {
     if ($h -notmatch 'showcase\.html') {
         $h = $h -replace '<a class="nav-link" data-i18n="nav.noticias" href="noticias.html">Noticias</a>',
             '<a class="nav-link" data-i18n="nav.noticias" href="noticias.html">Noticias</a></li><li class="nav-item"><a class="nav-link" data-i18n="nav.showcase" href="showcase.html">Showcase</a>'
-    }
-    # CSS del banner (solo la usa el aviso de formularios) tras </head>
-    # (Razor inyecta atributos de CSS con ambito tipo b-xxxxxxx: no asumir tag exacto)
-    $h = $h -replace '</head>', $bannerCss
-    # Formularios: en Pages no hay backend; interceptar el envio y explicarlo
-    # en vez de caer en un 404 (login/registro solo existen en la app local).
-    $formJs = '<script>document.addEventListener("submit",function(e){var f=e.target;if(f&&f.tagName==="FORM"){e.preventDefault();var n=document.getElementById("static-form-msg");if(!n){n=document.createElement("div");n.id="static-form-msg";n.className="static-banner";f.parentNode.insertBefore(n,f);}n.innerHTML="Las cuentas solo funcionan en la app local: <code>dotnet run</code> &#8594; http://localhost:5215";if(n.scrollIntoView){n.scrollIntoView();}}});</script></body>'
-    if ($h -match '<form') {
-        $h = $h -replace '</body>', $formJs
     }
     # Titulo con contexto Pages
     $h = $h -replace '</title>', ' (vista est&#225;tica)</title>'

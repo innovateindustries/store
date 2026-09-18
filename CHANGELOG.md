@@ -4,16 +4,16 @@ Documento vivo de la evolución del proyecto. Última actualización: checkpoint
 
 ## 2026-09-18 — Pages: vitrina estática REAL de la tienda
 - `docs/` ya no es un cartel de "ejecuta dotnet run": es un snapshot de la tienda real
-  (mismo `_Layout`, `site.css`, i18n 8 idiomas, noticias y build publicados): `index/store/
-  plataforma/showcase/noticias/privacidad/login/registro.html` + `css/js/lib/favicon/uploads`.
+  (mismo `_Layout`, `site.css`, i18n 8 idiomas, noticias y build publicados):
+  `index/store/plataforma/showcase/noticias/privacidad.html` + `css/js/lib/favicon/uploads`.
 - Generado con `scripts/snapshot-pages.ps1` (requiere servidor en `http://localhost:5215`):
   reescribe rutas MVC→`.html`, absolutas→relativas, Twitch `parent=innovateindustries.github.io`,
   botón Descargar→zip real de `uploads/launcher`, expone Showcase en el nav.
-  Sin franja de aviso (a petición): solo los formularios explican que las cuentas son
-  de la app local. Regenerar tras cada cambio visual.
+  Sin cuentas en Pages (a petición): fuera Entrar/Crear cuenta/Ajustes y las páginas
+  `login/registro/planes/interno*.html` (el login sigue solo en local).
+  Regenerar tras cada cambio visual.
 - Límite honesto: sin login/compras/admin/descargas con contador ni `api/launcher` (Pages es
   estático; la app interactiva corre en local con `dotnet run` → `http://localhost:5215`).
-  Los formularios (login/registro/interno) muestran aviso en vez de 404; `planes/interno` incluidos.
 
 ## 2026-09-18 — Pages: portada corregida (categorías reales)
 - `Publish/index.html` + `docs/index.html`: chips INICIO/STORE/PLATAFORMA/SHOWCASE/NOTICIAS/AJUSTES
