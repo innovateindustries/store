@@ -13,6 +13,7 @@ Documento vivo de la evolución del proyecto. Última actualización: checkpoint
   anónimo `[CategoryEnabled]` redirige a Ajustes. Regenerar tras cada cambio visual.
 - Límite honesto: sin login/compras/admin/descargas con contador ni `api/launcher` (Pages es
   estático; la app interactiva corre en local con `dotnet run` → `http://localhost:5215`).
+  Los formularios (login/registro/interno) muestran aviso en vez de 404; `planes/interno` incluidos.
 
 ## 2026-09-18 — Pages: portada corregida (categorías reales)
 - `Publish/index.html` + `docs/index.html`: chips INICIO/STORE/PLATAFORMA/SHOWCASE/NOTICIAS/AJUSTES
