@@ -1,4 +1,5 @@
 using INNOVATE_INDUSTRIES_WEB_STORE.Data;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -64,6 +65,15 @@ builder.Services.AddHttpClient("Instagram", client =>
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36");
 });
 
+// Proxy inverso (Cloudflare / Azure / hosting): respeta X-Forwarded-For y X-Forwarded-Proto
+// para que Request.Scheme/Host sean los públicos (Twitch parent, redirects, cookies Secure).
+builder.Services.Configure<ForwardedHeadersOptions>(o =>
+{
+    o.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    o.KnownIPNetworks.Clear();
+    o.KnownProxies.Clear();
+});
+
 var app = builder.Build();
 
 // Crea app.db con el esquema de Identity si no existe.
@@ -120,6 +130,69 @@ using (var scope = app.Services.CreateScope())
     db.Database.ExecuteSqlRaw(
         "CREATE UNIQUE INDEX IF NOT EXISTS \"IX_LauncherTokens_TokenHash\" ON \"LauncherTokens\" (\"TokenHash\")");
 
+    // Juegos de la STORE (kit de publicación del Admin).
+    db.Database.ExecuteSqlRaw(
+        "CREATE TABLE IF NOT EXISTS \"StoreGames\" (" +
+        "\"Id\" INTEGER NOT NULL CONSTRAINT \"PK_StoreGames\" PRIMARY KEY AUTOINCREMENT, " +
+        "\"Title\" TEXT NOT NULL, " +
+        "\"Description\" TEXT NOT NULL, " +
+        "\"MinRequirements\" TEXT NOT NULL, " +
+        "\"RecRequirements\" TEXT NOT NULL, " +
+        "\"IsPreorder\" INTEGER NOT NULL, " +
+        "\"IsEarlyAccess\" INTEGER NOT NULL, " +
+        "\"Price\" TEXT NOT NULL, " +
+        "\"CoverPath\" TEXT NOT NULL, " +
+        "\"ScreenshotsJson\" TEXT NOT NULL, " +
+        "\"TrailerUrl\" TEXT NOT NULL, " +
+        "\"IsPublished\" INTEGER NOT NULL, " +
+        "\"CreatedAtUtc\" TEXT NOT NULL, " +
+        "\"CreatedByUserId\" TEXT NULL)");
+    // Pedidos de pago manual de la STORE.
+    db.Database.ExecuteSqlRaw(
+        "CREATE TABLE IF NOT EXISTS \"StoreOrders\" (" +
+        "\"Id\" INTEGER NOT NULL CONSTRAINT \"PK_StoreOrders\" PRIMARY KEY AUTOINCREMENT, " +
+        "\"GameId\" INTEGER NOT NULL, " +
+        "\"GameTitle\" TEXT NOT NULL, " +
+        "\"Price\" TEXT NOT NULL, " +
+        "\"Reference\" TEXT NOT NULL, " +
+        "\"Status\" TEXT NOT NULL, " +
+        "\"CreatedAtUtc\" TEXT NOT NULL, " +
+        "\"BuyerUserId\" TEXT NULL)");
+    db.Database.ExecuteSqlRaw(
+        "CREATE UNIQUE INDEX IF NOT EXISTS \"IX_StoreOrders_Reference\" ON \"StoreOrders\" (\"Reference\")");
+    // Key del juego: se genera al marcar Pagado (para bases ya creadas).
+    var orderCols = db.Database.SqlQueryRaw<string>("SELECT name FROM pragma_table_info('StoreOrders')").ToList();
+    if (!orderCols.Contains("KeyCode"))
+        db.Database.ExecuteSqlRaw("ALTER TABLE \"StoreOrders\" ADD COLUMN \"KeyCode\" TEXT NULL");
+    // Canje único en el launcher: quién/cuándo canjeó la key (para bases ya creadas).
+    if (!orderCols.Contains("RedeemedByUserId"))
+        db.Database.ExecuteSqlRaw("ALTER TABLE \"StoreOrders\" ADD COLUMN \"RedeemedByUserId\" TEXT NULL");
+    if (!orderCols.Contains("RedeemedAtUtc"))
+        db.Database.ExecuteSqlRaw("ALTER TABLE \"StoreOrders\" ADD COLUMN \"RedeemedAtUtc\" TEXT NULL");
+    db.Database.ExecuteSqlRaw(
+        "CREATE UNIQUE INDEX IF NOT EXISTS \"IX_StoreOrders_KeyCode\" ON \"StoreOrders\" (\"KeyCode\")");
+    // Builds del launcher (descargables desde Plataforma).
+    db.Database.ExecuteSqlRaw(
+        "CREATE TABLE IF NOT EXISTS \"LauncherBuilds\" (" +
+        "\"Id\" INTEGER NOT NULL CONSTRAINT \"PK_LauncherBuilds\" PRIMARY KEY AUTOINCREMENT, " +
+        "\"Version\" TEXT NOT NULL, " +
+        "\"Notes\" TEXT NULL, " +
+        "\"FilePath\" TEXT NOT NULL, " +
+        "\"FileName\" TEXT NOT NULL, " +
+        "\"SizeBytes\" INTEGER NOT NULL, " +
+        "\"IsPublished\" INTEGER NOT NULL, " +
+        "\"Downloads\" INTEGER NOT NULL, " +
+        "\"CreatedAtUtc\" TEXT NOT NULL, " +
+        "\"CreatedByUserId\" TEXT NULL)");
+    // Columnas añadidas después (para bases ya creadas).
+    var buildCols = db.Database.SqlQueryRaw<string>("SELECT name FROM pragma_table_info('LauncherBuilds')").ToList();
+    if (!buildCols.Contains("Description"))
+        db.Database.ExecuteSqlRaw("ALTER TABLE \"LauncherBuilds\" ADD COLUMN \"Description\" TEXT NULL");
+    if (!buildCols.Contains("Specs"))
+        db.Database.ExecuteSqlRaw("ALTER TABLE \"LauncherBuilds\" ADD COLUMN \"Specs\" TEXT NULL");
+    if (!buildCols.Contains("ScreenshotPath"))
+        db.Database.ExecuteSqlRaw("ALTER TABLE \"LauncherBuilds\" ADD COLUMN \"ScreenshotPath\" TEXT NULL");
+
     // Roles del sistema.
     var roles = sp.GetRequiredService<RoleManager<IdentityRole>>();
     foreach (var r in new[] { "CEO", "FOUNDER", "INTERNO", "PUBLISHER" })
@@ -135,6 +208,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.UseForwardedHeaders();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();

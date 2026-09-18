@@ -56,9 +56,5 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Models
     {
         // Categorías opcionales (desactivadas por defecto).
         public bool Showcase { get; set; }
-
-        public bool Eventos { get; set; }
-
-        public bool Vlog { get; set; }
     }
 }

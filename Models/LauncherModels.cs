@@ -91,4 +91,27 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Models
 
         public string Plan { get; set; } = "USUARIO";
     }
+
+    public class LauncherInternalRegisterRequest
+    {
+        public string Username { get; set; } = string.Empty;
+
+        public string WorkEmail { get; set; } = string.Empty;
+
+        public string Nombres { get; set; } = string.Empty;
+
+        public string Key { get; set; } = string.Empty;
+    }
+
+    // Canje de key de la STORE desde el launcher.
+    // La key es única (XXXXX-XXXXX-XXXXX, un solo uso).
+    public class LauncherRedeemRequest
+    {
+        public string KeyCode { get; set; } = string.Empty;
+
+        // Alias aceptados desde el launcher antiguo.
+        public string? Key { get; set; }
+
+        public string? Code { get; set; }
+    }
 }

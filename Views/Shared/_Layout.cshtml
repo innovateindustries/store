@@ -36,27 +36,15 @@
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index" data-i18n="nav.home">Inicio</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Plataforma" data-i18n="nav.plataforma">Plataforma</a>
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Store" data-i18n="nav.store">STORE</a>
                         </li>
-                        @if (User.HasClaim("cat_eventos", "true"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Eventos" data-i18n="nav.eventos">Eventos</a>
-                            </li>
-                        }
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Roblox" data-i18n="nav.roblox">Roblox</a>
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Plataforma" data-i18n="nav.plataforma">Plataforma</a>
                         </li>
                         @if (User.HasClaim("cat_showcase", "true"))
                         {
                             <li class="nav-item">
                                 <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Showcase" data-i18n="nav.showcase">Showcase</a>
-                            </li>
-                        }
-                        @if (User.HasClaim("cat_vlog", "true"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Vlog" data-i18n="nav.vlog">Vlog</a>
                             </li>
                         }
                         <li class="nav-item">

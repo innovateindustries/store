@@ -1,0 +1,68 @@
+@model INNOVATE_INDUSTRIES_WEB_STORE.Models.AdminUsuarioDetalleViewModel
+@{
+    ViewData["Title"] = "Biblioteca";
+    Layout = "_AdminLayout";
+    ViewData["AdminSection"] = "userslib";
+}
+
+<section class="hero-neon">
+    <span class="badge-neon"><span class="pulse-dot"></span><span data-i18n="sb.title">ADMIN</span></span>
+    <h1 class="section-title mt-3"><small data-i18n="adm.lib_eyebrow">// Biblioteca</small><span>@Model.UserName</span></h1>
+    <p class="text-secondary">@Model.Email · @Model.Roles</p>
+    <div class="d-flex flex-wrap gap-3 mt-2">
+        <a class="btn-neon-outline" asp-action="Usuarios" data-i18n="adm.lib_back">← USUARIOS</a>
+    </div>
+</section>
+
+<div class="neon-card p-3">
+    @if (Model.Orders.Count == 0)
+    {
+        <p class="text-secondary mb-0" data-i18n="adm.lib_empty">Este usuario aún no tiene juegos canjeados.</p>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-dark table-striped align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th data-i18n="adm.col_game">Juego</th>
+                        <th>USD</th>
+                        <th data-i18n="adm.col_key">Key</th>
+                        <th data-i18n="adm.col_state">Estado</th>
+                        <th data-i18n="adm.col_date">Fecha (UTC)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var o in Model.Orders)
+                    {
+                        <tr>
+                            <td><b class="text-white">@o.GameTitle</b><br /><small class="text-secondary">@o.Reference</small></td>
+                            <td class="text-white">$@o.Price.ToString("0.00")</td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(o.KeyCode))
+                                {
+                                    <span class="order-ref order-ref-sm">@o.KeyCode</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">—</span>
+                                }
+                            </td>
+                            <td>
+                                @if (o.Status == "Pagado")
+                                {
+                                    <span class="text-green-neon" data-i18n="pay.st_paid">Pagado</span>
+                                }
+                                else
+                                {
+                                    <span class="card-tag tag-magenta" data-i18n="pay.st_pending">Pendiente</span>
+                                }
+                            </td>
+                            <td><small>@o.CreatedAtUtc.ToString("dd/MM/yyyy HH:mm")</small></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

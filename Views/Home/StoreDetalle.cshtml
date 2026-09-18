@@ -1,0 +1,142 @@
+@model INNOVATE_INDUSTRIES_WEB_STORE.Models.StoreGame
+@using System.Text.Json
+@{
+    ViewData["Title"] = Model.Title;
+    List<string> shots = new();
+    try { shots = JsonSerializer.Deserialize<List<string>>(Model.ScreenshotsJson ?? "[]") ?? new(); } catch { }
+    string trailer = (Model.TrailerUrl ?? string.Empty).Trim();
+    string? ytEmbed = null;
+    if (trailer.Contains("youtube.com/watch", StringComparison.OrdinalIgnoreCase)
+        || trailer.Contains("youtu.be/", StringComparison.OrdinalIgnoreCase)
+        || trailer.Contains("youtube.com/shorts/", StringComparison.OrdinalIgnoreCase)
+        || trailer.Contains("youtube.com/embed/", StringComparison.OrdinalIgnoreCase))
+    {
+        string id = string.Empty;
+        var m1 = System.Text.RegularExpressions.Regex.Match(trailer, @"[?&]v=([A-Za-z0-9_-]{6,})");
+        if (m1.Success) { id = m1.Groups[1].Value; }
+        else
+        {
+            var m2 = System.Text.RegularExpressions.Regex.Match(trailer, @"youtu\.be/([A-Za-z0-9_-]{6,})");
+            if (m2.Success) { id = m2.Groups[1].Value; }
+            else
+            {
+                var m3 = System.Text.RegularExpressions.Regex.Match(trailer, @"/embed/([A-Za-z0-9_-]{6,})");
+                if (m3.Success) { id = m3.Groups[1].Value; }
+                else
+                {
+                    var m4 = System.Text.RegularExpressions.Regex.Match(trailer, @"/shorts/([A-Za-z0-9_-]{6,})");
+                    if (m4.Success) { id = m4.Groups[1].Value; }
+                }
+            }
+        }
+        if (id.Length > 0) { ytEmbed = "https://www.youtube.com/embed/" + id; }
+    }
+    bool isMp4 = trailer.EndsWith(".mp4", StringComparison.OrdinalIgnoreCase)
+        || trailer.EndsWith(".webm", StringComparison.OrdinalIgnoreCase);
+    var minLines = (Model.MinRequirements ?? string.Empty)
+        .Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+        .Select(s => s.Trim()).Where(s => s.Length > 0).Take(20).ToList();
+    var recLines = (Model.RecRequirements ?? string.Empty)
+        .Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+        .Select(s => s.Trim()).Where(s => s.Length > 0).Take(20).ToList();
+}
+
+<section class="hero-neon" style="padding-top:50px">
+    <div class="d-flex flex-wrap gap-3">
+        <a class="btn-neon-outline" asp-action="Store" data-i18n="store.back">← Inicio</a>
+    </div>
+    <div class="row g-4 mt-1 align-items-start">
+        <div class="col-md-5 reveal">
+            <img src="@Model.CoverPath" alt="Portada @Model.Title" class="img-fluid rounded store-detail-cover" loading="lazy" />
+        </div>
+        <div class="col-md-7 reveal">
+            <div class="d-flex gap-2 flex-wrap">
+                @if (Model.IsPreorder)
+                {
+                    <span class="card-tag tag-magenta" data-i18n="store.preorder">PREVENTA</span>
+                }
+                else if (Model.IsEarlyAccess)
+                {
+                    <span class="card-tag tag-cyan" data-i18n="store.early">ACCESO ANTICIPADO</span>
+                }
+            </div>
+            <h1 class="section-title mt-2"><span>@Model.Title</span></h1>
+            <p class="store-price store-price-lg">$@Model.Price.ToString("0.00")</p>
+            <div class="d-flex flex-wrap gap-3 mt-2">
+                <a class="btn-neon" asp-action="Pagar" asp-route-id="@Model.Id"><span data-i18n="store.pay">Pagar</span></a>
+            </div>
+            <p class="text-secondary" style="white-space:pre-wrap">@Model.Description</p>
+            <small class="text-muted">@Model.CreatedAtUtc.ToString("dd/MM/yyyy") UTC</small>
+        </div>
+    </div>
+</section>
+
+<div class="row g-3 mt-1">
+    <div class="col-md-6 reveal">
+        <div class="neon-card p-4 h-100">
+            <h6 class="text-white" data-i18n="store.req_min">Requisitos mínimos</h6>
+            @if (minLines.Count > 0)
+            {
+                <ul class="text-secondary small mb-0">
+                    @foreach (var s in minLines)
+                    {
+                        <li>@s</li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p class="text-secondary small mb-0" style="white-space:pre-wrap">@Model.MinRequirements</p>
+            }
+        </div>
+    </div>
+    <div class="col-md-6 reveal">
+        <div class="neon-card p-4 h-100">
+            <h6 class="text-white" data-i18n="store.req_rec">Requisitos recomendados</h6>
+            @if (recLines.Count > 0)
+            {
+                <ul class="text-secondary small mb-0">
+                    @foreach (var s in recLines)
+                    {
+                        <li>@s</li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p class="text-secondary small mb-0" style="white-space:pre-wrap">@Model.RecRequirements</p>
+            }
+        </div>
+    </div>
+</div>
+
+@if (shots.Count > 0)
+{
+    <h2 class="section-title mt-5 reveal"><span data-i18n="store.shots">Capturas</span></h2>
+    <div class="row g-3 mt-1">
+        @foreach (var s in shots.Take(6))
+        {
+            <div class="col-md-4 reveal">
+                <img src="@s" alt="Captura @Model.Title" class="img-fluid rounded store-shot" loading="lazy" />
+            </div>
+        }
+    </div>
+}
+
+<h2 class="section-title mt-5 reveal"><span data-i18n="store.trailer">Tráiler</span></h2>
+<div class="neon-card p-3 mt-1 reveal">
+    @if (!string.IsNullOrEmpty(ytEmbed))
+    {
+        <div class="ratio ratio-16x9">
+            <iframe src="@ytEmbed" title="Tráiler @Model.Title" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+    }
+    else if (isMp4)
+    {
+        <video controls preload="metadata" class="w-100 rounded" src="@trailer"></video>
+    }
+    else
+    {
+        <a class="btn-neon" href="@trailer" target="_blank" rel="noopener"><span data-i18n="store.trailer_open">Ver tráiler ↗</span></a>
+    }
+</div>

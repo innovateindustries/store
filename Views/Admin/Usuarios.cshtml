@@ -1,0 +1,53 @@
+@model INNOVATE_INDUSTRIES_WEB_STORE.Models.AdminUsuariosViewModel
+@{
+    ViewData["Title"] = "USUARIOS";
+    Layout = "_AdminLayout";
+    ViewData["AdminSection"] = "userslib";
+}
+
+<section class="hero-neon">
+    <span class="badge-neon"><span class="pulse-dot"></span><span data-i18n="sb.title">ADMIN</span></span>
+    <h1 class="section-title mt-3"><small>// Biblioteca</small><span data-i18n="adm.userslib_t">USUARIOS</span></h1>
+    <p class="text-secondary" data-i18n="adm.userslib_lead">Usuarios del launcher. Haz clic en un usuario para ver sus juegos canjeados y sus keys.</p>
+</section>
+
+<div class="neon-card p-3">
+    @if (Model.Users.Count == 0)
+    {
+        <p class="text-secondary mb-0" data-i18n="adm.userslib_empty">Aún no hay usuarios registrados.</p>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-dark table-striped align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th data-i18n="adm.col_user">Usuario</th>
+                        <th data-i18n="adm.col_email">Correo</th>
+                        <th data-i18n="adm.col_roles">Roles</th>
+                        <th data-i18n="adm.col_games">Juegos</th>
+                        <th data-i18n="adm.col_key">Key</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var u in Model.Users)
+                    {
+                        <tr>
+                            <td>
+                                <a asp-action="UsuarioDetalle" asp-route-id="@u.Id" class="text-white fw-bold text-decoration-none">@u.UserName</a>
+                            </td>
+                            <td><small class="text-secondary">@u.Email</small></td>
+                            <td><small>@u.Roles</small></td>
+                            <td><span class="card-tag tag-cyan">@u.GamesCount</span></td>
+                            <td><span class="card-tag tag-green">@u.KeysCount</span></td>
+                            <td>
+                                <a asp-action="UsuarioDetalle" asp-route-id="@u.Id" class="btn btn-sm btn-neon-outline" data-i18n="adm.btn_library">Biblioteca</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

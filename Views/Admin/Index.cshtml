@@ -47,6 +47,10 @@
                                 <button type="submit" class="btn btn-sm btn-neon-magenta" data-i18n="adm.ban">Banear</button>
                             </form>
                         }
+                        <form asp-action="DeleteUser" method="post" class="d-inline ms-2">
+                            <input type="hidden" name="id" value="@u.Id" />
+                            <button type="submit" class="btn btn-sm btn-outline-danger" data-i18n="adm.btn_del">Eliminar</button>
+                        </form>
                     }
                 </div>
             }
@@ -91,6 +95,10 @@
                                 <button type="submit" class="btn btn-sm btn-neon-magenta" data-i18n="adm.ban">Banear</button>
                             </form>
                         }
+                        <form asp-action="DeleteUser" method="post" class="d-inline ms-2">
+                            <input type="hidden" name="id" value="@u.Id" />
+                            <button type="submit" class="btn btn-sm btn-outline-danger" data-i18n="adm.btn_del">Eliminar</button>
+                        </form>
                     }
                 </div>
             }
@@ -135,6 +143,10 @@
                                 <button type="submit" class="btn btn-sm btn-neon-magenta" data-i18n="adm.ban">Banear</button>
                             </form>
                         }
+                        <form asp-action="DeleteUser" method="post" class="d-inline ms-2">
+                            <input type="hidden" name="id" value="@u.Id" />
+                            <button type="submit" class="btn btn-sm btn-outline-danger" data-i18n="adm.btn_del">Eliminar</button>
+                        </form>
                     }
                 </div>
             }

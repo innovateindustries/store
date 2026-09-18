@@ -9,8 +9,11 @@
             <h6 class="text-white mb-3" style="font-family:var(--font-display);letter-spacing:2px" data-i18n="sb.title">ADMIN</h6>
             <div class="d-grid gap-2">
                 <a asp-controller="Admin" asp-action="Index" class="btn-neon-outline text-center @(section == "users" ? "active-admin-link" : "")"><span data-i18n="sb.users">Usuarios</span></a>
+                <a asp-controller="Admin" asp-action="Usuarios" class="btn-neon-outline text-center @(section == "userslib" ? "active-admin-link" : "")"><span data-i18n="sb.users_lib">USUARIOS</span></a>
                 <a asp-controller="Admin" asp-action="Horas" class="btn-neon-outline text-center @(section == "horas" ? "active-admin-link" : "")"><span>Horas de juego</span></a>
                 <a asp-controller="Admin" asp-action="Noticias" class="btn-neon-outline text-center @(section == "news" ? "active-admin-link" : "")"><span data-i18n="sb.news">Noticias</span></a>
+                <a asp-controller="Admin" asp-action="Store" class="btn-neon-outline text-center @(section == "store" ? "active-admin-link" : "")"><span data-i18n="sb.store">STORE</span></a>
+                <a asp-controller="Admin" asp-action="Launcher" class="btn-neon-outline text-center @(section == "launcher" ? "active-admin-link" : "")"><span data-i18n="sb.launcher">Launcher</span></a>
                 <a asp-controller="Home" asp-action="Index" class="btn-neon-outline text-center"><span data-i18n="sb.home">← Sitio</span></a>
             </div>
         </div>

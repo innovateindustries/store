@@ -1,11 +1,14 @@
 using INNOVATE_INDUSTRIES_WEB_STORE.Data;
 using INNOVATE_INDUSTRIES_WEB_STORE.Filters;
 using INNOVATE_INDUSTRIES_WEB_STORE.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using System.Diagnostics;
 using System.Net.Http.Json;
-using System.Text.RegularExpressions;
+using System.Security.Claims;
+using System.Security.Cryptography;
 
 namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers
 {
@@ -14,12 +17,14 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IMemoryCache _cache;
         private readonly AppDbContext _db;
+        private readonly IWebHostEnvironment _env;
 
-        public HomeController(IHttpClientFactory httpClientFactory, IMemoryCache cache, AppDbContext db)
+        public HomeController(IHttpClientFactory httpClientFactory, IMemoryCache cache, AppDbContext db, IWebHostEnvironment env)
         {
             _httpClientFactory = httpClientFactory;
             _cache = cache;
             _db = db;
+            _env = env;
         }
 
         public IActionResult Index()
@@ -43,162 +48,116 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers
             return View(items);
         }
 
+        // STORE: juegos publicados desde el Admin (carátula + precio + badge).
+        public IActionResult Store()
+        {
+            var games = _db.StoreGames
+                .Where(g => g.IsPublished)
+                .OrderByDescending(g => g.Id)
+                .Take(60)
+                .ToList();
+            return View(games);
+        }
+
+        // Ficha del juego: portada, descripción, requisitos, screenshots y tráiler.
+        public IActionResult StoreDetalle(int id)
+        {
+            var game = _db.StoreGames
+                .FirstOrDefault(g => g.Id == id && g.IsPublished);
+            if (game == null)
+                return RedirectToAction(nameof(Store));
+            return View(game);
+        }
+
+        // PAGAR (no "comprar"): resumen del pedido. Requiere login.
+        // Sin pasarela conectada: el pago es manual y queda Pendiente.
+        [Authorize]
+        public IActionResult Pagar(int id)
+        {
+            var game = _db.StoreGames
+                .FirstOrDefault(g => g.Id == id && g.IsPublished);
+            if (game == null)
+                return RedirectToAction(nameof(Store));
+            return View(game);
+        }
+
+        // Confirma el pago manual: crea el pedido Pendiente con referencia.
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ConfirmarPago(int id)
+        {
+            var game = _db.StoreGames
+                .FirstOrDefault(g => g.Id == id && g.IsPublished);
+            if (game == null)
+                return RedirectToAction(nameof(Store));
+
+            string reference;
+            do
+            {
+                reference = "ORD-" + Convert.ToHexString(RandomNumberGenerator.GetBytes(4));
+            } while (_db.StoreOrders.Any(o => o.Reference == reference));
+
+            var order = new StoreOrder
+            {
+                GameId = game.Id,
+                GameTitle = game.Title,
+                Price = game.Price,
+                Reference = reference,
+                Status = "Pendiente",
+                CreatedAtUtc = DateTime.UtcNow,
+                BuyerUserId = User.FindFirstValue(ClaimTypes.NameIdentifier)
+            };
+            _db.StoreOrders.Add(order);
+            await _db.SaveChangesAsync();
+            return RedirectToAction(nameof(PagarOk), new { id = order.Id });
+        }
+
+        // Confirmación del pedido con su referencia de pago manual.
+        [Authorize]
+        public IActionResult PagarOk(int id)
+        {
+            var order = _db.StoreOrders.FirstOrDefault(o => o.Id == id);
+            if (order == null)
+                return RedirectToAction(nameof(Store));
+            var me = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var staff = User.IsInRole("CEO") || User.IsInRole("FOUNDER") || User.IsInRole("INTERNO");
+            if (!staff && order.BuyerUserId != me)
+                return RedirectToAction(nameof(Store));
+            ViewData["Game"] = _db.StoreGames.FirstOrDefault(g => g.Id == order.GameId);
+            return View(order);
+        }
+
         public IActionResult Privacy()
         {
             return View();
         }
 
-        // NUESTRA PLATAFORMA en vivo: sincroniza metadatos de
-        // https://innovate-industries.itch.io/innovate-launcher (única fuente externa).
-        // Se cachea 5 minutos para no saturar a itch.io.
-        public async Task<IActionResult> Plataforma()
+        // PLATAFORMA: descarga del último build publicado desde el Admin (LAUNCHER).
+        public IActionResult Plataforma()
         {
-            const string cacheKey = "itch:innovate-launcher";
-            if (!_cache.TryGetValue(cacheKey, out ItchPageInfo? info) || info is null)
-            {
-                info = await FetchItchPageAsync();
-                _cache.Set(cacheKey, info, TimeSpan.FromMinutes(5));
-            }
-            return View(info);
+            LauncherBuild? build = _db.LauncherBuilds
+                .Where(b => b.IsPublished)
+                .OrderByDescending(b => b.Id)
+                .FirstOrDefault();
+            return View(build);
         }
 
-        private async Task<ItchPageInfo> FetchItchPageAsync()
+        // Descarga el archivo y cuenta (con soporte de rangos para archivos grandes).
+        public async Task<IActionResult> DescargarLauncher()
         {
-            var info = new ItchPageInfo { FetchedAtUtc = DateTime.UtcNow };
-            try
-            {
-                var client = _httpClientFactory.CreateClient("ItchIo");
-                using var response = await client.GetAsync("innovate-launcher", HttpContext.RequestAborted);
-                response.EnsureSuccessStatusCode();
-                var html = await response.Content.ReadAsStringAsync(HttpContext.RequestAborted);
-
-                info.Success = true;
-                info.Title = ExtractMeta(html, "og:title") ?? CleanTitle(ExtractTitleTag(html)) ?? info.Title;
-                info.Description = ExtractMeta(html, "og:description") ?? string.Empty;
-                info.ImageUrl = ExtractMeta(html, "og:image");
-                info.IsPasswordProtected = html.Contains("password is required", StringComparison.OrdinalIgnoreCase)
-                    || html.Contains("game_password", StringComparison.OrdinalIgnoreCase);
-            }
-            catch (Exception ex)
-            {
-                info.Success = false;
-                info.ErrorMessage = ex.Message;
-            }
-            return info;
-        }
-
-        private static string? ExtractMeta(string html, string property)
-        {
-            var m = Regex.Match(html, $"<meta[^>]+property=\"{property}\"[^>]+content=\"([^\"]*)\"",
-                RegexOptions.IgnoreCase | RegexOptions.Singleline);
-            if (!m.Success)
-                m = Regex.Match(html, $"<meta[^>]+content=\"([^\"]*)\"[^>]+property=\"{property}\"",
-                    RegexOptions.IgnoreCase | RegexOptions.Singleline);
-            return m.Success ? System.Net.WebUtility.HtmlDecode(m.Groups[1].Value) : null;
-        }
-
-        private static string? ExtractTitleTag(string html)
-        {
-            var m = Regex.Match(html, "<title>(.*?)</title>",
-                RegexOptions.IgnoreCase | RegexOptions.Singleline);
-            return m.Success ? System.Net.WebUtility.HtmlDecode(m.Groups[1].Value.Trim()) : null;
-        }
-
-        private static string? CleanTitle(string? title)
-        {
-            if (string.IsNullOrWhiteSpace(title))
-                return null;
-            const string suffix = " - itch.io";
-            if (title.EndsWith(suffix, StringComparison.OrdinalIgnoreCase))
-                title = title[..^suffix.Length].Trim();
-            return title;
-        }
-
-        // EVENTOS en vivo: sincroniza https://webbun.github.io/innovate-industrie/ (única fuente).
-        // Se cachea 5 minutos para no saturar la web de eventos.
-        [CategoryEnabled("eventos")]
-        public async Task<IActionResult> Eventos()
-        {
-            const string cacheKey = "eventos:innovate-industrie";
-            if (!_cache.TryGetValue(cacheKey, out EventosPageInfo? info) || info is null)
-            {
-                info = await FetchEventosPageAsync();
-                _cache.Set(cacheKey, info, TimeSpan.FromMinutes(5));
-            }
-            return View(info);
-        }
-
-        private async Task<EventosPageInfo> FetchEventosPageAsync()
-        {
-            var info = new EventosPageInfo { FetchedAtUtc = DateTime.UtcNow };
-            try
-            {
-                var client = _httpClientFactory.CreateClient("Eventos");
-                var html = await client.GetStringAsync("", HttpContext.RequestAborted);
-
-                info.Success = true;
-                info.Title = ExtractTitleTag(html) ?? info.Title;
-
-                var eventosSection = Regex.Match(html, "<section id=\"eventos\".*?</section>",
-                    RegexOptions.Singleline | RegexOptions.IgnoreCase).Value;
-                if (!string.IsNullOrEmpty(eventosSection))
-                {
-                    info.SectionTitle = StripTags(FirstGroup(eventosSection, "<h2[^>]*>(.*?)</h2>"));
-                    info.SectionDesc = StripTags(FirstGroup(eventosSection, "<p class=\"desc\"[^>]*>(.*?)</p>"));
-
-                    foreach (var row in Regex.Split(eventosSection, "<div class=\"event-row\">").Skip(1))
-                    {
-                        var name = StripTags(FirstGroup(row, "<h3[^>]*>(.*?)</h3>"));
-                        if (string.IsNullOrWhiteSpace(name))
-                            continue;
-                        info.Events.Add(new EventoInfo
-                        {
-                            Tag = StripTags(FirstGroup(row, "<span class=\"tag[^\"]*\"[^>]*>(.*?)</span>")),
-                            Name = name,
-                            Description = StripTags(FirstGroup(row, "<p[^>]*>(.*?)</p>")),
-                            HasCountdown = row.Contains("uhc-days", StringComparison.OrdinalIgnoreCase),
-                            StatusText = StripTags(FirstGroup(row, "<span class=\"reveal-tag\"[^>]*>(.*?)</span>"))
-                        });
-                    }
-                }
-
-                var dateMatch = Regex.Match(html, @"new Date\('([^']+)'\)");
-                if (dateMatch.Success && DateTimeOffset.TryParse(dateMatch.Groups[1].Value, out var target))
-                    info.NextEventDate = target;
-
-                var launcherSection = Regex.Match(html, "<section id=\"launcher\".*?</section>",
-                    RegexOptions.Singleline | RegexOptions.IgnoreCase).Value;
-                if (!string.IsNullOrEmpty(launcherSection))
-                {
-                    info.LauncherVersion = StripTags(FirstGroup(launcherSection, "<span class=\"tag[^\"]*\"[^>]*>(v[\\d.]+[^<]*)</span>"));
-                    info.LauncherName = StripTags(FirstGroup(launcherSection, "<h3[^>]*>(.*?)</h3>"));
-                    info.LauncherDesc = StripTags(FirstGroup(launcherSection, "<p[^>]*>(.*?)</p>"));
-                }
-            }
-            catch (Exception ex)
-            {
-                info.Success = false;
-                info.ErrorMessage = ex.Message;
-            }
-            return info;
-        }
-
-        private static string FirstGroup(string input, string pattern)
-        {
-            var m = Regex.Match(input, pattern, RegexOptions.Singleline | RegexOptions.IgnoreCase);
-            return m.Success ? System.Net.WebUtility.HtmlDecode(m.Groups[1].Value.Trim()) : string.Empty;
-        }
-
-        private static string StripTags(string? s) =>
-            string.IsNullOrEmpty(s)
-                ? string.Empty
-                : System.Net.WebUtility.HtmlDecode(Regex.Replace(s, "<[^>]+>", string.Empty).Trim());
-
-        // ROBLOX: hub de la categoría. Aún sin link oficial: cuando se reciba
-        // el juego/grupo se conectará el sync en vivo (Roblox Games API).
-        public IActionResult Roblox()
-        {
-            return View(new RobloxPageInfo());
+            var build = _db.LauncherBuilds
+                .Where(b => b.IsPublished)
+                .OrderByDescending(b => b.Id)
+                .FirstOrDefault();
+            if (build == null)
+                return RedirectToAction(nameof(Plataforma));
+            var full = Path.Combine(_env.WebRootPath, build.FilePath.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
+            if (!System.IO.File.Exists(full))
+                return NotFound();
+            build.Downloads++;
+            await _db.SaveChangesAsync();
+            return PhysicalFile(full, "application/octet-stream", build.FileName, enableRangeProcessing: true);
         }
 
         // SHOWCASE en vivo: directo de Twitch https://www.twitch.tv/tarloox
@@ -246,41 +205,6 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers
             {
                 return null;
             }
-        }
-
-        // VLOG en vivo: https://www.instagram.com/innovateindustriesof/
-        // Instagram solo entrega un cascarón JS a bots (sin bio/posts/datos) y
-        // bloquea iframes del perfil, así que se verifica la cuenta en vivo y
-        // los reels/posts se embeben con el player oficial al recibir sus links.
-        [CategoryEnabled("vlog")]
-        public async Task<IActionResult> Vlog()
-        {
-            const string cacheKey = "ig:innovateindustriesof:status";
-            if (!_cache.TryGetValue(cacheKey, out VlogPageInfo? info) || info is null)
-            {
-                info = await FetchInstagramStatusAsync();
-                _cache.Set(cacheKey, info, TimeSpan.FromMinutes(10));
-            }
-            return View(info);
-        }
-
-        private async Task<VlogPageInfo> FetchInstagramStatusAsync()
-        {
-            var info = new VlogPageInfo { FetchedAtUtc = DateTime.UtcNow };
-            try
-            {
-                var client = _httpClientFactory.CreateClient("Instagram");
-                using var req = new HttpRequestMessage(HttpMethod.Head, "innovateindustriesof/");
-                using var res = await client.SendAsync(req, HttpContext.RequestAborted);
-                info.Success = true;
-                info.IsReachable = res.IsSuccessStatusCode;
-            }
-            catch
-            {
-                info.Success = false;
-                info.IsReachable = false;
-            }
-            return info;
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

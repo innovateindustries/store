@@ -111,9 +111,7 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers
             ViewData["Disabled"] = disabled;
             return View(new AjustesViewModel
             {
-                Showcase = claims.Any(c => c.Type == "cat_showcase" && c.Value == "true"),
-                Eventos = claims.Any(c => c.Type == "cat_eventos" && c.Value == "true"),
-                Vlog = claims.Any(c => c.Type == "cat_vlog" && c.Value == "true")
+                Showcase = claims.Any(c => c.Type == "cat_showcase" && c.Value == "true")
             });
         }
 
@@ -134,10 +132,6 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers
             }
             if (m.Showcase)
                 await _users.AddClaimAsync(user, new Claim("cat_showcase", "true"));
-            if (m.Eventos)
-                await _users.AddClaimAsync(user, new Claim("cat_eventos", "true"));
-            if (m.Vlog)
-                await _users.AddClaimAsync(user, new Claim("cat_vlog", "true"));
 
             await _signIn.RefreshSignInAsync(user);
             TempData["AjustesSaved"] = true;

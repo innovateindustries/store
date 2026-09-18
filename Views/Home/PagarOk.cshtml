@@ -1,0 +1,72 @@
+@model INNOVATE_INDUSTRIES_WEB_STORE.Models.StoreOrder
+@{
+    ViewData["Title"] = "Pagar";
+    var game = ViewData["Game"] as INNOVATE_INDUSTRIES_WEB_STORE.Models.StoreGame;
+}
+
+<section class="hero-neon" style="padding-top:50px">
+    <span class="badge-neon"><span class="pulse-dot"></span><span data-i18n="pay.badge">Pago · manual</span></span>
+    <h1 class="section-title mt-3"><small data-i18n="pay.eyebrow">// Pagar</small><span data-i18n="pay.title">Pagar</span></h1>
+    <p class="lead-muted" data-i18n="pay.ok_lead">Pedido registrado. Guarda tu referencia.</p>
+</section>
+
+<div class="neon-card p-4 mt-1 reveal">
+    <div class="row g-4 align-items-center">
+        @if (game != null)
+        {
+            <div class="col-md-4">
+                <img src="@game.CoverPath" alt="Portada @game.Title" class="img-fluid rounded" loading="lazy" style="max-height:300px;width:100%;object-fit:contain;background:rgba(0,0,0,.45)" />
+            </div>
+        }
+        <div class="col-md-8">
+            <h5 class="text-white">@Model.GameTitle</h5>
+            <p class="store-price">$@Model.Price.ToString("0.00")</p>
+            <p class="text-secondary small mb-1" data-i18n="pay.ref">Referencia</p>
+            <p class="order-ref">@Model.Reference</p>
+            @if (!string.IsNullOrEmpty(Model.KeyCode))
+            {
+                <p class="text-secondary small mb-1 mt-3" data-i18n="pay.key_t">Tu key del juego</p>
+                <p class="order-ref" id="gameKey">@Model.KeyCode</p>
+                <button type="button" class="btn btn-sm btn-neon-outline mt-1" onclick="copyGameKey()" data-i18n="pay.copy">Copiar</button>
+                <p class="text-secondary small mt-2" data-i18n="pay.key_lead">Canjea esta key en el launcher para añadir el juego a tu biblioteca. No la compartas.</p>
+            }
+            else if (Model.Status != "Pagado")
+            {
+                <p class="text-secondary small mt-3" data-i18n="pay.key_pending">Tu key se generará cuando el equipo valide tu pago.</p>
+            }
+            @if (Model.Status == "Pagado")
+            {
+                <span class="card-tag tag-green" data-i18n="pay.st_paid">Pagado</span>
+            }
+            else
+            {
+                <span class="card-tag tag-magenta" data-i18n="pay.st_pending">Pendiente</span>
+            }
+            <small class="text-muted d-block mt-2">@Model.CreatedAtUtc.ToString("dd/MM/yyyy HH:mm") UTC</small>
+            <p class="text-secondary small mt-3" data-i18n="pay.manual">Pago manual: confirma y contacta al equipo por Discord indicando tu referencia para completar el pago.</p>
+            <div class="d-flex flex-wrap gap-3 mt-3">
+                <a class="btn-neon-outline" asp-action="Store" data-i18n="store.back">← Inicio</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+function copyGameKey() {
+    var el = document.getElementById('gameKey');
+    if (!el) return;
+    var text = el.textContent.trim();
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text);
+    } else {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+    }
+}
+</script>
+}

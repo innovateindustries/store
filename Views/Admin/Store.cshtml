@@ -1,0 +1,202 @@
+@model INNOVATE_INDUSTRIES_WEB_STORE.Models.PublicarStoreViewModel
+@using System.Text.Json
+@{
+    ViewData["Title"] = "STORE";
+    Layout = "_AdminLayout";
+    ViewData["AdminSection"] = "store";
+    var games = ViewData["Games"] as List<INNOVATE_INDUSTRIES_WEB_STORE.Models.StoreGame> ?? new();
+}
+
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <h2 class="section-title mt-2"><span data-i18n="adm.store_t">STORE · Publicaciones</span> (@games.Count)</h2>
+</div>
+
+<div class="neon-card p-4 mt-2">
+    <form asp-action="PublicarStore" method="post" enctype="multipart/form-data">
+        <div asp-validation-summary="All" class="text-danger small"></div>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label asp-for="Cover" class="form-label text-white" data-i18n="adm.store_cover">Portada (carátula JPG/PNG/GIF/WEBP · máx. 5 MB) *</label>
+                <input asp-for="Cover" class="form-control" type="file" accept=".jpg,.jpeg,.png,.gif,.webp" required />
+            </div>
+            <div class="col-md-5">
+                <label asp-for="Title" class="form-label text-white" data-i18n="adm.store_title">Título del juego *</label>
+                <input asp-for="Title" class="form-control" maxlength="120" required data-i18n-ph="adm.store_title" placeholder="Título del juego" />
+            </div>
+            <div class="col-md-3">
+                <label asp-for="Price" class="form-label text-white" data-i18n="adm.store_price">Precio (USD) *</label>
+                <input asp-for="Price" class="form-control" type="number" min="0" max="999999" step="0.01" required placeholder="19.99" />
+            </div>
+            <div class="col-12">
+                <label asp-for="Description" class="form-label text-white" data-i18n="adm.store_desc">Descripción *</label>
+                <textarea asp-for="Description" class="form-control" rows="3" maxlength="4000" required></textarea>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="MinRequirements" class="form-label text-white" data-i18n="adm.store_min">Requisitos mínimos *</label>
+                <textarea asp-for="MinRequirements" class="form-control" rows="4" maxlength="2000" required placeholder="Windows 10 64 bits&#10;8 GB RAM&#10;GTX 1060"></textarea>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="RecRequirements" class="form-label text-white" data-i18n="adm.store_rec">Requisitos recomendados *</label>
+                <textarea asp-for="RecRequirements" class="form-control" rows="4" maxlength="2000" required placeholder="Windows 11 64 bits&#10;16 GB RAM&#10;RTX 3060"></textarea>
+            </div>
+            <div class="col-md-6">
+                <div class="form-check form-switch">
+                    <input asp-for="IsPreorder" class="form-check-input" type="checkbox" />
+                    <label asp-for="IsPreorder" class="form-check-label text-white" data-i18n="adm.store_pre">¿Es preventa? *</label>
+                </div>
+                <small class="text-secondary" data-i18n="adm.store_pre_d">Marca si aún no sale a la venta.</small>
+            </div>
+            <div class="col-md-6">
+                <div class="form-check form-switch">
+                    <input asp-for="IsEarlyAccess" class="form-check-input" type="checkbox" />
+                    <label asp-for="IsEarlyAccess" class="form-check-label text-white" data-i18n="adm.store_early">¿Es ACCESO ANTICIPADO? *</label>
+                </div>
+                <small class="text-secondary" data-i18n="adm.store_early_d">Marca si es Early Access jugable.</small>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Screenshots" class="form-label text-white" data-i18n="adm.store_shots">Screenshots (1 a 6 imágenes JPG/PNG/GIF/WEBP · máx. 5 MB c/u) *</label>
+                <input asp-for="Screenshots" class="form-control" type="file" accept=".jpg,.jpeg,.png,.gif,.webp" multiple required />
+            </div>
+            <div class="col-md-6">
+                <label asp-for="TrailerUrl" class="form-label text-white" data-i18n="adm.store_trailer">Tráiler (URL YouTube o MP4 directo) *</label>
+                <input asp-for="TrailerUrl" class="form-control" type="url" maxlength="500" required placeholder="https://www.youtube.com/watch?v=..." />
+            </div>
+        </div>
+        <div class="form-check form-switch mt-3">
+            <input asp-for="IsPublished" class="form-check-input" type="checkbox" />
+            <label asp-for="IsPublished" class="form-check-label text-white" data-i18n="adm.store_pub">Publicar al guardar</label>
+        </div>
+        <button type="submit" class="btn-neon mt-3" data-i18n="adm.store_btn">Publicar juego</button>
+    </form>
+</div>
+
+<div class="row g-3 mt-1">
+    @foreach (var g in games)
+    {
+        List<string> shots = new();
+        try { shots = JsonSerializer.Deserialize<List<string>>(g.ScreenshotsJson ?? "[]") ?? new(); } catch { }
+        <div class="col-md-6">
+            <div class="neon-card p-3 h-100">
+                <img src="@g.CoverPath" alt="Portada @g.Title" class="img-fluid rounded mb-2" loading="lazy" style="max-height:260px;width:100%;object-fit:contain;background:rgba(0,0,0,.45)" />
+                <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap">
+                    <h6 class="text-white mb-0">@g.Title</h6>
+                    @if (g.IsPublished)
+                    {
+                        <span class="text-green-neon small" data-i18n="adm.st_pub">● Publicada</span>
+                    }
+                    else
+                    {
+                        <span class="text-muted small" data-i18n="adm.st_draft">○ Borrador</span>
+                    }
+                </div>
+                <div class="d-flex gap-2 align-items-center mt-1 flex-wrap">
+                    <b class="text-white" style="font-family:var(--font-display)">$@g.Price.ToString("0.00")</b>
+                    @if (g.IsPreorder)
+                    {
+                        <span class="card-tag tag-magenta" data-i18n="store.preorder">PREVENTA</span>
+                    }
+                    else if (g.IsEarlyAccess)
+                    {
+                        <span class="card-tag tag-cyan" data-i18n="store.early">ACCESO ANTICIPADO</span>
+                    }
+                </div>
+                <small class="text-muted">🖼 @shots.Count/6 · @g.CreatedAtUtc.ToString("dd/MM/yyyy HH:mm") UTC</small>
+                <p class="text-secondary small mt-2 mb-0" style="white-space:pre-wrap">@(g.Description.Length > 160 ? g.Description.Substring(0, 160) + "…" : g.Description)</p>
+                <div class="d-flex gap-2 mt-2">
+                    <form asp-action="ToggleStore" method="post" class="d-inline">
+                        <input type="hidden" name="id" value="@g.Id" />
+                        <button type="submit" class="btn btn-sm btn-neon-outline" data-i18n="adm.btn_toggle">Publicar / Ocultar</button>
+                    </form>
+                    <form asp-action="DeleteStore" method="post" class="d-inline">
+                        <input type="hidden" name="id" value="@g.Id" />
+                        <button type="submit" class="btn btn-sm btn-outline-danger" data-i18n="adm.btn_del">Eliminar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+@if (games.Count == 0)
+{
+    <p class="text-secondary mt-3" data-i18n="adm.store_empty">Aún no hay juegos. Publica el primero.</p>
+}
+
+@{
+    var orders = ViewData["Orders"] as List<INNOVATE_INDUSTRIES_WEB_STORE.Models.StoreOrder> ?? new();
+    var buyerNames = ViewData["BuyerNames"] as Dictionary<string, string> ?? new();
+}
+
+<h2 class="section-title mt-5"><span data-i18n="adm.orders_t">Pedidos</span> (@orders.Count)</h2>
+@if (orders.Count == 0)
+{
+    <p class="text-secondary" data-i18n="adm.orders_empty">Aún no hay pedidos.</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-dark table-hover align-middle mt-2" style="--bs-table-bg:rgba(18,20,29,.9)">
+            <thead>
+                <tr>
+                    <th data-i18n="adm.col_ref">Ref.</th>
+                    <th data-i18n="adm.col_game">Juego</th>
+                    <th data-i18n="adm.col_buyer">Comprador</th>
+                    <th>USD</th>
+                    <th data-i18n="adm.col_key">Key</th>
+                    <th data-i18n="adm.col_state">Estado</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var o in orders)
+                {
+                    <tr>
+                        <td class="text-white" style="font-family:var(--font-display)">@o.Reference</td>
+                        <td>@o.GameTitle</td>
+                        <td>@(o.BuyerUserId != null && buyerNames.TryGetValue(o.BuyerUserId, out var n) ? n : "—")</td>
+                        <td class="text-white">$@o.Price.ToString("0.00")</td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(o.KeyCode))
+                            {
+                                <span class="order-ref order-ref-sm">@o.KeyCode</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">—</span>
+                            }
+                        </td>
+                        <td>
+                            @if (o.Status == "Pagado")
+                            {
+                                <span class="text-green-neon" data-i18n="pay.st_paid">Pagado</span>
+                            }
+                            else
+                            {
+                                <span class="card-tag tag-magenta" data-i18n="pay.st_pending">Pendiente</span>
+                            }
+                        </td>
+                        <td>
+                            <form asp-action="ToggleOrder" method="post" class="d-inline">
+                                <input type="hidden" name="id" value="@o.Id" />
+                                @if (o.Status == "Pagado")
+                                {
+                                    <button type="submit" class="btn btn-sm btn-neon-outline" data-i18n="adm.btn_markpending">Marcar pendiente</button>
+                                }
+                                else
+                                {
+                                    <button type="submit" class="btn btn-sm btn-neon" data-i18n="adm.btn_markpaid">Marcar pagado</button>
+                                }
+                            </form>
+                            @if (User.IsInRole("CEO") || User.IsInRole("FOUNDER"))
+                            {
+                                <form asp-action="DeleteOrder" method="post" class="d-inline ms-1">
+                                    <input type="hidden" name="id" value="@o.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" data-i18n="adm.btn_del">Eliminar</button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

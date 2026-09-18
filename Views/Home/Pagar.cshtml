@@ -1,0 +1,61 @@
+@model INNOVATE_INDUSTRIES_WEB_STORE.Models.StoreGame
+@{
+    ViewData["Title"] = "Pagar";
+}
+
+<section class="hero-neon" style="padding-top:50px">
+    <span class="badge-neon"><span class="pulse-dot"></span><span data-i18n="pay.badge">Pago · manual</span></span>
+    <h1 class="section-title mt-3"><small data-i18n="pay.eyebrow">// Pagar</small><span data-i18n="pay.title">Pagar</span></h1>
+    <p class="lead-muted" data-i18n="pay.lead">Revisa tu pedido y confirma. El pago se registra como pendiente hasta validarlo.</p>
+    <div class="d-flex flex-wrap gap-3 mt-3">
+        <a class="btn-neon-outline" asp-action="Store" data-i18n="store.back">← Inicio</a>
+    </div>
+</section>
+
+<div class="row g-4 mt-1">
+    <div class="col-md-5 reveal">
+        <div class="neon-card h-100">
+            <img class="card-img-top store-cover" src="@Model.CoverPath" alt="Portada @Model.Title" loading="lazy" />
+            <div class="card-body">
+                <h5 class="text-white mt-1">@Model.Title</h5>
+                @if (Model.IsPreorder)
+                {
+                    <span class="card-tag tag-magenta" data-i18n="store.preorder">PREVENTA</span>
+                }
+                else if (Model.IsEarlyAccess)
+                {
+                    <span class="card-tag tag-cyan" data-i18n="store.early">ACCESO ANTICIPADO</span>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-md-7 reveal">
+        <div class="neon-card p-4 h-100">
+            <h6 class="text-white" data-i18n="pay.summary">Tu pedido</h6>
+            <div class="table-responsive">
+                <table class="table table-dark align-middle" style="--bs-table-bg:rgba(18,20,29,.9)">
+                    <tbody>
+                        <tr>
+                            <td class="text-secondary" data-i18n="pay.summary">Tu pedido</td>
+                            <td class="text-white">@Model.Title</td>
+                        </tr>
+                        <tr>
+                            <td class="text-secondary" data-i18n="pay.buyer">Comprador</td>
+                            <td class="text-white">@User.Identity?.Name</td>
+                        </tr>
+                        <tr>
+                            <td class="text-secondary">USD</td>
+                            <td><b class="store-price">$@Model.Price.ToString("0.00")</b></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="text-secondary small" data-i18n="pay.manual">Pago manual: confirma y contacta al equipo por Discord indicando tu referencia para completar el pago.</p>
+            <form asp-action="ConfirmarPago" method="post" class="d-flex flex-wrap gap-3 mt-3">
+                <input type="hidden" name="id" value="@Model.Id" />
+                <button type="submit" class="btn-neon" data-i18n="pay.confirm">Confirmar pago</button>
+                <a class="btn-neon-outline" asp-action="StoreDetalle" asp-route-id="@Model.Id" data-i18n="store.back">← Inicio</a>
+            </form>
+        </div>
+    </div>
+</div>

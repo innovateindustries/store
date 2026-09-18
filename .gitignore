@@ -21,3 +21,10 @@ secrets.json
 Thumbs.db
 Desktop.ini
 .DS_Store
+
+## Node / skills (se regeneran con npx, NO subir)
+node_modules/
+.opencode/node_modules/
+
+## Cloudflare local (caché con IDs de cuenta, NO subir)
+.wrangler/

@@ -19,5 +19,11 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Data
         public DbSet<PlaySession> PlaySessions => Set<PlaySession>();
 
         public DbSet<LauncherToken> LauncherTokens => Set<LauncherToken>();
+
+        public DbSet<LauncherBuild> LauncherBuilds => Set<LauncherBuild>();
+
+        public DbSet<StoreGame> StoreGames => Set<StoreGame>();
+
+        public DbSet<StoreOrder> StoreOrders => Set<StoreOrder>();
     }
 }

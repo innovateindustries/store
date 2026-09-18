@@ -6,7 +6,7 @@
 <section class="hero-neon" style="padding-top:50px">
     <span class="badge-neon"><span class="pulse-dot"></span><span data-i18n="set.badge">Tu vista</span></span>
     <h1 class="section-title mt-3"><small data-i18n="set.eyebrow">// Ajustes</small><span data-i18n="set.ta">Ajustes</span></h1>
-    <p class="lead-muted" data-i18n="set.lead">Elige qué categorías quieres ver. Showcase, Eventos y Vlog están desactivadas por defecto.</p>
+    <p class="lead-muted" data-i18n="set.lead">Elige qué categorías quieres ver. Showcase está desactivada por defecto.</p>
 </section>
 
 @if (ViewData["Saved"] as bool? == true)
@@ -19,36 +19,18 @@
 }
 
 <h2 class="section-title mt-4"><span data-i18n="set.always_t">Siempre visibles</span></h2>
-<p class="text-secondary" data-i18n="set.always_d">Inicio, Plataforma, Roblox y Noticias.</p>
+<p class="text-secondary" data-i18n="set.always_d">Inicio, STORE, Plataforma y Noticias.</p>
 
 <h2 class="section-title mt-4"><span data-i18n="set.opt_t">Opcionales (desactivadas por defecto)</span></h2>
 <form asp-action="Ajustes" method="post" class="mt-2">
     <div class="row g-3">
-        <div class="col-md-4">
+        <div class="col-md-6">
             <div class="neon-card p-4 h-100">
                 <div class="form-check form-switch">
                     <input asp-for="Showcase" class="form-check-input" type="checkbox" />
                     <label asp-for="Showcase" class="form-check-label text-white" style="font-family:var(--font-display)" data-i18n="nav.showcase">Showcase</label>
                 </div>
                 <small class="text-secondary" data-i18n="set.c_showcase_d">Directos de Twitch.</small>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="neon-card p-4 h-100">
-                <div class="form-check form-switch">
-                    <input asp-for="Eventos" class="form-check-input" type="checkbox" />
-                    <label asp-for="Eventos" class="form-check-label text-white" style="font-family:var(--font-display)" data-i18n="nav.eventos">Eventos</label>
-                </div>
-                <small class="text-secondary" data-i18n="set.c_eventos_d">Calendario de eventos.</small>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="neon-card p-4 h-100">
-                <div class="form-check form-switch">
-                    <input asp-for="Vlog" class="form-check-input" type="checkbox" />
-                    <label asp-for="Vlog" class="form-check-label text-white" style="font-family:var(--font-display)" data-i18n="nav.vlog">Vlog</label>
-                </div>
-                <small class="text-secondary" data-i18n="set.c_vlog_d">Videos de Instagram.</small>
             </div>
         </div>
     </div>
