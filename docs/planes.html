@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="INNOVATE INDUSTRIES WEB STORE - Tienda gamer con estilo neon, periféricos, PC y comunidad." />
-    <title>Entrar - INNOVATE INDUSTRIES WEB STORE (vista est&#225;tica)</title>
+    <title>Planes - INNOVATE INDUSTRIES WEB STORE (vista est&#225;tica)</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -78,37 +78,37 @@
         <main b-nmn324jza5 role="main" class="pb-3"><div class="static-banner">VISTA EST&Aacute;TICA DEMOSTRATIVA &#9679; la app interactiva (cuentas, compras, descargas, admin) corre en local con <code>dotnet run</code> &#8594; http://localhost:5215</div>
             
 <section class="hero-neon" style="padding-top:50px">
-    <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-5">
-            <div class="neon-card p-4">
-                <span class="badge-neon"><span class="pulse-dot"></span><span data-i18n="acc.login_badge">Bienvenido de vuelta</span></span>
-                <h1 class="section-title mt-3"><small data-i18n="acc.login_eyebrow">// Acceso</small><span data-i18n="acc.login_title">Entrar</span></h1>
-                <p class="text-secondary" data-i18n="acc.login_lead">Conecta tu cuenta para continuar.</p>
-                <form method="post" action="#">
-                    
-                    <div class="mb-3">
-                        <label class="form-label text-white" data-i18n="acc.login_id" for="Email">Email o usuario</label>
-                        <input class="form-control" autocomplete="email" type="text" data-val="true" data-val-required="El email o usuario es obligatorio." id="Email" name="Email" value="" />
-                        <span class="text-danger field-validation-valid" data-valmsg-for="Email" data-valmsg-replace="true"></span>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label text-white" data-i18n="acc.password" for="Password">Contraseña</label>
-                        <input class="form-control" autocomplete="current-password" type="password" data-val="true" data-val-required="La contrase&#xF1;a es obligatoria." id="Password" name="Password" />
-                        <span class="text-danger field-validation-valid" data-valmsg-for="Password" data-valmsg-replace="true"></span>
-                    </div>
-                    <div class="mb-3 form-check">
-                        <input class="form-check-input" type="checkbox" data-val="true" data-val-required="The RememberMe field is required." id="RememberMe" name="RememberMe" value="true" />
-                        <label class="form-check-label text-secondary" data-i18n="acc.remember" for="RememberMe">Recuérdame</label>
-                    </div>
-                    <button type="submit" class="btn-neon w-100 text-center" data-i18n="acc.btn_login">Entrar</button>
-                <input name="__RequestVerificationToken" type="hidden" value="CfDJ8IW3bcnzl6ZMn3ZR4s1SyG9rxPUbJvYXaZDopxs2KttlD9tNAM0C1ClfZ9JEuaxe-1qvFI-Hfuvne6meOaUg4hFL4ODQp7AIEoiMQdbFxwwmGLLokbFS7DtYs1cZwZVkpCbZdn30jLIiZKTdcZVFEvI" /><input name="RememberMe" type="hidden" value="false" /></form>
-                <p class="text-secondary mt-3 mb-0"><span data-i18n="acc.no_account">¿Nuevo aquí?</span> <a data-i18n="acc.register_link" href="registro.html">Crea tu cuenta</a></p>
-                <p class="mt-2 mb-0"><a class="btn-neon-outline w-100 text-center" data-i18n="acc.plans_btn" href="planes.html">Ver planes</a></p>
-            </div>
-        </div>
-    </div>
+    <span class="badge-neon"><span class="pulse-dot"></span><span data-i18n="plans.badge">Elige tu camino</span></span>
+    <h1 class="section-title mt-3"><small data-i18n="plans.eyebrow">// Planes</small><span data-i18n="plans.ta">Nuestros</span> <span class="text-magenta-neon" data-i18n="plans.tb">planes</span></h1>
+    <p class="lead-muted" data-i18n="plans.lead">Tres formas de entrar a INNOVATE INDUSTRIES. Elige la tuya.</p>
 </section>
 
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="neon-card p-4 h-100">
+            <span class="card-tag tag-green" data-i18n="plans.u_tag">Gratis</span>
+            <h4 class="text-white" style="font-family:var(--font-display)" data-i18n="plans.u_t">USUARIO</h4>
+            <p class="text-secondary" data-i18n="plans.u_d">Cuenta normal: comunidad, eventos, directos y todo el contenido. Sin costo, para siempre.</p>
+            <a class="btn-neon w-100 text-center" data-i18n="plans.u_btn" href="registro.html">Registrarse gratis</a>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="neon-card p-4 h-100" style="border-color:var(--magenta-500)">
+            <span class="card-tag tag-magenta" data-i18n="plans.i_tag">Por invitación</span>
+            <h4 class="text-white" style="font-family:var(--font-display)" data-i18n="plans.i_t">TRABAJADOR INTERNO</h4>
+            <p class="text-secondary" data-i18n="plans.i_d">Acceso al panel de administración. Solo con key de invitación entregada por un CEO o FOUNDER.</p>
+            <a class="btn-neon btn-neon-magenta w-100 text-center" data-i18n="plans.i_btn" href="interno.html">Tengo una key</a>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="neon-card p-4 h-100" style="opacity:.85">
+            <span class="card-tag tag-cyan" data-i18n="plans.p_tag">100 USD / juego</span>
+            <h4 class="text-white" style="font-family:var(--font-display)" data-i18n="plans.p_t">PUBLISHER</h4>
+            <p class="text-secondary" data-i18n="plans.p_d">Publica tus juegos en la plataforma. 100 USD por publicación.</p>
+            <button class="btn-neon-outline w-100 text-center" disabled data-i18n="plans.p_btn">Próximamente</button>
+        </div>
+    </div>
+</div>
 
         </main>
     </div>
@@ -131,9 +131,5 @@
     <script src="./js/i18n.js?v=VD2zXiRmh3lPHjId59o8ucp5d0Fmxd43u7xGurpsh0E"></script>
     <script src="./js/site.js?v=mN2-tu6CZFVH-_0tkQwb1w_P6-GR1jeIU7j1TujbsKc"></script>
     
-    <script src="./lib/jquery-validation/dist/jquery.validate.min.js"></script>
-<script src="./lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"></script>
-
-
-<script>document.addEventListener("submit",function(e){var f=e.target;if(f&&f.tagName==="FORM"){e.preventDefault();var n=document.getElementById("static-form-msg");if(!n){n=document.createElement("div");n.id="static-form-msg";n.className="static-banner";f.parentNode.insertBefore(n,f);}n.innerHTML="Las cuentas solo funcionan en la app local: <code>dotnet run</code> &#8594; http://localhost:5215";if(n.scrollIntoView){n.scrollIntoView();}}});</script></body>
+</body>
 </html>

@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="INNOVATE INDUSTRIES WEB STORE - Tienda gamer con estilo neon, periféricos, PC y comunidad." />
-    <title>Entrar - INNOVATE INDUSTRIES WEB STORE (vista est&#225;tica)</title>
+    <title>Acceso interno - INNOVATE INDUSTRIES WEB STORE (vista est&#225;tica)</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -80,35 +80,24 @@
 <section class="hero-neon" style="padding-top:50px">
     <div class="row justify-content-center">
         <div class="col-md-6 col-lg-5">
-            <div class="neon-card p-4">
-                <span class="badge-neon"><span class="pulse-dot"></span><span data-i18n="acc.login_badge">Bienvenido de vuelta</span></span>
-                <h1 class="section-title mt-3"><small data-i18n="acc.login_eyebrow">// Acceso</small><span data-i18n="acc.login_title">Entrar</span></h1>
-                <p class="text-secondary" data-i18n="acc.login_lead">Conecta tu cuenta para continuar.</p>
+            <div class="neon-card p-4" style="border-color:var(--magenta-500)">
+                <span class="badge-neon"><span class="pulse-dot"></span><span data-i18n="intk.badge">Solo equipo</span></span>
+                <h1 class="section-title mt-3"><small data-i18n="intk.eyebrow">// Invitación</small><span data-i18n="intk.title">Key de acceso</span></h1>
+                <p class="text-secondary" data-i18n="intk.lead">Escribe la key que te entregó tu CEO o FOUNDER. Es de un solo uso.</p>
                 <form method="post" action="#">
                     
                     <div class="mb-3">
-                        <label class="form-label text-white" data-i18n="acc.login_id" for="Email">Email o usuario</label>
-                        <input class="form-control" autocomplete="email" type="text" data-val="true" data-val-required="El email o usuario es obligatorio." id="Email" name="Email" value="" />
-                        <span class="text-danger field-validation-valid" data-valmsg-for="Email" data-valmsg-replace="true"></span>
+                        <label class="form-label text-white" data-i18n="intk.label" for="Key">Key de invitación</label>
+                        <input class="form-control" placeholder="INN-XXXXXXXX" autocomplete="off" style="text-transform:uppercase" type="text" data-val="true" data-val-required="La key es obligatoria." id="Key" name="Key" value="" />
+                        <span class="text-danger field-validation-valid" data-valmsg-for="Key" data-valmsg-replace="true"></span>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label text-white" data-i18n="acc.password" for="Password">Contraseña</label>
-                        <input class="form-control" autocomplete="current-password" type="password" data-val="true" data-val-required="La contrase&#xF1;a es obligatoria." id="Password" name="Password" />
-                        <span class="text-danger field-validation-valid" data-valmsg-for="Password" data-valmsg-replace="true"></span>
-                    </div>
-                    <div class="mb-3 form-check">
-                        <input class="form-check-input" type="checkbox" data-val="true" data-val-required="The RememberMe field is required." id="RememberMe" name="RememberMe" value="true" />
-                        <label class="form-check-label text-secondary" data-i18n="acc.remember" for="RememberMe">Recuérdame</label>
-                    </div>
-                    <button type="submit" class="btn-neon w-100 text-center" data-i18n="acc.btn_login">Entrar</button>
-                <input name="__RequestVerificationToken" type="hidden" value="CfDJ8IW3bcnzl6ZMn3ZR4s1SyG9rxPUbJvYXaZDopxs2KttlD9tNAM0C1ClfZ9JEuaxe-1qvFI-Hfuvne6meOaUg4hFL4ODQp7AIEoiMQdbFxwwmGLLokbFS7DtYs1cZwZVkpCbZdn30jLIiZKTdcZVFEvI" /><input name="RememberMe" type="hidden" value="false" /></form>
-                <p class="text-secondary mt-3 mb-0"><span data-i18n="acc.no_account">¿Nuevo aquí?</span> <a data-i18n="acc.register_link" href="registro.html">Crea tu cuenta</a></p>
-                <p class="mt-2 mb-0"><a class="btn-neon-outline w-100 text-center" data-i18n="acc.plans_btn" href="planes.html">Ver planes</a></p>
+                    <button type="submit" class="btn-neon btn-neon-magenta w-100 text-center" data-i18n="intk.btn">Validar key</button>
+                <input name="__RequestVerificationToken" type="hidden" value="CfDJ8IW3bcnzl6ZMn3ZR4s1SyG9KD0P59LBvALF6GLmN_3f_7BGB7icKkvBAw0Ry7ryaoqyoih5fC0VLm8lX2OlAWw-wulUrUB3t29Oz1UOxZR7WRTsSwHB-MwnyPRacDijsTOa7DeJBHImUE5UAC9gro1Q" /></form>
+                <p class="text-secondary mt-3 mb-0"><a data-i18n="intk.back" href="planes.html">← Ver planes</a></p>
             </div>
         </div>
     </div>
 </section>
-
 
         </main>
     </div>
@@ -131,9 +120,5 @@
     <script src="./js/i18n.js?v=VD2zXiRmh3lPHjId59o8ucp5d0Fmxd43u7xGurpsh0E"></script>
     <script src="./js/site.js?v=mN2-tu6CZFVH-_0tkQwb1w_P6-GR1jeIU7j1TujbsKc"></script>
     
-    <script src="./lib/jquery-validation/dist/jquery.validate.min.js"></script>
-<script src="./lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"></script>
-
-
 <script>document.addEventListener("submit",function(e){var f=e.target;if(f&&f.tagName==="FORM"){e.preventDefault();var n=document.getElementById("static-form-msg");if(!n){n=document.createElement("div");n.id="static-form-msg";n.className="static-banner";f.parentNode.insertBefore(n,f);}n.innerHTML="Las cuentas solo funcionan en la app local: <code>dotnet run</code> &#8594; http://localhost:5215";if(n.scrollIntoView){n.scrollIntoView();}}});</script></body>
 </html>

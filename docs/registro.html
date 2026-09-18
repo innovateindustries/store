@@ -84,7 +84,7 @@
                 <span class="badge-neon"><span class="pulse-dot"></span><span data-i18n="acc.reg_badge">Nuevo jugador</span></span>
                 <h1 class="section-title mt-3"><small data-i18n="acc.reg_eyebrow">// Únete</small><span data-i18n="acc.reg_title">Crear cuenta</span></h1>
                 <p class="text-secondary" data-i18n="acc.reg_lead">Gratis, en 30 segundos. Tu progreso te espera.</p>
-                <form method="post" action="./Account/Register">
+                <form method="post" action="#">
                     
                     <div class="mb-3">
                         <label class="form-label text-white" data-i18n="acc.email" for="Email">Email</label>
@@ -102,9 +102,9 @@
                         <span class="text-danger field-validation-valid" data-valmsg-for="ConfirmPassword" data-valmsg-replace="true"></span>
                     </div>
                     <button type="submit" class="btn-neon w-100 text-center" data-i18n="acc.btn_register">Crear cuenta</button>
-                <input name="__RequestVerificationToken" type="hidden" value="CfDJ8IW3bcnzl6ZMn3ZR4s1SyG-t8S-RJoLPS4rr9nuZC-UlmhaopGpWOuSWOfDs7DNv-epBaB4Ky2FhjS3HVv3O10Scs_BBxCdaZE_3sLWdtAunsTZAKQn4Yk8hzP8beBzARbGl5oNbuKNbvjalChrlWuE" /></form>
+                <input name="__RequestVerificationToken" type="hidden" value="CfDJ8IW3bcnzl6ZMn3ZR4s1SyG-l1K2meQJhE7Ut1_mUSi-zZOMwNrHOCOHeK3Zuo5VfCev7wvFJqXcNhYpeRc0rpPHtvB14r5nIi8EcxM2FEwwF5rKlBGKPKrpfla9xVmxhDuhPHOG3L5NG68yR2pW2nc4" /></form>
                 <p class="text-secondary mt-3 mb-0"><span data-i18n="acc.have_account">¿Ya tienes cuenta?</span> <a data-i18n="acc.login_link" href="login.html">Entra</a></p>
-                <p class="mt-2 mb-0"><a class="btn-neon-outline w-100 text-center" data-i18n="acc.plans_btn" href="./Account/Plans">Ver planes</a></p>
+                <p class="mt-2 mb-0"><a class="btn-neon-outline w-100 text-center" data-i18n="acc.plans_btn" href="planes.html">Ver planes</a></p>
             </div>
         </div>
     </div>
@@ -136,5 +136,5 @@
 <script src="./lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"></script>
 
 
-</body>
+<script>document.addEventListener("submit",function(e){var f=e.target;if(f&&f.tagName==="FORM"){e.preventDefault();var n=document.getElementById("static-form-msg");if(!n){n=document.createElement("div");n.id="static-form-msg";n.className="static-banner";f.parentNode.insertBefore(n,f);}n.innerHTML="Las cuentas solo funcionan en la app local: <code>dotnet run</code> &#8594; http://localhost:5215";if(n.scrollIntoView){n.scrollIntoView();}}});</script></body>
 </html>

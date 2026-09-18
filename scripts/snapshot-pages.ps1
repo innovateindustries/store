@@ -18,7 +18,10 @@ $pages = @(
     @('/Home/Noticias', 'noticias.html'),
     @('/Home/Privacy', 'privacidad.html'),
     @('/Account/Login', 'login.html'),
-    @('/Account/Register', 'registro.html')
+    @('/Account/Register', 'registro.html'),
+    @('/Account/Plans', 'planes.html'),
+    @('/Account/InternalKey', 'interno.html'),
+    @('/Account/InternalRegister', 'registro-interno.html')
 )
 # Showcase se construye aparte: en anonimo el filtro [CategoryEnabled] redirige
 # a Ajustes, asi que el GET directo no trae el player de Twitch.
@@ -44,6 +47,9 @@ foreach ($p in $pages) {
     $h = $h -replace 'href="/Home/Privacy"', 'href="privacidad.html"'
     $h = $h -replace 'href="/Account/Login"', 'href="login.html"'
     $h = $h -replace 'href="/Account/Register"', 'href="registro.html"'
+    $h = $h -replace 'href="/Account/Plans"', 'href="planes.html"'
+    $h = $h -replace 'href="/Account/InternalKey"', 'href="interno.html"'
+    $h = $h -replace 'href="/Account/InternalRegister"', 'href="registro-interno.html"'
     $h = $h -replace 'href="/Account/Ajustes"', 'href="login.html"'
     $h = $h -replace 'href="/Admin"', 'href="login.html"'
     $h = $h -replace 'href="/Account/Logout"', 'href="login.html"'
@@ -51,7 +57,7 @@ foreach ($p in $pages) {
     # Absolutas del sitio -> relativas (proyecto Pages vive en /store/)
     $h = $h -replace 'href="/', 'href="./'
     $h = $h -replace 'src="/', 'src="./'
-    $h = $h -replace 'action="/', 'action="./'
+    $h = $h -replace 'action="/Account/(Login|Register|InternalKey|InternalRegister)"', 'action="#"'
     # Twitch embed: parent localhost no vale en Pages
     $h = $h -replace 'parent=localhost[^"&]*', ('parent=' + $pagesHost)
     # Descarga del launcher: accion MVC -> zip real copiado a docs/uploads
@@ -69,6 +75,12 @@ foreach ($p in $pages) {
     # (Razor inyecta atributos de CSS con ambito tipo b-xxxxxxx: no asumir tag exacto)
     $h = $h -replace '</head>', $bannerCss
     $h = $h -replace '<main[^>]*>', ('$0' + $banner)
+    # Formularios: en Pages no hay backend; interceptar el envio y explicarlo
+    # en vez de caer en un 404 (login/registro solo existen en la app local).
+    $formJs = '<script>document.addEventListener("submit",function(e){var f=e.target;if(f&&f.tagName==="FORM"){e.preventDefault();var n=document.getElementById("static-form-msg");if(!n){n=document.createElement("div");n.id="static-form-msg";n.className="static-banner";f.parentNode.insertBefore(n,f);}n.innerHTML="Las cuentas solo funcionan en la app local: <code>dotnet run</code> &#8594; http://localhost:5215";if(n.scrollIntoView){n.scrollIntoView();}}});</script></body>'
+    if ($h -match '<form') {
+        $h = $h -replace '</body>', $formJs
+    }
     # Titulo con contexto Pages
     $h = $h -replace '</title>', ' (vista est&#225;tica)</title>'
     [IO.File]::WriteAllText($out, $h, [Text.UTF8Encoding]::new($false))
