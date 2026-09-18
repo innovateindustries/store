@@ -66,8 +66,9 @@ foreach ($p in $pages) {
             '<a class="nav-link" data-i18n="nav.noticias" href="noticias.html">Noticias</a></li><li class="nav-item"><a class="nav-link" data-i18n="nav.showcase" href="showcase.html">Showcase</a>'
     }
     # CSS del banner + banner tras abrir <main>
+    # (Razor inyecta atributos de CSS con ambito tipo b-xxxxxxx: no asumir tag exacto)
     $h = $h -replace '</head>', $bannerCss
-    $h = $h -replace '<main role="main" class="pb-3">', ('<main role="main" class="pb-3">' + $banner)
+    $h = $h -replace '<main[^>]*>', ('$0' + $banner)
     # Titulo con contexto Pages
     $h = $h -replace '</title>', ' (vista est&#225;tica)</title>'
     [IO.File]::WriteAllText($out, $h, [Text.UTF8Encoding]::new($false))
@@ -135,8 +136,9 @@ $showcaseBody = @'
 </div>
 '@
 $shell = [IO.File]::ReadAllText((Join-Path $docs 'index.html'))
-$rxMain = New-Object regex('<main role="main" class="pb-3">.*</main>', 'Singleline')
-$show = $rxMain.Replace($shell, ('<main role="main" class="pb-3">' + $banner + $showcaseBody + '</main>'), 1)
+$openTag = [regex]::Match($shell, '<main[^>]*>').Value
+$rxMain = New-Object regex('<main[^>]*>.*</main>', 'Singleline')
+$show = $rxMain.Replace($shell, ($openTag + $banner + $showcaseBody + '</main>'), 1)
 $show = $show -replace '<title>.*?</title>', '<title>Showcase - INNOVATE INDUSTRIES WEB STORE (vista est&#225;tica)</title>'
 [IO.File]::WriteAllText((Join-Path $docs 'showcase.html'), $show, [Text.UTF8Encoding]::new($false))
 Write-Output 'OK showcase.html (estatico desde la vista real)'
