@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 
 namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers.Api
 {
@@ -17,11 +18,13 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers.Api
     {
         private readonly UserManager<IdentityUser> _users;
         private readonly AppDbContext _db;
+        private readonly IWebHostEnvironment _env;
 
-        public LauncherApiController(UserManager<IdentityUser> users, AppDbContext db)
+        public LauncherApiController(UserManager<IdentityUser> users, AppDbContext db, IWebHostEnvironment env)
         {
             _users = users;
             _db = db;
+            _env = env;
         }
 
         private static string Hash(string token)
@@ -120,7 +123,59 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers.Api
             return StatusCode(201, new { userName = user.UserName });
         }
 
-        // Diagnóstico sin auth (el launcher lo usa en AJUSTES → probar conexión).
+        // Registro fundador desde el launcher: exige FounderKey válida.
+        // El rol FOUNDER lo decide el servidor (nunca el cliente).
+        [HttpPost("register-founder")]
+        public async Task<IActionResult> RegisterFounder([FromBody] LauncherFounderRegisterRequest m)
+        {
+            var username = (m.Username ?? string.Empty).Trim();
+            var email = (m.WorkEmail ?? m.Email ?? string.Empty).Trim();
+            var pass = m.Password ?? string.Empty;
+            var code = (m.Key ?? string.Empty).Trim().ToUpperInvariant();
+
+            if (username.Length < 3 || username.Any(char.IsWhiteSpace))
+                return BadRequest(new { errors = new[] { "Usuario inválido (mínimo 3 caracteres, sin espacios)." } });
+            if (!new EmailAddressAttribute().IsValid(email))
+                return BadRequest(new { errors = new[] { "Email no válido." } });
+            if (pass.Length < 6)
+                return BadRequest(new { errors = new[] { "La clave debe tener mínimo 6 caracteres." } });
+            if (string.IsNullOrWhiteSpace(code))
+                return BadRequest(new { errors = new[] { "Founder Key requerida." } });
+
+            var key = _db.FounderKeys.FirstOrDefault(k => k.Code == code);
+            if (key is null || !key.IsActive)
+                return BadRequest(new { errors = new[] { "Founder Key no válida o desactivada." } });
+            if (key.ExpiresAtUtc != null && key.ExpiresAtUtc < DateTime.UtcNow)
+                return BadRequest(new { errors = new[] { "Founder Key expirada." } });
+            if (key.UsesCount >= Math.Max(1, key.MaxUses))
+                return BadRequest(new { errors = new[] { "Founder Key sin usos restantes." } });
+
+            if (await _users.FindByNameAsync(username) != null)
+                return BadRequest(new { errors = new[] { "Ese usuario ya existe en la web." } });
+            if (await _users.FindByEmailAsync(email) != null)
+                return BadRequest(new { errors = new[] { "Ese email ya está registrado en la web." } });
+
+            var user = new IdentityUser { UserName = username, Email = email };
+            var r = await _users.CreateAsync(user, pass);
+            if (!r.Succeeded)
+                return BadRequest(new { errors = r.Errors.Select(e => e.Description).ToArray() });
+
+            await _users.AddToRoleAsync(user, "FOUNDER");
+            var nombres = (m.Nombres ?? string.Empty).Trim();
+            if (nombres.Length >= 2)
+                await _users.AddClaimAsync(user, new Claim("Nombres", nombres));
+
+            key.UsesCount++;
+            if (key.UsesCount >= Math.Max(1, key.MaxUses))
+            {
+                key.IsActive = false;
+                key.UsedByUserId = user.Id;
+                key.UsedAtUtc = DateTime.UtcNow;
+            }
+            await _db.SaveChangesAsync();
+
+            return StatusCode(201, new { userName = user.UserName });
+        }
         [HttpGet("ping")]
         public IActionResult Ping() => Ok(new { ok = true, utc = DateTime.UtcNow });
 
@@ -281,7 +336,11 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers.Api
                     coverPath = g.CoverPath,
                     isPreorder = g.IsPreorder,
                     isEarlyAccess = g.IsEarlyAccess,
+                    genre = g.Genre,
                     trailerUrl = g.TrailerUrl,
+                    screenshots = string.Join("|", ScreenshotsDe(g)),
+                    regions = g.Regions,
+                    inPass = g.InPass,
                     owned = ownedIds.Contains(g.Id)
                 })
                 .ToList();
@@ -369,6 +428,366 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers.Api
                 });
             }
             return Ok(new { ok = true, games = items });
+        }
+
+        // ---------- Fase 2: el backend canónico (Web Store) ----------
+
+        private async Task<bool> EsStaffAsync(IdentityUser u)
+        {
+            var roles = await _users.GetRolesAsync(u);
+            return roles.Contains("CEO") || roles.Contains("FOUNDER") || roles.Contains("INTERNO");
+        }
+
+        private static List<string> ScreenshotsDe(StoreGame g)
+        {
+            try
+            {
+                return JsonSerializer.Deserialize<List<string>>(g.ScreenshotsJson ?? "[]") ?? new();
+            }
+            catch { return new(); }
+        }
+
+        private async Task<int> PuntosDeAsync(string userId)
+        {
+            var row = await _db.LauncherPoints.FirstOrDefaultAsync(p => p.UserId == userId);
+            return row?.Points ?? 0;
+        }
+
+        private async Task SumarPuntosAsync(string userId, int amount)
+        {
+            if (amount == 0) return;
+            var row = await _db.LauncherPoints.FirstOrDefaultAsync(p => p.UserId == userId);
+            if (row == null)
+            {
+                row = new LauncherPoints { UserId = userId, Points = 0, UpdatedAtUtc = DateTime.UtcNow };
+                _db.LauncherPoints.Add(row);
+            }
+            row.Points = Math.Max(0, row.Points + amount);
+            row.UpdatedAtUtc = DateTime.UtcNow;
+        }
+
+        private static object OrdenDto(StoreOrder o, string gameTitle) => new
+        {
+            reference = o.Reference,
+            gameId = o.GameId,
+            gameTitle,
+            amount = o.Price,
+            amountText = o.Price <= 0 ? "FREE" : "$" + o.Price.ToString("0.##"),
+            status = o.Status,
+            discordUser = (string?)null,
+            nota = (string?)null,
+            createdAt = o.CreatedAtUtc,
+            updatedAt = o.CreatedAtUtc
+        };
+
+        // Crear pedido de pago manual (reutiliza el Pendiente del mismo juego).
+        [HttpPost("store/order")]
+        public async Task<IActionResult> CrearOrden([FromBody] LauncherCreateOrderRequest m)
+        {
+            var user = await UsuarioPorTokenAsync();
+            if (user == null)
+                return Unauthorized(new { error = "NO_AUTH" });
+            if (Baneado(user))
+                return StatusCode(403, new { banned = true });
+            var game = _db.StoreGames.FirstOrDefault(g => g.Id == m.GameId && g.IsPublished);
+            if (game == null)
+                return BadRequest(new { error = "GAME_NOT_FOUND" });
+            var existente = _db.StoreOrders.FirstOrDefault(o =>
+                o.BuyerUserId == user.Id && o.GameId == game.Id && o.Status == "Pendiente");
+            if (existente != null)
+                return Ok(OrdenDto(existente, game.Title));
+            string reference;
+            do
+            {
+                reference = "ORD-" + Convert.ToHexString(RandomNumberGenerator.GetBytes(4));
+            } while (_db.StoreOrders.Any(o => o.Reference == reference));
+            var orden = new StoreOrder
+            {
+                GameId = game.Id,
+                GameTitle = game.Title,
+                Price = game.Price,
+                Reference = reference,
+                Status = "Pendiente",
+                CreatedAtUtc = DateTime.UtcNow,
+                BuyerUserId = user.Id
+            };
+            _db.StoreOrders.Add(orden);
+            await _db.SaveChangesAsync();
+            return Ok(OrdenDto(orden, game.Title));
+        }
+
+        [HttpGet("store/orders")]
+        public async Task<IActionResult> MisOrdenes()
+        {
+            var user = await UsuarioPorTokenAsync();
+            if (user == null)
+                return Unauthorized(new { error = "NO_AUTH" });
+            if (Baneado(user))
+                return StatusCode(403, new { banned = true });
+            var ordenes = _db.StoreOrders
+                .Where(o => o.BuyerUserId == user.Id)
+                .OrderByDescending(o => o.CreatedAtUtc)
+                .Take(200)
+                .ToList();
+            return Ok(new { orders = ordenes.ConvertAll(o => OrdenDto(o, o.GameTitle)) });
+        }
+
+        [HttpGet("store/order/{reference}")]
+        public async Task<IActionResult> VerOrden(string reference)
+        {
+            var user = await UsuarioPorTokenAsync();
+            if (user == null)
+                return Unauthorized(new { error = "NO_AUTH" });
+            if (Baneado(user))
+                return StatusCode(403, new { banned = true });
+            var orden = _db.StoreOrders.FirstOrDefault(o =>
+                o.Reference == reference && o.BuyerUserId == user.Id);
+            if (orden == null)
+                return NotFound(new { error = "ORDER_NOT_FOUND" });
+            return Ok(OrdenDto(orden, orden.GameTitle));
+        }
+
+        // ---------- Puntos y premios (1 USD = 100 pts) ----------
+
+        private sealed record Premio(string Id, string Title, string Description, int Cost, string ValueText, string Icon);
+
+        private static readonly List<Premio> CatalogoPremios = new()
+        {
+            new("coin_9", "9 USD Digital Coins", "Monedas digitales valor 9 USD", 900, "9 USD", "🪙"),
+            new("coin_25", "25 USD Digital Coins", "Monedas digitales valor 25 USD", 2500, "25 USD", "💰"),
+            new("game_30", "Juego Premium (30 USD)", "Canjea por cualquier juego hasta 30 USD", 3000, "30 USD", "🎮"),
+            new("coin_50", "50 USD Digital Coins", "Monedas digitales valor 50 USD", 5000, "50 USD", "💎"),
+            new("coin_100", "100 USD Digital Coins", "Monedas digitales valor 100 USD", 10000, "100 USD", "👑"),
+        };
+
+        [HttpGet("points")]
+        public async Task<IActionResult> MisPuntos()
+        {
+            var user = await UsuarioPorTokenAsync();
+            if (user == null)
+                return Unauthorized();
+            if (Baneado(user))
+                return StatusCode(403, new { banned = true });
+            return Ok(new { points = await PuntosDeAsync(user.Id), userName = user.UserName });
+        }
+
+        [HttpGet("rewards")]
+        public async Task<IActionResult> Premios()
+        {
+            var user = await UsuarioPorTokenAsync();
+            if (user == null)
+                return Unauthorized();
+            if (Baneado(user))
+                return StatusCode(403, new { banned = true });
+            var pts = await PuntosDeAsync(user.Id);
+            return Ok(new
+            {
+                points = pts,
+                rewards = CatalogoPremios.ConvertAll(r => new
+                {
+                    id = r.Id, title = r.Title, description = r.Description,
+                    cost = r.Cost, valueText = r.ValueText, icon = r.Icon,
+                    canAfford = pts >= r.Cost
+                })
+            });
+        }
+
+        [HttpPost("rewards/redeem")]
+        public async Task<IActionResult> CanjearPremio([FromBody] LauncherRedeemRewardRequest m)
+        {
+            var user = await UsuarioPorTokenAsync();
+            if (user == null)
+                return Unauthorized();
+            if (Baneado(user))
+                return StatusCode(403, new { banned = true });
+            var premio = CatalogoPremios.FirstOrDefault(r => r.Id == (m.RewardId ?? string.Empty).Trim());
+            if (premio == null)
+                return NotFound(new { error = "REWARD_NOT_FOUND" });
+            var pts = await PuntosDeAsync(user.Id);
+            if (pts < premio.Cost)
+                return StatusCode(402, new { error = "NOT_ENOUGH_POINTS" });
+            await SumarPuntosAsync(user.Id, -premio.Cost);
+            await _db.SaveChangesAsync();
+            return Ok(new { ok = true, points = pts - premio.Cost, reward = premio.Id, title = premio.Title });
+        }
+
+        // ---------- Perfil ----------
+
+        private string UrlPerfil(string? imagePath)
+        {
+            if (string.IsNullOrWhiteSpace(imagePath)) return string.Empty;
+            if (imagePath.StartsWith("http", StringComparison.OrdinalIgnoreCase)) return imagePath;
+            return $"{Request.Scheme}://{Request.Host}" + imagePath;
+        }
+
+        [HttpGet("profile")]
+        public async Task<IActionResult> MiPerfil()
+        {
+            var user = await UsuarioPorTokenAsync();
+            if (user == null)
+                return Unauthorized();
+            if (Baneado(user))
+                return StatusCode(403, new { banned = true });
+            var perfil = await _db.LauncherProfiles.FirstOrDefaultAsync(p => p.UserId == user.Id);
+            return Ok(new
+            {
+                userName = user.UserName,
+                profileImagePath = perfil?.ImagePath ?? string.Empty,
+                profileImageUrl = UrlPerfil(perfil?.ImagePath),
+                points = await PuntosDeAsync(user.Id)
+            });
+        }
+
+        [HttpPost("profile/photo")]
+        public async Task<IActionResult> SubirFoto([FromBody] LauncherProfilePhotoRequest m)
+        {
+            var user = await UsuarioPorTokenAsync();
+            if (user == null)
+                return Unauthorized();
+            if (Baneado(user))
+                return StatusCode(403, new { banned = true });
+            var b64 = (m.PhotoB64 ?? string.Empty).Trim();
+            if (string.IsNullOrWhiteSpace(b64) || b64.Length < 60)
+                return BadRequest(new { error = "PHOTO_REQUIRED" });
+            if (b64.Length > 2_800_000)
+                return BadRequest(new { error = "PHOTO_TOO_LARGE" });
+            byte[] bytes;
+            try
+            {
+                var clean = b64.Contains(',') ? b64[(b64.IndexOf(',') + 1)..] : b64;
+                bytes = Convert.FromBase64String(clean);
+            }
+            catch { return BadRequest(new { error = "PHOTO_INVALID" }); }
+            if (bytes.Length < 16)
+                return BadRequest(new { error = "PHOTO_INVALID" });
+            var dir = Path.Combine(_env.WebRootPath, "uploads", "profiles");
+            Directory.CreateDirectory(dir);
+            var nombre = "u-" + user.Id + ".png";
+            await System.IO.File.WriteAllBytesAsync(Path.Combine(dir, nombre), bytes);
+            var ruta = "/uploads/profiles/" + nombre;
+            var perfil = await _db.LauncherProfiles.FirstOrDefaultAsync(p => p.UserId == user.Id);
+            if (perfil == null)
+            {
+                perfil = new LauncherProfile { UserId = user.Id, UpdatedAtUtc = DateTime.UtcNow };
+                _db.LauncherProfiles.Add(perfil);
+            }
+            perfil.ImagePath = ruta;
+            perfil.UpdatedAtUtc = DateTime.UtcNow;
+            await _db.SaveChangesAsync();
+            return Ok(new { ok = true, profileImagePath = ruta, profileImageUrl = UrlPerfil(ruta) });
+        }
+
+        [HttpDelete("profile/photo")]
+        public async Task<IActionResult> BorrarFoto()
+        {
+            var user = await UsuarioPorTokenAsync();
+            if (user == null)
+                return Unauthorized();
+            if (Baneado(user))
+                return StatusCode(403, new { banned = true });
+            var perfil = await _db.LauncherProfiles.FirstOrDefaultAsync(p => p.UserId == user.Id);
+            if (perfil != null && !string.IsNullOrWhiteSpace(perfil.ImagePath))
+            {
+                try
+                {
+                    var full = Path.Combine(_env.WebRootPath,
+                        perfil.ImagePath.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
+                    if (System.IO.File.Exists(full)) System.IO.File.Delete(full);
+                }
+                catch { /* mejor esfuerzo */ }
+                _db.LauncherProfiles.Remove(perfil);
+                await _db.SaveChangesAsync();
+            }
+            return Ok(new { ok = true });
+        }
+
+        // ---------- Distribución de juegos por manifiesto ----------
+
+        private async Task<bool> ConLicenciaAsync(IdentityUser user, int gameId)
+        {
+            if (await EsStaffAsync(user)) return true;
+            return _db.StoreOrders.Any(o => o.GameId == gameId
+                && o.Status == "Pagado"
+                && (o.RedeemedByUserId == user.Id || o.BuyerUserId == user.Id));
+        }
+
+        private static string? RutaSegura(string raiz, string rel)
+        {
+            try
+            {
+                var full = Path.GetFullPath(Path.Combine(raiz, rel.Replace('/', Path.DirectorySeparatorChar)));
+                var raizFull = Path.GetFullPath(raiz);
+                return full.StartsWith(raizFull + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)
+                    ? full : null;
+            }
+            catch { return null; }
+        }
+
+        [HttpGet("games/{id:int}/manifest")]
+        public async Task<IActionResult> ManifiestoJuego(int id)
+        {
+            var user = await UsuarioPorTokenAsync();
+            if (user == null)
+                return Unauthorized();
+            if (Baneado(user))
+                return StatusCode(403, new { banned = true });
+            var game = _db.StoreGames.FirstOrDefault(g => g.Id == id && g.IsPublished);
+            if (game == null)
+                return NotFound(new { error = "GAME_NOT_FOUND" });
+            if (!await ConLicenciaAsync(user, id))
+                return StatusCode(402, new { error = "NOT_OWNED" });
+            var build = _db.GameBuilds.FirstOrDefault(b => b.GameId == id);
+            if (build == null || string.IsNullOrWhiteSpace(build.ManifestJson))
+                return NotFound(new { error = "NO_MANIFEST" });
+            return Content(build.ManifestJson, "application/json");
+        }
+
+        [HttpGet("games/{id:int}/file")]
+        public async Task<IActionResult> ArchivoJuego(int id)
+        {
+            var user = await UsuarioPorTokenAsync();
+            if (user == null)
+                return Unauthorized();
+            if (Baneado(user))
+                return StatusCode(403, new { banned = true });
+            var game = _db.StoreGames.FirstOrDefault(g => g.Id == id && g.IsPublished);
+            if (game == null)
+                return NotFound(new { error = "GAME_NOT_FOUND" });
+            if (!await ConLicenciaAsync(user, id))
+                return StatusCode(402, new { error = "NOT_OWNED" });
+            var build = _db.GameBuilds.FirstOrDefault(b => b.GameId == id);
+            var v = (Request.Query["v"].ToString() ?? string.Empty).Trim();
+            var rel = (Request.Query["path"].ToString() ?? string.Empty).Trim();
+            if (build == null || string.IsNullOrWhiteSpace(v) || string.IsNullOrWhiteSpace(rel)
+                || !string.Equals(build.Version, v, StringComparison.Ordinal))
+                return BadRequest();
+            var raiz = Path.Combine(_env.WebRootPath, "uploads", "builds", id.ToString(), v);
+            var full = RutaSegura(raiz, rel);
+            if (full == null || !System.IO.File.Exists(full))
+                return NotFound();
+            return PhysicalFile(full, "application/octet-stream", enableRangeProcessing: true);
+        }
+
+        // ---------- Manifiesto del propio launcher (auto-update) ----------
+
+        [HttpGet("client/manifest")]
+        public IActionResult ManifiestoCliente()
+        {
+            var build = _db.LauncherBuilds
+                .Where(b => b.IsPublished)
+                .OrderByDescending(b => b.Id)
+                .FirstOrDefault();
+            if (build == null)
+                return NotFound(new { error = "NO_CLIENT_BUILD" });
+            return Ok(new
+            {
+                version = build.Version,
+                download = build.FilePath,
+                fileName = build.FileName,
+                sizeBytes = build.SizeBytes,
+                releaseNotes = build.Notes ?? build.Description ?? string.Empty,
+                mandatory = build.IsMandatory
+            });
         }
     }
 }

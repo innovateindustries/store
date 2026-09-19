@@ -2,6 +2,19 @@
 
 Documento vivo de la evolución del proyecto. Última actualización: checkpoint actual.
 
+## 2026-09-19 — Backend canónico del launcher (Fases 1-2)
+- **Founder Key server-side:** tabla `FounderKeys` (`FND-XXXXXXXX`, usos, expiración) +
+  `POST api/launcher/register-founder` (otorga FOUNDER, validación 100% servidor) +
+  Admin → keys de fundador (generar/desactivar/eliminar, solo CEO/FOUNDER).
+  i18n: `adm.fkeys_t/col_uses/empty_fkeys/up_mandatory/st_mandatory` en 8 idiomas.
+- **Paridad con INNOVATE.Server:** `store/order(s)`, `points/rewards/redeem`,
+  `profile/photo`, `games/{id}/manifest|file` (con licencia), `api/admin/*`
+  (users/orders/confirm/cancel/delete/publish/grant) y `client/manifest` (auto-update).
+  Tablas: `LauncherPoints/LauncherProfiles/GameBuilds` + columnas
+  `StoreGames(Genre/Regions/InPass)` + `LauncherBuilds.IsMandatory` (checkbox en Admin).
+- `ToggleOrder` otorga 1 USD = 100 pts al pagar (solo primera key). Smoke
+  `scripts/smoke_launcher_api.ps1`: 27/27 en vivo. Build 0 warnings.
+
 ## 2026-09-18 — Pages: vitrina estática REAL de la tienda
 - `docs/` ya no es un cartel de "ejecuta dotnet run": es un snapshot de la tienda real
   (mismo `_Layout`, `site.css`, i18n 8 idiomas, noticias y build publicados):

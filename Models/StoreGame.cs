@@ -21,6 +21,15 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Models
         // ¿Es ACCESO ANTICIPADO (Early Access jugable)?
         public bool IsEarlyAccess { get; set; }
 
+        // Género (ficha publicada desde ADMIN → STORE del launcher).
+        public string Genre { get; set; } = string.Empty;
+
+        // Regiones disponibles, CSV: NA,SA,EU,ASIA,AF,OC.
+        public string Regions { get; set; } = string.Empty;
+
+        // Disponible mediante INNOVATE PASS.
+        public bool InPass { get; set; }
+
         public decimal Price { get; set; }
 
         // Ruta pública de la portada (carátula, ej. /uploads/store/<guid>.png).

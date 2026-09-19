@@ -96,6 +96,22 @@ using (var scope = app.Services.CreateScope())
     db.Database.ExecuteSqlRaw(
         "CREATE UNIQUE INDEX IF NOT EXISTS \"IX_InviteKeys_Code\" ON \"InviteKeys\" (\"Code\")");
 
+    // Keys de fundador (registro con rol FOUNDER desde el launcher).
+    db.Database.ExecuteSqlRaw(
+        "CREATE TABLE IF NOT EXISTS \"FounderKeys\" (" +
+        "\"Id\" INTEGER NOT NULL CONSTRAINT \"PK_FounderKeys\" PRIMARY KEY AUTOINCREMENT, " +
+        "\"Code\" TEXT NOT NULL, " +
+        "\"CreatedByUserId\" TEXT NULL, " +
+        "\"CreatedAtUtc\" TEXT NOT NULL, " +
+        "\"UsedByUserId\" TEXT NULL, " +
+        "\"UsedAtUtc\" TEXT NULL, " +
+        "\"IsActive\" INTEGER NOT NULL, " +
+        "\"MaxUses\" INTEGER NOT NULL DEFAULT 1, " +
+        "\"UsesCount\" INTEGER NOT NULL DEFAULT 0, " +
+        "\"ExpiresAtUtc\" TEXT NULL)");
+    db.Database.ExecuteSqlRaw(
+        "CREATE UNIQUE INDEX IF NOT EXISTS \"IX_FounderKeys_Code\" ON \"FounderKeys\" (\"Code\")");
+
     // Tabla de noticias (para bases ya creadas antes de esta versión).
     db.Database.ExecuteSqlRaw(
         "CREATE TABLE IF NOT EXISTS \"NewsItems\" (" +
@@ -192,6 +208,42 @@ using (var scope = app.Services.CreateScope())
         db.Database.ExecuteSqlRaw("ALTER TABLE \"LauncherBuilds\" ADD COLUMN \"Specs\" TEXT NULL");
     if (!buildCols.Contains("ScreenshotPath"))
         db.Database.ExecuteSqlRaw("ALTER TABLE \"LauncherBuilds\" ADD COLUMN \"ScreenshotPath\" TEXT NULL");
+    if (!buildCols.Contains("IsMandatory"))
+        db.Database.ExecuteSqlRaw("ALTER TABLE \"LauncherBuilds\" ADD COLUMN \"IsMandatory\" INTEGER NOT NULL DEFAULT 0");
+
+    // Puntos canjeables del launcher (1 USD = 100 pts).
+    db.Database.ExecuteSqlRaw(
+        "CREATE TABLE IF NOT EXISTS \"LauncherPoints\" (" +
+        "\"UserId\" TEXT NOT NULL CONSTRAINT \"PK_LauncherPoints\" PRIMARY KEY, " +
+        "\"Points\" INTEGER NOT NULL DEFAULT 0, " +
+        "\"UpdatedAtUtc\" TEXT NOT NULL)");
+    // Foto de perfil del launcher.
+    db.Database.ExecuteSqlRaw(
+        "CREATE TABLE IF NOT EXISTS \"LauncherProfiles\" (" +
+        "\"UserId\" TEXT NOT NULL CONSTRAINT \"PK_LauncherProfiles\" PRIMARY KEY, " +
+        "\"ImagePath\" TEXT NOT NULL DEFAULT '', " +
+        "\"UpdatedAtUtc\" TEXT NOT NULL)");
+    // Builds distribuibles por juego (manifiestos del launcher).
+    db.Database.ExecuteSqlRaw(
+        "CREATE TABLE IF NOT EXISTS \"GameBuilds\" (" +
+        "\"Id\" INTEGER NOT NULL CONSTRAINT \"PK_GameBuilds\" PRIMARY KEY AUTOINCREMENT, " +
+        "\"GameId\" INTEGER NOT NULL, " +
+        "\"Version\" TEXT NOT NULL, " +
+        "\"Exe\" TEXT NOT NULL DEFAULT '', " +
+        "\"ManifestJson\" TEXT NOT NULL DEFAULT '', " +
+        "\"TotalSize\" INTEGER NOT NULL DEFAULT 0, " +
+        "\"CreatedAtUtc\" TEXT NOT NULL, " +
+        "\"CreatedByUserId\" TEXT NULL)");
+    db.Database.ExecuteSqlRaw(
+        "CREATE UNIQUE INDEX IF NOT EXISTS \"IX_GameBuilds_GameId\" ON \"GameBuilds\" (\"GameId\")");
+    // Ficha extendida de la STORE (para bases ya creadas).
+    var gameCols = db.Database.SqlQueryRaw<string>("SELECT name FROM pragma_table_info('StoreGames')").ToList();
+    if (!gameCols.Contains("Genre"))
+        db.Database.ExecuteSqlRaw("ALTER TABLE \"StoreGames\" ADD COLUMN \"Genre\" TEXT NOT NULL DEFAULT ''");
+    if (!gameCols.Contains("Regions"))
+        db.Database.ExecuteSqlRaw("ALTER TABLE \"StoreGames\" ADD COLUMN \"Regions\" TEXT NOT NULL DEFAULT ''");
+    if (!gameCols.Contains("InPass"))
+        db.Database.ExecuteSqlRaw("ALTER TABLE \"StoreGames\" ADD COLUMN \"InPass\" INTEGER NOT NULL DEFAULT 0");
 
     // Roles del sistema.
     var roles = sp.GetRequiredService<RoleManager<IdentityRole>>();

@@ -3,6 +3,7 @@ using INNOVATE_INDUSTRIES_WEB_STORE.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 using System.Text.Json;
 
@@ -28,7 +29,8 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers
             var vm = new AdminIndexViewModel
             {
                 CanManageKeys = User.IsInRole("CEO") || User.IsInRole("FOUNDER"),
-                JustCreatedCode = TempData["JustCreatedCode"] as string
+                JustCreatedCode = TempData["JustCreatedCode"] as string,
+                JustCreatedFounderCode = TempData["JustCreatedFounderCode"] as string
             };
 
             foreach (var u in _users.Users.OrderBy(u => u.UserName).ToList())
@@ -66,6 +68,18 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers
                         IsActive = k.IsActive,
                         CreatedAtUtc = k.CreatedAtUtc,
                         UsedBy = k.UsedByUserId != null && usedNames.TryGetValue(k.UsedByUserId, out var n) ? n : string.Empty
+                    });
+                }
+                foreach (var k in _db.FounderKeys.OrderByDescending(k => k.Id).Take(50).ToList())
+                {
+                    vm.FounderKeys.Add(new AdminKeyRow
+                    {
+                        Id = k.Id,
+                        Code = k.Code,
+                        IsActive = k.IsActive,
+                        CreatedAtUtc = k.CreatedAtUtc,
+                        UsedBy = k.UsedByUserId != null && usedNames.TryGetValue(k.UsedByUserId, out var fn) ? fn : string.Empty,
+                        UsesInfo = k.UsesCount + "/" + Math.Max(1, k.MaxUses)
                     });
                 }
             }
@@ -123,6 +137,61 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers
             if (key != null)
             {
                 _db.InviteKeys.Remove(key);
+                await _db.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+        // Solo CEO y FOUNDER generan keys de fundador (registro con rol FOUNDER).
+        [HttpPost]
+        [Authorize(Roles = "CEO,FOUNDER")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> GenerateFounderKey()
+        {
+            string code;
+            do
+            {
+                code = "FND-" + Convert.ToHexString(RandomNumberGenerator.GetBytes(4));
+            } while (_db.FounderKeys.Any(k => k.Code == code));
+
+            var userId = _users.GetUserId(User);
+            _db.FounderKeys.Add(new FounderKey
+            {
+                Code = code,
+                CreatedByUserId = userId,
+                CreatedAtUtc = DateTime.UtcNow,
+                IsActive = true,
+                MaxUses = 1
+            });
+            await _db.SaveChangesAsync();
+
+            TempData["JustCreatedFounderCode"] = code;
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "CEO,FOUNDER")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeactivateFounderKey(int id)
+        {
+            var key = _db.FounderKeys.FirstOrDefault(k => k.Id == id);
+            if (key != null)
+            {
+                key.IsActive = false;
+                await _db.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "CEO,FOUNDER")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteFounderKey(int id)
+        {
+            var key = _db.FounderKeys.FirstOrDefault(k => k.Id == id);
+            if (key != null)
+            {
+                _db.FounderKeys.Remove(key);
                 await _db.SaveChangesAsync();
             }
             return RedirectToAction(nameof(Index));
@@ -387,6 +456,7 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers
                 FileName = Path.GetFileName(m.Archivo.FileName),
                 SizeBytes = m.Archivo.Length,
                 IsPublished = m.IsPublished,
+                IsMandatory = m.IsMandatory,
                 Downloads = 0,
                 CreatedAtUtc = DateTime.UtcNow,
                 CreatedByUserId = _users.GetUserId(User)
@@ -616,7 +686,12 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers
                 {
                     order.Status = "Pagado";
                     if (string.IsNullOrEmpty(order.KeyCode))
+                    {
                         order.KeyCode = GenerarKeyJuegoUnica();
+                        // 1 USD = 100 pts al confirmar pago (primera vez con key).
+                        if (!string.IsNullOrEmpty(order.BuyerUserId) && order.Price > 0)
+                            await SumarPuntosAsync(order.BuyerUserId, (int)Math.Round(order.Price * 100m));
+                    }
                 }
                 await _db.SaveChangesAsync();
             }
@@ -663,6 +738,19 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers
                 key = GenerarKeyJuego();
             } while (_db.StoreOrders.Any(o => o.KeyCode == key));
             return key;
+        }
+
+        private async Task SumarPuntosAsync(string userId, int amount)
+        {
+            if (amount == 0) return;
+            var row = await _db.LauncherPoints.FirstOrDefaultAsync(p => p.UserId == userId);
+            if (row == null)
+            {
+                row = new LauncherPoints { UserId = userId, Points = 0, UpdatedAtUtc = DateTime.UtcNow };
+                _db.LauncherPoints.Add(row);
+            }
+            row.Points = Math.Max(0, row.Points + amount);
+            row.UpdatedAtUtc = DateTime.UtcNow;
         }
 
         // ---- USUARIOS: biblioteca de juegos canjeados por usuario ----

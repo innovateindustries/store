@@ -14,6 +14,8 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Data
 
         public DbSet<InviteKey> InviteKeys => Set<InviteKey>();
 
+        public DbSet<FounderKey> FounderKeys => Set<FounderKey>();
+
         public DbSet<NewsItem> NewsItems => Set<NewsItem>();
 
         public DbSet<PlaySession> PlaySessions => Set<PlaySession>();
@@ -25,5 +27,11 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Data
         public DbSet<StoreGame> StoreGames => Set<StoreGame>();
 
         public DbSet<StoreOrder> StoreOrders => Set<StoreOrder>();
+
+        public DbSet<LauncherPoints> LauncherPoints => Set<LauncherPoints>();
+
+        public DbSet<LauncherProfile> LauncherProfiles => Set<LauncherProfile>();
+
+        public DbSet<GameBuild> GameBuilds => Set<GameBuild>();
     }
 }

@@ -29,6 +29,9 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Models
 
         public bool IsPublished { get; set; } = true;
 
+        // Actualización obligatoria: el launcher debe instalarla.
+        public bool IsMandatory { get; set; }
+
         public long Downloads { get; set; }
 
         public DateTime CreatedAtUtc { get; set; }

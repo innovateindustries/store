@@ -223,4 +223,70 @@
     {
         <p class="text-secondary" data-i18n="adm.empty_keys">Aún no hay keys. Genera la primera.</p>
     }
+
+    <h2 class="section-title mt-5"><span data-i18n="adm.fkeys_t">Keys de fundador</span></h2>
+    @if (!string.IsNullOrEmpty(Model.JustCreatedFounderCode))
+    {
+        <div class="alert mt-2" style="background:rgba(5,255,161,.08);border:1px solid var(--green-500);color:#d0ffe0">
+            <span data-i18n="adm.newkey">Nueva key generada (cópiala ahora):</span>
+            <b style="font-family:var(--font-display);font-size:1.3rem">@Model.JustCreatedFounderCode</b>
+        </div>
+    }
+    <form asp-action="GenerateFounderKey" method="post" class="mt-2">
+        <button type="submit" class="btn-neon" data-i18n="adm.btn_gen">Generar key</button>
+    </form>
+    <div class="table-responsive">
+        <table class="table table-dark table-hover align-middle mt-3" style="--bs-table-bg:rgba(18,20,29,.9)">
+            <thead>
+                <tr>
+                    <th data-i18n="adm.col_code">Key</th>
+                    <th data-i18n="adm.col_status">Estado</th>
+                    <th data-i18n="adm.col_uses">Usos</th>
+                    <th data-i18n="adm.col_used">Usada por</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var k in Model.FounderKeys)
+                {
+                    <tr>
+                        <td class="text-white" style="font-family:var(--font-display)">@k.Code</td>
+                        <td>
+                            @if (k.IsActive)
+                            {
+                                <span class="text-green-neon" data-i18n="adm.st_active">● Activa</span>
+                            }
+                            else if (!string.IsNullOrEmpty(k.UsedBy))
+                            {
+                                <span class="text-muted" data-i18n="adm.st_used">○ Usada</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted" data-i18n="adm.st_off">○ Desactivada</span>
+                            }
+                        </td>
+                        <td>@k.UsesInfo</td>
+                        <td>@(string.IsNullOrEmpty(k.UsedBy) ? "—" : k.UsedBy)</td>
+                        <td>
+                            @if (k.IsActive)
+                            {
+                                <form asp-action="DeactivateFounderKey" method="post" class="d-inline">
+                                    <input type="hidden" name="id" value="@k.Id" />
+                                    <button type="submit" class="btn btn-sm btn-neon-outline" data-i18n="adm.btn_off">Desactivar</button>
+                                </form>
+                            }
+                            <form asp-action="DeleteFounderKey" method="post" class="d-inline ms-1">
+                                <input type="hidden" name="id" value="@k.Id" />
+                                <button type="submit" class="btn btn-sm btn-outline-danger" data-i18n="adm.btn_del">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    @if (Model.FounderKeys.Count == 0)
+    {
+        <p class="text-secondary" data-i18n="adm.empty_fkeys">Aún no hay founder keys. Genera la primera.</p>
+    }
 }

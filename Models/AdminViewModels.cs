@@ -31,6 +31,9 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Models
         public string UsedBy { get; set; } = string.Empty;
 
         public DateTime CreatedAtUtc { get; set; }
+
+        // Solo founder keys: "usos/max" (vacío en keys de invitación).
+        public string UsesInfo { get; set; } = string.Empty;
     }
 
     public class AdminIndexViewModel
@@ -45,9 +48,13 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Models
 
         public List<AdminKeyRow> Keys { get; set; } = new();
 
+        public List<AdminKeyRow> FounderKeys { get; set; } = new();
+
         public bool CanManageKeys { get; set; }
 
         public string? JustCreatedCode { get; set; }
+
+        public string? JustCreatedFounderCode { get; set; }
     }
 
     public class CrearNoticiaViewModel
@@ -89,6 +96,9 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Models
         public IFormFile? Screenshot { get; set; }
 
         public bool IsPublished { get; set; } = true;
+
+        // Actualización obligatoria (el launcher debe instalarla).
+        public bool IsMandatory { get; set; }
     }
 
     // Kit de publicación de la STORE: todos los campos son obligatorios
