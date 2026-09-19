@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Admin - INNOVATE INDUSTRIES WEB STORE (vista est&#225;tica)</title>
-<meta name="description" content="Panel admin estatico de INNOVATE: acceso con key, catalogo publico y accesos al admin local." />
+<title>Admin - INNOVATE INDUSTRIES WEB STORE</title>
+<meta name="description" content="Panel admin de INNOVATE: opera usuarios, pedidos, keys, builds, noticias y puntos contra la API." />
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -23,7 +23,7 @@
   }
   nav a.active { background: rgba(0,240,255,.18); }
   .card {
-    max-width: 860px; width: 100%; margin: 12px auto;
+    max-width: 960px; width: 100%; margin: 12px auto;
     background: rgba(18,20,29,.92); border: 1px solid rgba(0,240,255,.35);
     border-radius: 0 14px 0 14px; padding: 32px 28px;
     box-shadow: 0 0 20px rgba(0,240,255,.35), 0 0 60px rgba(0,240,255,.12);
@@ -31,35 +31,52 @@
   .brand { font-size: .8rem; letter-spacing: 3px; color: #00f0ff; text-align: center; }
   h1 { font-size: 1.7rem; margin: 12px 0 8px; letter-spacing: 1px; text-align: center; }
   h1 .m { color: #ff2a6d; }
-  h2 { font-size: 1.05rem; letter-spacing: 2px; color: #00f0ff; margin: 26px 0 10px; }
+  h2 { font-size: 1.0rem; letter-spacing: 2px; color: #00f0ff; margin: 26px 0 10px; }
   p.sub { color: #b2b7c7; margin: 8px 0; text-align: center; }
   p.dim { color: #b2b7c7; font-size: .85rem; }
-  input[type=password], input[type=text] {
-    width: 100%; padding: 12px 14px; margin-top: 12px; font-size: 1rem; letter-spacing: 2px;
-    background: #010204; border: 1px solid #1f2230; border-radius: 8px; color: #05ffa1;
+  input, textarea, select {
+    width: 100%; padding: 10px 12px; margin-top: 8px; font-size: .9rem;
+    background: #010204; border: 1px solid #1f2230; border-radius: 8px; color: #f0f1f5;
   }
+  input[type=file] { padding: 8px; }
+  label.lbl { display: block; color: #b2b7c7; font-size: .8rem; margin-top: 12px; letter-spacing: 1px; }
+  label.chk { display: inline-block; color: #b2b7c7; font-size: .85rem; margin: 10px 16px 0 0; }
   button.btn {
     display: inline-block; margin-top: 14px; padding: 12px 26px; cursor: pointer;
     font-size: .85rem; letter-spacing: 2px; color: #001318; font-weight: 700;
     background: linear-gradient(90deg, #00f0ff, #05ffa1); border: 0; border-radius: 8px;
   }
+  button.mini {
+    margin: 2px 4px 2px 0; padding: 5px 12px; font-size: .72rem; letter-spacing: 1px;
+    background: transparent; color: #00f0ff; border: 1px solid rgba(0,240,255,.4);
+    border-radius: 6px; cursor: pointer;
+  }
+  button.danger { color: #ff7d9c; border-color: rgba(255,42,109,.5); }
   button.ghost {
     background: transparent; color: #00f0ff; border: 1px solid rgba(0,240,255,.4);
-    padding: 8px 18px; font-size: .75rem; margin-top: 0;
+    padding: 8px 18px; font-size: .75rem; border-radius: 8px; cursor: pointer;
   }
-  #lock-err { color: #ff2a6d; margin-top: 10px; min-height: 1.2em; font-size: .85rem; }
-  table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: .85rem; }
-  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #1f2230; }
-  th { color: #00f0ff; letter-spacing: 1px; font-size: .75rem; }
-  td.num { text-align: right; font-family: Consolas, monospace; }
-  .links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
-  .links a {
-    font-size: .8rem; padding: 8px 16px; border-radius: 8px; text-decoration: none;
-    color: #00f0ff; border: 1px solid rgba(0,240,255,.4); background: rgba(0,240,255,.06);
+  #msg { margin-top: 12px; min-height: 1.4em; font-size: .85rem; color: #05ffa1; }
+  #msg.err { color: #ff2a6d; }
+  table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: .8rem; }
+  th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid #1f2230; vertical-align: top; }
+  th { color: #00f0ff; letter-spacing: 1px; font-size: .72rem; }
+  td.num, th.num { text-align: right; font-family: Consolas, monospace; }
+  td .mono { font-family: Consolas, monospace; font-size: .75rem; }
+  .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 4px; }
+  .tabs button {
+    padding: 8px 16px; font-size: .75rem; letter-spacing: 1px; cursor: pointer;
+    background: transparent; color: #b2b7c7; border: 1px solid #1f2230; border-radius: 8px;
   }
+  .tabs button.on { color: #00f0ff; border-color: rgba(0,240,255,.5); }
+  .tab { display: none; }
+  .tab.on { display: block; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 18px; }
   code { color: #05ffa1; font-size: .85rem; }
   footer { margin-top: 24px; font-size: .75rem; color: #747d99; text-align: center; }
   .rowbtn { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .ok { color: #05ffa1; }
+  .bad { color: #ff2a6d; }
 </style>
 </head>
 <body>
@@ -67,143 +84,498 @@
     <a href="index.html">INICIO</a><a href="store.html">STORE</a><a href="plataforma.html">PLATAFORMA</a><a href="noticias.html">NOTICIAS</a><a href="showcase.html">SHOWCASE</a><a href="admin.html" class="active">ADMIN</a>
   </nav>
 
-  <div class="card" id="lock">
+  <div class="card" id="login">
     <div class="brand">[ INNOVATE // ADMIN ]</div>
-    <h1>ACCESO <span class="m">RESTRINGIDO</span></h1>
-    <p class="sub">Introduce la key de administrador para ver el panel.</p>
-    <input type="password" id="key" placeholder="KEY-XXXX-XXXX" autocomplete="off" />
-    <button class="btn" id="unlock">DESBLOQUEAR</button>
-    <div id="lock-err"></div>
+    <h1>PANEL <span class="m">ADMIN</span></h1>
+    <p class="sub" id="api-line">Conectando con la API...</p>
+    <label class="lbl">USUARIO O EMAIL</label>
+    <input type="text" id="li-user" autocomplete="username" />
+    <label class="lbl">CONTRASE&#209;A</label>
+    <input type="password" id="li-pass" autocomplete="current-password" />
+    <button class="btn" id="li-go">ENTRAR</button>
+    <div id="msg"></div>
+    <p class="dim">Opera contra la API real (usuarios, pedidos, keys, builds, noticias, puntos). Requiere rol CEO, FOUNDER o INTERNO.</p>
   </div>
 
   <div class="card" id="panel" style="display:none">
     <div class="rowbtn">
       <div class="brand">[ INNOVATE // ADMIN ]</div>
-      <button class="ghost btn" id="lockbtn">BLOQUEAR</button>
+      <button class="ghost" id="lockbtn">SALIR</button>
     </div>
     <h1>PANEL <span class="m">ADMIN</span></h1>
-    <p class="sub">Vitrina est&#225;tica: cat&#225;logo p&#250;blico y accesos directos. La gesti&#243;n real vive en el servidor local.</p>
-
-    <h2>// CAT&#193;LOGO P&#218;BLICO</h2>
-    <p class="dim" id="games-meta">Cargando...</p>
-    <table>
-      <thead><tr><th>JUEGO</th><th>PRECIO</th><th>ESTADO</th></tr></thead>
-      <tbody id="games"></tbody>
-    </table>
-
-    <h2>// BUILD DEL LAUNCHER</h2>
-    <p class="dim" id="build">Cargando...</p>
-
-    <h2>// ADMIN LOCAL (SOLO EQUIPO)</h2>
-    <p class="dim">Solo responden en el equipo donde corre el servidor (<code>dotnet run</code> &#8594; <code>http://localhost:5215</code>).</p>
-    <div class="links">
-      <a href="http://localhost:5215/Admin">Usuarios + Keys</a>
-      <a href="http://localhost:5215/Admin/Store">Store + Pedidos</a>
-      <a href="http://localhost:5215/Admin/Launcher">Launcher</a>
-      <a href="http://localhost:5215/Admin/Noticias">Noticias</a>
-      <a href="http://localhost:5215/Admin/Usuarios">Bibliotecas</a>
-      <a href="http://localhost:5215/Admin/Horas">Horas</a>
+    <p class="sub" id="who"></p>
+    <div class="tabs" id="tabs">
+      <button data-tab="t-users" class="on">USUARIOS</button>
+      <button data-tab="t-orders">PEDIDOS</button>
+      <button data-tab="t-keys">KEYS</button>
+      <button data-tab="t-builds">BUILDS</button>
+      <button data-tab="t-news">NOTICIAS</button>
+      <button data-tab="t-pub">PUBLICAR</button>
+      <button data-tab="t-pts">PUNTOS</button>
     </div>
-    <footer>&copy; 2026 INNOVATE INDUSTRIES · panel est&#225;tico con key</footer>
+    <div id="msg2"></div>
+
+    <div class="tab on" id="t-users">
+      <h2>// USUARIOS</h2>
+      <div class="rowbtn"><p class="dim" id="users-meta"></p><button class="mini" id="users-re">ACTUALIZAR</button></div>
+      <table><thead><tr><th>USUARIO</th><th>EMAIL</th><th>ROLES</th><th>BIBLIO</th><th class="num">PTS</th><th></th></tr></thead>
+      <tbody id="users"></tbody></table>
+    </div>
+
+    <div class="tab" id="t-orders">
+      <h2>// PEDIDOS</h2>
+      <div class="rowbtn"><p class="dim" id="orders-meta"></p><button class="mini" id="orders-re">ACTUALIZAR</button></div>
+      <table><thead><tr><th>REF</th><th>JUEGO</th><th>COMPRADOR</th><th class="num">USD</th><th>ESTADO</th><th></th></tr></thead>
+      <tbody id="orders"></tbody></table>
+    </div>
+
+    <div class="tab" id="t-keys">
+      <h2>// KEYS DE INVITACI&#211;N (INTERNO)</h2>
+      <button class="mini" id="ikey-new">GENERAR (CEO/FOUNDER)</button>
+      <table><thead><tr><th>KEY</th><th>ESTADO</th><th>USADA POR</th><th></th></tr></thead>
+      <tbody id="ikeys"></tbody></table>
+      <h2>// FOUNDER KEYS</h2>
+      <button class="mini" id="fkey-new">GENERAR (CEO/FOUNDER)</button>
+      <table><thead><tr><th>KEY</th><th>ESTADO</th><th>USOS</th><th>USADA POR</th><th></th></tr></thead>
+      <tbody id="fkeys"></tbody></table>
+    </div>
+
+    <div class="tab" id="t-builds">
+      <h2>// BUILDS DEL LAUNCHER</h2>
+      <div class="rowbtn"><p class="dim" id="builds-meta"></p><button class="mini" id="builds-re">ACTUALIZAR</button></div>
+      <table><thead><tr><th>VERSI&#211;N</th><th>ARCHIVO</th><th class="num">TAMA&#209;O</th><th class="num">DESCARGAS</th><th>ESTADO</th><th></th></tr></thead>
+      <tbody id="builds"></tbody></table>
+    </div>
+
+    <div class="tab" id="t-news">
+      <h2>// NUEVA NOTICIA</h2>
+      <div class="grid2">
+        <div><label class="lbl">T&#205;TULO</label><input type="text" id="nw-title" maxlength="120" /></div>
+        <div><label class="lbl">ENLACE (OPCIONAL)</label><input type="text" id="nw-link" placeholder="https://..." /></div>
+      </div>
+      <label class="lbl">TEXTO LINK (OPCIONAL)</label><input type="text" id="nw-linktext" maxlength="120" />
+      <label class="lbl">CUERPO</label><textarea id="nw-body" rows="4"></textarea>
+      <label class="lbl">IMAGEN (JPG/PNG/GIF/WEBP &#8804;5 MB, OPCIONAL)</label><input type="file" id="nw-img" accept=".jpg,.jpeg,.png,.gif,.webp" />
+      <label class="chk"><input type="checkbox" id="nw-pub" checked style="width:auto" /> Publicada</label>
+      <br /><button class="btn" id="nw-go">PUBLICAR NOTICIA</button>
+      <h2>// PUBLICADAS</h2>
+      <div class="rowbtn"><p class="dim" id="news-meta"></p><button class="mini" id="news-re">ACTUALIZAR</button></div>
+      <table><thead><tr><th class="num">ID</th><th>T&#205;TULO</th><th>ESTADO</th><th></th></tr></thead>
+      <tbody id="news"></tbody></table>
+    </div>
+
+    <div class="tab" id="t-pub">
+      <h2>// PUBLICAR JUEGO EN STORE</h2>
+      <p class="dim">Todo obligatorio salvo precio/preventa/pass. Portada + 6 capturas.</p>
+      <div class="grid2">
+        <div><label class="lbl">T&#205;TULO</label><input type="text" id="pg-title" /></div>
+        <div><label class="lbl">G&#201;NERO</label><input type="text" id="pg-genre" /></div>
+        <div><label class="lbl">PRECIO USD</label><input type="text" id="pg-price" placeholder="0" /></div>
+        <div><label class="lbl">TR&#193;ILER (URL)</label><input type="text" id="pg-trailer" /></div>
+      </div>
+      <label class="lbl">DESCRIPCI&#211;N</label><textarea id="pg-desc" rows="3"></textarea>
+      <label class="lbl">REGIONES (CSV: NA,SA,EU,ASIA,AF,OC)</label><input type="text" id="pg-regions" value="NA,SA,EU,ASIA,AF,OC" />
+      <label class="chk"><input type="checkbox" id="pg-pre" style="width:auto" /> Preventa</label>
+      <label class="chk"><input type="checkbox" id="pg-pass" style="width:auto" /> INNOVATE PASS</label>
+      <label class="lbl">PORTADA</label><input type="file" id="pg-cover" accept=".jpg,.jpeg,.png,.gif,.webp" />
+      <label class="lbl">6 CAPTURAS</label><input type="file" id="pg-shots" accept=".jpg,.jpeg,.png,.gif,.webp" multiple />
+      <br /><button class="btn" id="pg-go">PUBLICAR JUEGO</button>
+    </div>
+
+    <div class="tab" id="t-pts">
+      <h2>// OTORGAR PUNTOS</h2>
+      <label class="lbl">USUARIO</label><input type="text" id="pt-user" />
+      <label class="lbl">CANTIDAD (+/-)</label><input type="text" id="pt-amount" placeholder="500" />
+      <br /><button class="btn" id="pt-go">OTORGAR</button>
+    </div>
+
+    <footer>&copy; 2026 INNOVATE INDUSTRIES · admin web contra API real</footer>
   </div>
 
 <script>
 (function () {
-  var KEY_HASH = "25d3304805c0a15071517df3561ebc4777f7f5a718e9200fc6a57dcb6f9e78c5";
-  var lockEl = document.getElementById("lock");
-  var panelEl = document.getElementById("panel");
-  var keyEl = document.getElementById("key");
-  var errEl = document.getElementById("lock-err");
+  var S = { base: "", token: "", user: "", roles: [] };
+  var $ = function (id) { return document.getElementById(id); };
+  var msgEl = $("msg"), msg2El = $("msg2");
 
-  function hex(buf) {
-    return Array.prototype.map.call(new Uint8Array(buf), function (b) {
-      return ("0" + b.toString(16)).slice(-2);
-    }).join("");
+  function say(t, err) {
+    msgEl.textContent = t || "";
+    msgEl.className = err ? "err" : "";
   }
-  async function sha256(s) {
-    var data = new TextEncoder().encode(s);
-    var digest = await crypto.subtle.digest("SHA-256", data);
-    return hex(digest);
+  function say2(t, err) {
+    msg2El.textContent = t || "";
+    msg2El.className = err ? "err" : "";
   }
-  function showPanel() {
-    lockEl.style.display = "none";
-    panelEl.style.display = "block";
-    cargar();
+  function esc(s) { return String(s == null ? "" : s); }
+  function td(t) { var e = document.createElement("td"); e.textContent = t; return e; }
+
+  async function api(method, path, body) {
+    var opt = { method: method, headers: {} };
+    if (S.token) opt.headers["Authorization"] = "Bearer " + S.token;
+    if (body !== undefined) {
+      opt.headers["Content-Type"] = "application/json";
+      opt.body = JSON.stringify(body);
+    }
+    var r = await fetch(S.base + path, opt);
+    var j = null;
+    try { j = await r.json(); } catch (e) {}
+    if (r.status === 401) { salir(); throw new Error("Sesion expirada. Entra de nuevo."); }
+    if (!r.ok) {
+      var det = (j && (j.error || (j.errors && j.errors.join(" ")))) || ("HTTP " + r.status);
+      throw new Error(det);
+    }
+    return j;
   }
-  function showLock() {
-    panelEl.style.display = "none";
-    lockEl.style.display = "block";
-    keyEl.value = "";
-    errEl.textContent = "";
-  }
-  async function unlock() {
-    errEl.textContent = "";
-    var v = (keyEl.value || "").trim();
-    if (!v) return;
-    var h;
-    try { h = await sha256(v); }
-    catch (e) { errEl.textContent = "Tu navegador no permite verificar la key (HTTPS requerido)."; return; }
-    if (h === KEY_HASH) {
-      try { sessionStorage.setItem("inn_admin", "1"); } catch (e) {}
-      showPanel();
-    } else {
-      errEl.textContent = "Key incorrecta.";
+
+  async function init() {
+    var base = "http://localhost:5215";
+    try {
+      var r = await fetch("./api.json");
+      if (r.ok) {
+        var j = await r.json();
+        if (j && j.apiBase) base = String(j.apiBase).replace(/\/+$/, "");
+      }
+    } catch (e) {}
+    S.base = base;
+    $("api-line").textContent = "API: " + base;
+    try {
+      var p = await fetch(base + "/api/launcher/ping");
+      if (!p.ok) $("api-line").textContent += " · sin respuesta (revisa el servidor/tunel)";
+    } catch (e) {
+      $("api-line").textContent += " · sin respuesta (revisa el servidor/tunel)";
     }
   }
-  document.getElementById("unlock").addEventListener("click", unlock);
-  keyEl.addEventListener("keydown", function (e) { if (e.key === "Enter") unlock(); });
-  document.getElementById("lockbtn").addEventListener("click", function () {
-    try { sessionStorage.removeItem("inn_admin"); } catch (e) {}
-    showLock();
-  });
 
-  function cargar() {
-    fetch("./store.json").then(function (r) { return r.json(); }).then(function (d) {
-      var tb = document.getElementById("games");
-      var meta = document.getElementById("games-meta");
-      var gs = (d && d.games) || [];
-      meta.textContent = gs.length + " juego(s) · exportado " + ((d && d.exportedAtUtc) || "?");
-      tb.innerHTML = "";
-      if (!gs.length) {
-        var tr = document.createElement("tr");
-        var td = document.createElement("td");
-        td.colSpan = 3; td.textContent = "Sin juegos publicados.";
-        tr.appendChild(td); tb.appendChild(tr); return;
-      }
-      gs.forEach(function (g) {
-        var tr = document.createElement("tr");
-        var t1 = document.createElement("td"); t1.textContent = g.title || "?";
-        var t2 = document.createElement("td"); t2.className = "num"; t2.textContent = g.priceText || ("$" + g.price);
-        var t3 = document.createElement("td"); t3.textContent = g.isPreorder ? "PREVENTA" : "DISPONIBLE";
-        tr.appendChild(t1); tr.appendChild(t2); tr.appendChild(t3); tb.appendChild(tr);
-      });
-    }).catch(function () {
-      document.getElementById("games-meta").textContent = "No se pudo cargar store.json.";
-    });
-    fetch("./client.json").then(function (r) { return r.json(); }).then(function (d) {
-      var el = document.getElementById("build");
-      if (!d || !d.version) { el.textContent = "Sin builds publicados."; return; }
-      el.innerHTML = "";
-      var b = document.createElement("b"); b.textContent = d.version; el.appendChild(b);
-      el.appendChild(document.createTextNode(" · " + (d.fileName || "") + " · " + (d.sizeBytes || 0) + " bytes"));
-      if (d.mandatory) el.appendChild(document.createTextNode(" · OBLIGATORIA"));
-      if (d.download) {
-        el.appendChild(document.createTextNode(" · "));
-        var a = document.createElement("a"); a.href = d.download; a.textContent = "Descargar";
-        el.appendChild(a);
-      }
-      if (d.releaseNotes) {
-        var p = document.createElement("div"); p.textContent = d.releaseNotes;
-        el.appendChild(p);
-      }
-    }).catch(function () {
-      document.getElementById("build").textContent = "Sin builds publicados.";
-    });
+  function esStaff() {
+    return S.roles.indexOf("CEO") >= 0 || S.roles.indexOf("FOUNDER") >= 0 || S.roles.indexOf("INTERNO") >= 0;
   }
 
+  async function entrar() {
+    say("");
+    var id = $("li-user").value.trim(), pw = $("li-pass").value;
+    if (!id || !pw) { say("Indica usuario y contrase\u00f1a.", true); return; }
+    try {
+      var r = await fetch(S.base + "/api/launcher/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ identifier: id, password: pw })
+      });
+      var j = null;
+      try { j = await r.json(); } catch (e) {}
+      if (r.status === 403) { say("Cuenta baneada.", true); return; }
+      if (!r.ok || !j || !j.token) { say("Credenciales incorrectas.", true); return; }
+      var roles = j.roles || [];
+      var staff = roles.indexOf("CEO") >= 0 || roles.indexOf("FOUNDER") >= 0 || roles.indexOf("INTERNO") >= 0;
+      if (!staff) { say("Tu cuenta no tiene rol de equipo.", true); return; }
+      S.token = j.token; S.user = j.userName || id; S.roles = roles;
+      try { sessionStorage.setItem("inn_at", S.token); sessionStorage.setItem("inn_au", S.user); sessionStorage.setItem("inn_ar", roles.join(",")); } catch (e) {}
+      mostrarPanel();
+    } catch (e) {
+      say("Sin conexi\u00f3n con la API.", true);
+    }
+  }
+
+  function mostrarPanel() {
+    $("login").style.display = "none";
+    $("panel").style.display = "block";
+    $("who").textContent = S.user + " · " + S.roles.join(", ");
+    cargarTodo();
+  }
+  function salir() {
+    S.token = ""; S.user = ""; S.roles = [];
+    try { sessionStorage.removeItem("inn_at"); sessionStorage.removeItem("inn_au"); sessionStorage.removeItem("inn_ar"); } catch (e) {}
+    $("panel").style.display = "none";
+    $("login").style.display = "block";
+    $("li-pass").value = "";
+  }
+
+  // ---------- pestañas ----------
+  var tabBtns = document.querySelectorAll("#tabs button");
+  for (var i = 0; i < tabBtns.length; i++) {
+    (function (b) {
+      b.addEventListener("click", function () {
+        for (var k = 0; k < tabBtns.length; k++) tabBtns[k].className = "";
+        b.className = "on";
+        var tabs = document.querySelectorAll(".tab");
+        for (var k2 = 0; k2 < tabs.length; k2++) tabs[k2].className = "tab";
+        $(b.getAttribute("data-tab")).className = "tab on";
+      });
+    })(tabBtns[i]);
+  }
+
+  function btnMini(txt, danger) {
+    var b = document.createElement("button");
+    b.className = "mini" + (danger ? " danger" : "");
+    b.textContent = txt;
+    return b;
+  }
+
+  // ---------- usuarios ----------
+  async function cargarUsuarios() {
+    var tb = $("users");
+    tb.innerHTML = "";
+    try {
+      var d = await api("GET", "/api/admin/users");
+      var us = d.users || [];
+      $("users-meta").textContent = us.length + " cuenta(s)";
+      us.forEach(function (u) {
+        var tr = document.createElement("tr");
+        tr.appendChild(td(u.userName + (u.banned ? " [BAN]" : "")));
+        tr.appendChild(td(u.email));
+        tr.appendChild(td(u.roles));
+        tr.appendChild(td(String(u.library)));
+        var p = document.createElement("td"); p.className = "num"; p.textContent = String(u.points); tr.appendChild(p);
+        var acc = document.createElement("td");
+        if (u.userName !== S.user) {
+          var b = btnMini(u.banned ? "DESBANEAR" : "BANEAR", !u.banned);
+          (function (uu, bb) {
+            b.addEventListener("click", async function () {
+              if (!confirm((bb ? "Banear a " : "Desbanear a ") + uu.userName + "?")) return;
+              try {
+                await api("POST", "/api/admin/users/" + encodeURIComponent(uu.id) + "/ban", { banned: bb });
+                say2("OK");
+                cargarUsuarios();
+              } catch (e) { say2(String(e.message || e), true); }
+            });
+          })(u, !u.banned);
+          acc.appendChild(b);
+        }
+        tr.appendChild(acc);
+        tb.appendChild(tr);
+      });
+    } catch (e) { say2(String(e.message || e), true); }
+  }
+
+  // ---------- pedidos ----------
+  async function cargarPedidos() {
+    var tb = $("orders");
+    tb.innerHTML = "";
+    try {
+      var d = await api("GET", "/api/admin/orders");
+      var os = d.orders || [];
+      $("orders-meta").textContent = os.length + " pedido(s)";
+      os.forEach(function (o) {
+        var tr = document.createElement("tr");
+        var ref = document.createElement("td"); ref.className = "mono"; ref.textContent = o.reference; tr.appendChild(ref);
+        tr.appendChild(td(o.gameTitle));
+        tr.appendChild(td(o.userName));
+        var am = document.createElement("td"); am.className = "num"; am.textContent = o.amountText; tr.appendChild(am);
+        tr.appendChild(td(o.status));
+        var acc = document.createElement("td");
+        var bc = btnMini("PAGADO");
+        bc.addEventListener("click", async function () {
+          try {
+            var r = await api("POST", "/api/admin/orders/" + o.id + "/confirm", {});
+            say2("Pagado. Key: " + (r.key || "?"));
+            cargarPedidos();
+          } catch (e) { say2(String(e.message || e), true); }
+        });
+        acc.appendChild(bc);
+        var bx = btnMini("CANCELAR", true);
+        bx.addEventListener("click", async function () {
+          if (!confirm("Cancelar " + o.reference + "?")) return;
+          try { await api("POST", "/api/admin/orders/" + o.id + "/cancel", {}); say2("OK"); cargarPedidos(); }
+          catch (e) { say2(String(e.message || e), true); }
+        });
+        acc.appendChild(bx);
+        var bd = btnMini("X", true);
+        bd.addEventListener("click", async function () {
+          if (!confirm("Eliminar " + o.reference + "?")) return;
+          try { await api("DELETE", "/api/admin/orders/" + o.id); say2("OK"); cargarPedidos(); }
+          catch (e) { say2(String(e.message || e), true); }
+        });
+        acc.appendChild(bd);
+        tr.appendChild(acc);
+        tb.appendChild(tr);
+      });
+    } catch (e) { say2(String(e.message || e), true); }
+  }
+
+  // ---------- keys ----------
+  async function pintarKeys(tbId, lista, tipo) {
+    var tb = $(tbId);
+    tb.innerHTML = "";
+    (lista || []).forEach(function (k) {
+      var tr = document.createElement("tr");
+      var c = document.createElement("td"); c.className = "mono"; c.textContent = k.code; tr.appendChild(c);
+      tr.appendChild(td(k.isActive ? "Activa" : (k.usedBy ? "Usada" : "Off")));
+      if (tipo === "founder") tr.appendChild(td(k.usesInfo || ""));
+      tr.appendChild(td(k.usedBy || ""));
+      var acc = document.createElement("td");
+      if (k.isActive) {
+        var bo = btnMini("OFF");
+        bo.addEventListener("click", async function () {
+          try { await api("POST", "/api/admin/" + tipo + "-keys/" + k.id + "/deactivate", {}); say2("OK"); cargarKeys(); }
+          catch (e) { say2(String(e.message || e), true); }
+        });
+        acc.appendChild(bo);
+      }
+      var bd = btnMini("X", true);
+      bd.addEventListener("click", async function () {
+        if (!confirm("Eliminar " + k.code + "?")) return;
+        try { await api("DELETE", "/api/admin/" + tipo + "-keys/" + k.id); say2("OK"); cargarKeys(); }
+        catch (e) { say2(String(e.message || e), true); }
+      });
+      acc.appendChild(bd);
+      tr.appendChild(acc);
+      tb.appendChild(tr);
+    });
+  }
+  async function cargarKeys() {
+    try {
+      var a = await api("GET", "/api/admin/invite-keys");
+      await pintarKeys("ikeys", a.keys, "invite");
+      var b = await api("GET", "/api/admin/founder-keys");
+      await pintarKeys("fkeys", b.keys, "founder");
+    } catch (e) { say2(String(e.message || e), true); }
+  }
+
+  // ---------- builds ----------
+  async function cargarBuilds() {
+    var tb = $("builds");
+    tb.innerHTML = "";
+    try {
+      var d = await api("GET", "/api/admin/builds");
+      var bs = d.builds || [];
+      $("builds-meta").textContent = bs.length + " build(s)";
+      bs.forEach(function (b) {
+        var tr = document.createElement("tr");
+        tr.appendChild(td(b.version + (b.isMandatory ? " [OBLIG]" : "")));
+        tr.appendChild(td(b.fileName));
+        var s = document.createElement("td"); s.className = "num"; s.textContent = String(b.sizeBytes); tr.appendChild(s);
+        var dl = document.createElement("td"); dl.className = "num"; dl.textContent = String(b.downloads); tr.appendChild(dl);
+        tr.appendChild(td(b.isPublished ? "Publicado" : "Borrador"));
+        var acc = document.createElement("td");
+        var t = btnMini(b.isPublished ? "OCULTAR" : "PUBLICAR");
+        t.addEventListener("click", async function () {
+          try { await api("POST", "/api/admin/builds/" + b.id + "/toggle", {}); say2("OK"); cargarBuilds(); }
+          catch (e) { say2(String(e.message || e), true); }
+        });
+        acc.appendChild(t);
+        tr.appendChild(acc);
+        tb.appendChild(tr);
+      });
+    } catch (e) { say2(String(e.message || e), true); }
+  }
+
+  // ---------- noticias ----------
+  function fileToB64(f) {
+    return new Promise(function (res, rej) {
+      var r = new FileReader();
+      r.onload = function () { res(String(r.result).split(",")[1] || ""); };
+      r.onerror = function () { rej(new Error("No se pudo leer el archivo")); };
+      r.readAsDataURL(f);
+    });
+  }
+  async function cargarNews() {
+    var tb = $("news");
+    tb.innerHTML = "";
+    try {
+      var d = await api("GET", "/api/admin/news");
+      var ns = d.news || [];
+      $("news-meta").textContent = ns.length + " noticia(s)";
+      ns.forEach(function (n) {
+        var tr = document.createElement("tr");
+        var id = document.createElement("td"); id.className = "num"; id.textContent = String(n.id); tr.appendChild(id);
+        tr.appendChild(td(n.title));
+        tr.appendChild(td(n.isPublished ? "Publicada" : "Oculta"));
+        var acc = document.createElement("td");
+        var t = btnMini(n.isPublished ? "OCULTAR" : "PUBLICAR");
+        t.addEventListener("click", async function () {
+          try { await api("POST", "/api/admin/news/" + n.id + "/toggle", {}); say2("OK"); cargarNews(); }
+          catch (e) { say2(String(e.message || e), true); }
+        });
+        acc.appendChild(t);
+        var bd = btnMini("X", true);
+        bd.addEventListener("click", async function () {
+          if (!confirm("Eliminar noticia " + n.id + "?")) return;
+          try { await api("DELETE", "/api/admin/news/" + n.id); say2("OK"); cargarNews(); }
+          catch (e) { say2(String(e.message || e), true); }
+        });
+        acc.appendChild(bd);
+        tr.appendChild(acc);
+        tb.appendChild(tr);
+      });
+    } catch (e) { say2(String(e.message || e), true); }
+  }
+
+  function cargarTodo() {
+    say2("");
+    cargarUsuarios(); cargarPedidos(); cargarKeys(); cargarBuilds(); cargarNews();
+  }
+
+  // ---------- eventos ----------
+  $("li-go").addEventListener("click", entrar);
+  $("li-pass").addEventListener("keydown", function (e) { if (e.key === "Enter") entrar(); });
+  $("lockbtn").addEventListener("click", salir);
+  $("users-re").addEventListener("click", cargarUsuarios);
+  $("orders-re").addEventListener("click", cargarPedidos);
+  $("builds-re").addEventListener("click", cargarBuilds);
+  $("news-re").addEventListener("click", cargarNews);
+  $("ikey-new").addEventListener("click", async function () {
+    try { var r = await api("POST", "/api/admin/invite-keys", {}); say2("Nueva: " + r.code); cargarKeys(); }
+    catch (e) { say2(String(e.message || e), true); }
+  });
+  $("fkey-new").addEventListener("click", async function () {
+    try { var r = await api("POST", "/api/admin/founder-keys", {}); say2("Nueva: " + r.code); cargarKeys(); }
+    catch (e) { say2(String(e.message || e), true); }
+  });
+  $("pt-go").addEventListener("click", async function () {
+    var u = $("pt-user").value.trim(), a = parseInt($("pt-amount").value.trim(), 10);
+    if (!u || isNaN(a) || a === 0) { say2("Indica usuario y cantidad.", true); return; }
+    try {
+      var r = await api("POST", "/api/admin/points/grant/" + encodeURIComponent(u), { amount: a });
+      say2("OK: " + r.userName + " = " + r.points + " PTS");
+    } catch (e) { say2(String(e.message || e), true); }
+  });
+  $("nw-go").addEventListener("click", async function () {
+    var body = { title: $("nw-title").value.trim(), body: $("nw-body").value.trim(),
+      linkUrl: $("nw-link").value.trim(), linkText: $("nw-linktext").value.trim(),
+      isPublished: $("nw-pub").checked };
+    if (!body.title || !body.body) { say2("Titulo y cuerpo obligatorios.", true); return; }
+    try {
+      var f = $("nw-img").files[0];
+      if (f) {
+        if (f.size > 5 * 1024 * 1024) { say2("Imagen maximo 5 MB.", true); return; }
+        body.imageB64 = await fileToB64(f);
+      }
+      await api("POST", "/api/admin/news", body);
+      say2("Noticia publicada.");
+      $("nw-title").value = ""; $("nw-body").value = ""; $("nw-link").value = ""; $("nw-linktext").value = ""; $("nw-img").value = "";
+      cargarNews();
+    } catch (e) { say2(String(e.message || e), true); }
+  });
+  $("pg-go").addEventListener("click", async function () {
+    var body = { title: $("pg-title").value.trim(), genre: $("pg-genre").value.trim(),
+      price: parseFloat(($("pg-price").value.trim() || "0").replace(",", ".")) || 0,
+      trailerUrl: $("pg-trailer").value.trim(), description: $("pg-desc").value.trim(),
+      regions: $("pg-regions").value.split(",").map(function (s) { return s.trim().toUpperCase(); }).filter(function (s) { return s; }),
+      isPreorder: $("pg-pre").checked, inPass: $("pg-pass").checked };
+    if (body.title.length < 3 || !body.genre || !body.description || !body.trailerUrl) { say2("Titulo/genero/descripcion/trailer obligatorios.", true); return; }
+    try {
+      var cf = $("pg-cover").files[0];
+      if (!cf) { say2("Portada obligatoria.", true); return; }
+      body.coverB64 = await fileToB64(cf);
+      var sf = $("pg-shots").files;
+      if (!sf || sf.length < 6) { say2("Se requieren 6 capturas.", true); return; }
+      body.screenshotsB64 = [];
+      for (var i = 0; i < Math.min(sf.length, 6); i++) body.screenshotsB64.push(await fileToB64(sf[i]));
+      var r = await api("POST", "/api/admin/games/publish", body);
+      say2("Juego publicado: " + (r.title || r.gameId));
+      $("pg-title").value = ""; $("pg-desc").value = "";
+    } catch (e) { say2(String(e.message || e), true); }
+  });
+
+  // sesion persistente por pestaña
   try {
-    if (sessionStorage.getItem("inn_admin") === "1" && KEY_HASH && KEY_HASH.indexOf("__ADMIN") !== 0) showPanel();
+    var t = sessionStorage.getItem("inn_at");
+    if (t) {
+      S.token = t; S.user = sessionStorage.getItem("inn_au") || "";
+      S.roles = (sessionStorage.getItem("inn_ar") || "").split(",").filter(function (s) { return s; });
+      if (esStaff()) mostrarPanel();
+    }
   } catch (e) {}
+  init();
 })();
 </script>
 </body>

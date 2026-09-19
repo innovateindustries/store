@@ -74,6 +74,12 @@ builder.Services.Configure<ForwardedHeadersOptions>(o =>
     o.KnownProxies.Clear();
 });
 
+// Panel admin estático (GitHub Pages) → API: solo la vitrina pública + JSON sin cookies.
+builder.Services.AddCors(o => o.AddPolicy("Pages", p => p
+    .WithOrigins("https://innovateindustries.github.io")
+    .AllowAnyHeader()
+    .AllowAnyMethod()));
+
 var app = builder.Build();
 
 // Crea app.db con el esquema de Identity si no existe.
@@ -264,6 +270,8 @@ app.UseForwardedHeaders();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+
+app.UseCors("Pages");
 
 app.UseAuthentication();
 app.UseAuthorization();

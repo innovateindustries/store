@@ -412,5 +412,344 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers.Api
             }
             catch { return null; }
         }
+
+        // ---------- Ban / desban (solo CEO/FOUNDER, sin auto-baneo) ----------
+
+        [HttpPost("users/{id}/ban")]
+        public async Task<IActionResult> BanearUsuario(string id, [FromBody] LauncherBanRequest m)
+        {
+            var denegado = await SoloStaffAsync();
+            if (denegado != null) return denegado;
+            var yo = await UsuarioPorTokenAsync();
+            var roles = await _users.GetRolesAsync(yo!);
+            if (!roles.Contains("CEO") && !roles.Contains("FOUNDER"))
+                return StatusCode(403);
+            var user = await _users.FindByIdAsync(id);
+            if (user == null)
+                return NotFound(new { error = "USER_NOT_FOUND" });
+            if (user.Id == yo!.Id)
+                return BadRequest(new { error = "NO_SELF_BAN" });
+            if (m.Banned)
+            {
+                await _users.SetLockoutEnabledAsync(user, true);
+                await _users.SetLockoutEndDateAsync(user, DateTimeOffset.MaxValue);
+                await _users.UpdateSecurityStampAsync(user);
+            }
+            else
+            {
+                await _users.SetLockoutEndDateAsync(user, null);
+                await _users.UpdateSecurityStampAsync(user);
+            }
+            // Expulsa tokens del launcher al banear.
+            if (m.Banned)
+            {
+                var toks = _db.LauncherTokens.Where(t => t.UserId == id).ToList();
+                if (toks.Count > 0)
+                {
+                    _db.LauncherTokens.RemoveRange(toks);
+                    await _db.SaveChangesAsync();
+                }
+            }
+            return Ok(new { ok = true, banned = m.Banned });
+        }
+
+        private async Task<IActionResult?> SoloJefesAsync()
+        {
+            var denegado = await SoloStaffAsync();
+            if (denegado != null) return denegado;
+            var yo = await UsuarioPorTokenAsync();
+            var roles = await _users.GetRolesAsync(yo!);
+            if (!roles.Contains("CEO") && !roles.Contains("FOUNDER"))
+                return StatusCode(403);
+            return null;
+        }
+
+        private static string GenerarCodigoKey(string prefijo)
+        {
+            return prefijo + Convert.ToHexString(RandomNumberGenerator.GetBytes(4));
+        }
+
+        // ---------- Keys de invitación (INTERNO) ----------
+
+        [HttpGet("invite-keys")]
+        public async Task<IActionResult> ListarInviteKeys()
+        {
+            var denegado = await SoloStaffAsync();
+            if (denegado != null) return denegado;
+            var nombres = _users.Users.ToDictionary(u => u.Id, u => u.UserName ?? u.Email ?? "?");
+            return Ok(new
+            {
+                keys = _db.InviteKeys.OrderByDescending(k => k.Id).Take(50).ToList().ConvertAll(k => new
+                {
+                    id = k.Id,
+                    code = k.Code,
+                    isActive = k.IsActive,
+                    createdAtUtc = k.CreatedAtUtc,
+                    usedBy = k.UsedByUserId != null && nombres.TryGetValue(k.UsedByUserId, out var n) ? n : string.Empty
+                })
+            });
+        }
+
+        [HttpPost("invite-keys")]
+        public async Task<IActionResult> GenerarInviteKey()
+        {
+            var denegado = await SoloJefesAsync();
+            if (denegado != null) return denegado;
+            string code;
+            do { code = GenerarCodigoKey("INN-"); }
+            while (_db.InviteKeys.Any(k => k.Code == code));
+            _db.InviteKeys.Add(new InviteKey
+            {
+                Code = code,
+                CreatedByUserId = (await UsuarioPorTokenAsync())?.Id,
+                CreatedAtUtc = DateTime.UtcNow,
+                IsActive = true
+            });
+            await _db.SaveChangesAsync();
+            return Ok(new { ok = true, code });
+        }
+
+        [HttpPost("invite-keys/{id:int}/deactivate")]
+        public async Task<IActionResult> DesactivarInviteKey(int id)
+        {
+            var denegado = await SoloJefesAsync();
+            if (denegado != null) return denegado;
+            var key = _db.InviteKeys.FirstOrDefault(k => k.Id == id);
+            if (key == null) return NotFound(new { error = "KEY_NOT_FOUND" });
+            key.IsActive = false;
+            await _db.SaveChangesAsync();
+            return Ok(new { ok = true });
+        }
+
+        [HttpDelete("invite-keys/{id:int}")]
+        public async Task<IActionResult> BorrarInviteKey(int id)
+        {
+            var denegado = await SoloJefesAsync();
+            if (denegado != null) return denegado;
+            var key = _db.InviteKeys.FirstOrDefault(k => k.Id == id);
+            if (key == null) return NotFound(new { error = "KEY_NOT_FOUND" });
+            _db.InviteKeys.Remove(key);
+            await _db.SaveChangesAsync();
+            return Ok(new { ok = true });
+        }
+
+        // ---------- Founder keys ----------
+
+        [HttpGet("founder-keys")]
+        public async Task<IActionResult> ListarFounderKeys()
+        {
+            var denegado = await SoloStaffAsync();
+            if (denegado != null) return denegado;
+            var nombres = _users.Users.ToDictionary(u => u.Id, u => u.UserName ?? u.Email ?? "?");
+            return Ok(new
+            {
+                keys = _db.FounderKeys.OrderByDescending(k => k.Id).Take(50).ToList().ConvertAll(k => new
+                {
+                    id = k.Id,
+                    code = k.Code,
+                    isActive = k.IsActive,
+                    createdAtUtc = k.CreatedAtUtc,
+                    usedBy = k.UsedByUserId != null && nombres.TryGetValue(k.UsedByUserId, out var n) ? n : string.Empty,
+                    usesInfo = k.UsesCount + "/" + Math.Max(1, k.MaxUses)
+                })
+            });
+        }
+
+        [HttpPost("founder-keys")]
+        public async Task<IActionResult> GenerarFounderKey()
+        {
+            var denegado = await SoloJefesAsync();
+            if (denegado != null) return denegado;
+            string code;
+            do { code = GenerarCodigoKey("FND-"); }
+            while (_db.FounderKeys.Any(k => k.Code == code));
+            _db.FounderKeys.Add(new FounderKey
+            {
+                Code = code,
+                CreatedByUserId = (await UsuarioPorTokenAsync())?.Id,
+                CreatedAtUtc = DateTime.UtcNow,
+                IsActive = true,
+                MaxUses = 1
+            });
+            await _db.SaveChangesAsync();
+            return Ok(new { ok = true, code });
+        }
+
+        [HttpPost("founder-keys/{id:int}/deactivate")]
+        public async Task<IActionResult> DesactivarFounderKey(int id)
+        {
+            var denegado = await SoloJefesAsync();
+            if (denegado != null) return denegado;
+            var key = _db.FounderKeys.FirstOrDefault(k => k.Id == id);
+            if (key == null) return NotFound(new { error = "KEY_NOT_FOUND" });
+            key.IsActive = false;
+            await _db.SaveChangesAsync();
+            return Ok(new { ok = true });
+        }
+
+        [HttpDelete("founder-keys/{id:int}")]
+        public async Task<IActionResult> BorrarFounderKey(int id)
+        {
+            var denegado = await SoloJefesAsync();
+            if (denegado != null) return denegado;
+            var key = _db.FounderKeys.FirstOrDefault(k => k.Id == id);
+            if (key == null) return NotFound(new { error = "KEY_NOT_FOUND" });
+            _db.FounderKeys.Remove(key);
+            await _db.SaveChangesAsync();
+            return Ok(new { ok = true });
+        }
+
+        // ---------- Builds del launcher ----------
+
+        [HttpGet("builds")]
+        public async Task<IActionResult> ListarBuilds()
+        {
+            var denegado = await SoloStaffAsync();
+            if (denegado != null) return denegado;
+            return Ok(new
+            {
+                builds = _db.LauncherBuilds.OrderByDescending(b => b.Id).Take(20).ToList().ConvertAll(b => new
+                {
+                    id = b.Id,
+                    version = b.Version,
+                    fileName = b.FileName,
+                    sizeBytes = b.SizeBytes,
+                    isPublished = b.IsPublished,
+                    isMandatory = b.IsMandatory,
+                    downloads = b.Downloads,
+                    createdAtUtc = b.CreatedAtUtc,
+                    notes = b.Notes ?? string.Empty
+                })
+            });
+        }
+
+        [HttpPost("builds/{id:int}/toggle")]
+        public async Task<IActionResult> AlternarBuild(int id)
+        {
+            var denegado = await SoloStaffAsync();
+            if (denegado != null) return denegado;
+            var build = _db.LauncherBuilds.FirstOrDefault(b => b.Id == id);
+            if (build == null) return NotFound(new { error = "BUILD_NOT_FOUND" });
+            build.IsPublished = !build.IsPublished;
+            await _db.SaveChangesAsync();
+            return Ok(new { ok = true, isPublished = build.IsPublished });
+        }
+
+        // ---------- Noticias ----------
+
+        [HttpGet("news")]
+        public async Task<IActionResult> ListarNoticias()
+        {
+            var denegado = await SoloStaffAsync();
+            if (denegado != null) return denegado;
+            return Ok(new
+            {
+                news = _db.NewsItems.OrderByDescending(n => n.Id).Take(100).ToList().ConvertAll(n => new
+                {
+                    id = n.Id,
+                    title = n.Title,
+                    body = n.Body,
+                    imagePath = n.ImagePath ?? string.Empty,
+                    linkUrl = n.LinkUrl ?? string.Empty,
+                    linkText = n.LinkText ?? string.Empty,
+                    isPublished = n.IsPublished,
+                    createdAtUtc = n.CreatedAtUtc
+                })
+            });
+        }
+
+        [HttpPost("news")]
+        public async Task<IActionResult> CrearNoticia([FromBody] LauncherNewsRequest m)
+        {
+            var denegado = await SoloStaffAsync();
+            if (denegado != null) return denegado;
+            var title = (m.Title ?? string.Empty).Trim();
+            var body = (m.Body ?? string.Empty).Trim();
+            if (title.Length == 0 || title.Length > 120)
+                return BadRequest(new { error = "TITLE_REQUIRED" });
+            if (body.Length == 0)
+                return BadRequest(new { error = "BODY_REQUIRED" });
+            string? imagePath = null;
+            if (!string.IsNullOrWhiteSpace(m.ImageB64))
+            {
+                var clean = m.ImageB64.Contains(',') ? m.ImageB64[(m.ImageB64.IndexOf(',') + 1)..] : m.ImageB64.Trim();
+                byte[] bytes;
+                try { bytes = Convert.FromBase64String(clean); }
+                catch { return BadRequest(new { error = "PHOTO_INVALID" }); }
+                if (bytes.Length > 5 * 1024 * 1024)
+                    return BadRequest(new { error = "PHOTO_TOO_LARGE" });
+                var ext = ExtensionImagen(bytes);
+                if (ext == null)
+                    return BadRequest(new { error = "PHOTO_INVALID" });
+                var dir = Path.Combine(_env.WebRootPath, "uploads", "news");
+                Directory.CreateDirectory(dir);
+                var nombre = Guid.NewGuid().ToString("N") + ext;
+                await System.IO.File.WriteAllBytesAsync(Path.Combine(dir, nombre), bytes);
+                imagePath = "/uploads/news/" + nombre;
+            }
+            var link = (m.LinkUrl ?? string.Empty).Trim();
+            if (link.Length > 0 && !link.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+                link = "https://" + link;
+            if (!string.IsNullOrEmpty(link) && !Uri.TryCreate(link, UriKind.Absolute, out _))
+                return BadRequest(new { error = "LINK_INVALID" });
+            _db.NewsItems.Add(new NewsItem
+            {
+                Title = title,
+                Body = body,
+                ImagePath = imagePath,
+                LinkUrl = string.IsNullOrEmpty(link) ? null : link,
+                LinkText = string.IsNullOrWhiteSpace(m.LinkText) ? null : m.LinkText.Trim(),
+                IsPublished = m.IsPublished,
+                CreatedAtUtc = DateTime.UtcNow,
+                CreatedByUserId = (await UsuarioPorTokenAsync())?.Id
+            });
+            await _db.SaveChangesAsync();
+            return Ok(new { ok = true });
+        }
+
+        [HttpPost("news/{id:int}/toggle")]
+        public async Task<IActionResult> AlternarNoticia(int id)
+        {
+            var denegado = await SoloStaffAsync();
+            if (denegado != null) return denegado;
+            var item = _db.NewsItems.FirstOrDefault(n => n.Id == id);
+            if (item == null) return NotFound(new { error = "NEWS_NOT_FOUND" });
+            item.IsPublished = !item.IsPublished;
+            await _db.SaveChangesAsync();
+            return Ok(new { ok = true, isPublished = item.IsPublished });
+        }
+
+        [HttpDelete("news/{id:int}")]
+        public async Task<IActionResult> BorrarNoticia(int id)
+        {
+            var denegado = await SoloStaffAsync();
+            if (denegado != null) return denegado;
+            var item = _db.NewsItems.FirstOrDefault(n => n.Id == id);
+            if (item == null) return NotFound(new { error = "NEWS_NOT_FOUND" });
+            if (!string.IsNullOrEmpty(item.ImagePath))
+            {
+                try
+                {
+                    var full = Path.Combine(_env.WebRootPath,
+                        item.ImagePath.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
+                    if (System.IO.File.Exists(full)) System.IO.File.Delete(full);
+                }
+                catch { /* mejor esfuerzo */ }
+            }
+            _db.NewsItems.Remove(item);
+            await _db.SaveChangesAsync();
+            return Ok(new { ok = true });
+        }
+
+        private static string? ExtensionImagen(byte[] b)
+        {
+            if (b.Length < 16) return null;
+            if (b[0] == 0x89 && b[1] == 0x50 && b[2] == 0x4E && b[3] == 0x47) return ".png";
+            if (b[0] == 0xFF && b[1] == 0xD8) return ".jpg";
+            if (b[0] == 0x47 && b[1] == 0x49 && b[2] == 0x46) return ".gif";
+            if (b[0] == 0x52 && b[1] == 0x49 && b[2] == 0x46 && b[3] == 0x46
+                && b.Length > 11 && b[8] == 0x57 && b[9] == 0x45 && b[10] == 0x42 && b[11] == 0x50) return ".webp";
+            return null;
+        }
     }
 }

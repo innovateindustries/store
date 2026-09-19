@@ -17,10 +17,12 @@ Documento vivo de la evolución del proyecto. Última actualización: checkpoint
 - Catálogo público para el launcher: `scripts/export-store-json.ps1` genera
   `docs/store.json` (https://innovateindustries.github.io/store/store.json).
   Regenerar al publicar juegos.
-- Panel admin estático con key: `docs/admin.html` (candado SHA-256 en navegador,
-  catálogo + build + accesos al admin local; la key en claro nunca se commitea,
-  se fija con `scripts/set-pages-admin-key.ps1`). Solo disuade: la gestión real
-  sigue en el servidor local.
+- Panel admin estático OPERABLE desde GitHub Pages: `docs/admin.html` con login real
+  (token en sesión) + tabs Usuarios (ban/desban CEO/FOUNDER), Pedidos (pagar/cancelar/
+  eliminar), Keys INN/FND, Builds, Noticias y Publicar juego + Puntos. Consume la API
+  vía `docs/api.json` (`scripts/set-pages-api.ps1`, localhost o túnel). CORS `Pages`.
+  Endpoints nuevos: `api/admin/users/{id}/ban`, `invite-keys/*`, `founder-keys/*`,
+  `builds`, `news/*`. Smoke `scripts/verify-admin-api.ps1`: 16/16 en vivo.
 
 ## 2026-09-18 — Pages: vitrina estática REAL de la tienda
 - `docs/` ya no es un cartel de "ejecuta dotnet run": es un snapshot de la tienda real

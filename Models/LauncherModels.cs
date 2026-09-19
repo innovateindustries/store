@@ -219,6 +219,27 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Models
         public int Amount { get; set; }
     }
 
+    public class LauncherBanRequest
+    {
+        public bool Banned { get; set; }
+    }
+
+    // Noticia desde el panel admin estático (imagen opcional en base64).
+    public class LauncherNewsRequest
+    {
+        public string Title { get; set; } = string.Empty;
+
+        public string Body { get; set; } = string.Empty;
+
+        public string? ImageB64 { get; set; }
+
+        public string? LinkUrl { get; set; }
+
+        public string? LinkText { get; set; }
+
+        public bool IsPublished { get; set; } = true;
+    }
+
     public class LauncherRedeemRewardRequest
     {
         public string RewardId { get; set; } = string.Empty;
