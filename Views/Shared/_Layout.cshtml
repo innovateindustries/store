@@ -5,112 +5,91 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="INNOVATE INDUSTRIES WEB STORE - Tienda gamer con estilo neon, periféricos, PC y comunidad." />
-    <title>@ViewData["Title"] - INNOVATE INDUSTRIES WEB STORE</title>
+    <meta name="description" content="NEXUS - Tienda oficial de INNOVATE INDUSTRIES: juegos, launcher y comunidad." />
+    <title>@ViewData["Title"] - NEXUS</title>
     <script type="importmap"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&family=Rajdhani:wght@500;600;700&family=Exo+2:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="icon" type="image/x-icon" href="~/favicon.ico" />
 </head>
 <body>
-    <canvas id="bg-3d" aria-hidden="true"></canvas>
-    <div class="bg-grid" aria-hidden="true"></div>
-    <div class="scanlines" aria-hidden="true"></div>
-
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark navbar-neon mb-3">
+        <nav class="navbar navbar-expand navbar-dark navbar-neon">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
-                    <span class="brand-bracket">[</span> INNOVATE <span class="brand-accent">//</span> STORE <span class="brand-bracket">]</span>
+                    NEXUS
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation" data-i18n-aria="nav.toggle">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                <ul class="navbar-nav ms-auto align-items-center gap-2 flex-row">
+                    @if (SignInManager.IsSignedIn(User))
+                    {
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index" data-i18n="nav.home">Inicio</a>
+                            <span class="nav-link"><span data-i18n="acc.hello">Hola</span>, @User.Identity?.Name</span>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Store" data-i18n="nav.store">STORE</a>
+                            <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-neon-outline" data-i18n="acc.logout">Salir</button>
+                            </form>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Account" asp-action="Login" data-i18n="acc.login_link">Entrar</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Plataforma" data-i18n="nav.plataforma">Plataforma</a>
+                            <a class="btn btn-sm btn-neon" asp-controller="Account" asp-action="Register" data-i18n="acc.register_link">Crear cuenta</a>
                         </li>
-                        @if (User.HasClaim("cat_showcase", "true"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Showcase" data-i18n="nav.showcase">Showcase</a>
-                            </li>
-                        }
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Noticias" data-i18n="nav.noticias">Noticias</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Account" asp-action="Ajustes" data-i18n="nav.ajustes">Ajustes</a>
-                        </li>
-                        @if (User.IsInRole("CEO") || User.IsInRole("FOUNDER") || User.IsInRole("INTERNO"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Admin" asp-action="Index" data-i18n="nav.admin">Admin</a>
-                            </li>
-                        }
-                        </li>
-                    </ul>
-                    <ul class="navbar-nav align-items-center gap-2">
-                        @if (SignInManager.IsSignedIn(User))
-                        {
-                            <li class="nav-item">
-                                <span class="nav-link"><span data-i18n="acc.hello">Hola</span>, @User.Identity?.Name</span>
-                            </li>
-                            <li class="nav-item">
-                                <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
-                                    <button type="submit" class="btn btn-sm btn-neon-outline" data-i18n="acc.logout">Salir</button>
-                                </form>
-                            </li>
-                        }
-                        else
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Account" asp-action="Login" data-i18n="acc.login_link">Entrar</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="btn btn-sm btn-neon" asp-controller="Account" asp-action="Register" data-i18n="acc.register_link">Crear cuenta</a>
-                            </li>
-                        }
-                        <li class="nav-item dropdown">
-                            <button type="button" class="btn btn-sm btn-neon-outline dropdown-toggle" id="langDrop" aria-expanded="false" data-i18n-aria="nav.lang" aria-label="Cambiar idioma">
-                                <img id="langFlag" src="https://flagcdn.com/w40/es.png" width="22" height="16" alt="ES"> <span id="langCode">ES</span>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark" id="langMenu" aria-labelledby="langDrop">
-                                <li><button type="button" class="dropdown-item" data-setlang="es"><img class="flag" src="https://flagcdn.com/w40/es.png" width="22" height="16" alt="ES"> Español</button></li>
-                                <li><button type="button" class="dropdown-item" data-setlang="en"><img class="flag" src="https://flagcdn.com/w40/us.png" width="22" height="16" alt="EN"> English</button></li>
-                                <li><button type="button" class="dropdown-item" data-setlang="ja"><img class="flag" src="https://flagcdn.com/w40/jp.png" width="22" height="16" alt="JA"> 日本語</button></li>
-                                <li><button type="button" class="dropdown-item" data-setlang="zh"><img class="flag" src="https://flagcdn.com/w40/cn.png" width="22" height="16" alt="ZH"> 中文</button></li>
-                                <li><button type="button" class="dropdown-item" data-setlang="ru"><img class="flag" src="https://flagcdn.com/w40/ru.png" width="22" height="16" alt="RU"> Русский</button></li>
-                                <li><button type="button" class="dropdown-item" data-setlang="ko"><img class="flag" src="https://flagcdn.com/w40/kr.png" width="22" height="16" alt="KO"> 한국어</button></li>
-                                <li><button type="button" class="dropdown-item" data-setlang="ptBR"><img class="flag" src="https://flagcdn.com/w40/br.png" width="22" height="16" alt="BR"> Português (BR)</button></li>
-                                <li><button type="button" class="dropdown-item" data-setlang="ptPT"><img class="flag" src="https://flagcdn.com/w40/pt.png" width="22" height="16" alt="PT"> Português (PT)</button></li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
+                    }
+                    <li class="nav-item dropdown">
+                        <button type="button" class="btn btn-sm btn-neon-outline dropdown-toggle" id="langDrop" aria-expanded="false" data-i18n-aria="nav.lang" aria-label="Cambiar idioma">
+                            <img id="langFlag" src="https://flagcdn.com/w40/es.png" width="22" height="16" alt="ES"> <span id="langCode">ES</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark" id="langMenu" aria-labelledby="langDrop">
+                            <li><button type="button" class="dropdown-item" data-setlang="es"><img class="flag" src="https://flagcdn.com/w40/es.png" width="22" height="16" alt="ES"> Español</button></li>
+                            <li><button type="button" class="dropdown-item" data-setlang="en"><img class="flag" src="https://flagcdn.com/w40/us.png" width="22" height="16" alt="EN"> English</button></li>
+                            <li><button type="button" class="dropdown-item" data-setlang="ja"><img class="flag" src="https://flagcdn.com/w40/jp.png" width="22" height="16" alt="JA"> 日本語</button></li>
+                            <li><button type="button" class="dropdown-item" data-setlang="zh"><img class="flag" src="https://flagcdn.com/w40/cn.png" width="22" height="16" alt="ZH"> 中文</button></li>
+                            <li><button type="button" class="dropdown-item" data-setlang="ru"><img class="flag" src="https://flagcdn.com/w40/ru.png" width="22" height="16" alt="RU"> Русский</button></li>
+                            <li><button type="button" class="dropdown-item" data-setlang="ko"><img class="flag" src="https://flagcdn.com/w40/kr.png" width="22" height="16" alt="KO"> 한국어</button></li>
+                            <li><button type="button" class="dropdown-item" data-setlang="ptBR"><img class="flag" src="https://flagcdn.com/w40/br.png" width="22" height="16" alt="BR"> Português (BR)</button></li>
+                            <li><button type="button" class="dropdown-item" data-setlang="ptPT"><img class="flag" src="https://flagcdn.com/w40/pt.png" width="22" height="16" alt="PT"> Português (PT)</button></li>
+                        </ul>
+                    </li>
+                </ul>
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+    <div class="nx-layout">
+        <aside class="nx-side">
+            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index" data-i18n="nav.home">Inicio</a>
+            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Store" data-i18n="nav.store">STORE</a>
+            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Plataforma" data-i18n="nav.plataforma">Plataforma</a>
+            @if (User.HasClaim("cat_showcase", "true"))
+            {
+                <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Showcase" data-i18n="nav.showcase">Showcase</a>
+            }
+            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Noticias" data-i18n="nav.noticias">Noticias</a>
+            <a class="nav-link" asp-area="" asp-controller="Account" asp-action="Ajustes" data-i18n="nav.ajustes">Ajustes</a>
+            @if (User.IsInRole("CEO") || User.IsInRole("FOUNDER") || User.IsInRole("INTERNO"))
+            {
+                <a class="nav-link" asp-area="" asp-controller="Admin" asp-action="Index" data-i18n="nav.admin">Admin</a>
+            }
+        </aside>
+        <div class="nx-main">
+            <div class="container-fluid">
+                <main role="main" class="pb-3">
+                    @RenderBody()
+                </main>
+            </div>
+        </div>
     </div>
 
     <footer class="footer-neon">
         <div class="container d-flex flex-wrap justify-content-between align-items-center gap-2">
-            <span>&copy; 2026 - <b class="text-white">INNOVATE INDUSTRIES WEB STORE</b> - <span class="text-green-neon" data-i18n="footer.online">&#9679; ONLINE</span></span>
+            <span>&copy; 2026 - <b class="text-white">NEXUS · INNOVATE INDUSTRIES</b> - <span class="text-green-neon" data-i18n="footer.online">&#9679; ONLINE</span></span>
             <span>
                 <a asp-area="" asp-controller="Home" asp-action="Privacy" data-i18n="footer.privacy">Privacidad</a> ·
                 <a href="https://discord.com" target="_blank" rel="noopener">Discord</a> ·
@@ -122,7 +101,6 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.149.0/three.min.js"></script>
     <script src="~/js/i18n.js" asp-append-version="true"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)

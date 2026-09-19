@@ -1,57 +1,8 @@
-﻿// INNOVATE STORE - Neon interactions: Three.js starfield + GSAP reveals
+﻿// NEXUS - interacciones: GSAP reveals (sin fondo 3D, tema plano)
 (function () {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // ---- 1. Fondo 3D partículas (Three.js) ----
-  try {
-    const canvas = document.getElementById('bg-3d');
-    if (canvas && window.THREE && !reduceMotion) {
-      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
-      camera.position.z = 8;
-
-      const count = window.innerWidth < 640 ? 500 : 1200;
-      const geo = new THREE.BufferGeometry();
-      const pos = new Float32Array(count * 3);
-      const col = new Float32Array(count * 3);
-      const cCyan = new THREE.Color(0x00f0ff), cMag = new THREE.Color(0xff2a6d), cGreen = new THREE.Color(0x05ffa1);
-      for (let i = 0; i < count; i++) {
-        pos[i * 3] = (Math.random() - 0.5) * 30;
-        pos[i * 3 + 1] = (Math.random() - 0.5) * 18;
-        pos[i * 3 + 2] = (Math.random() - 0.5) * 16;
-        const r = Math.random();
-        const c = r < 0.6 ? cCyan : r < 0.85 ? cMag : cGreen;
-        col[i * 3] = c.r; col[i * 3 + 1] = c.g; col[i * 3 + 2] = c.b;
-      }
-      geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-      geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
-      const mat = new THREE.PointsMaterial({ size: 0.045, vertexColors: true, transparent: true, opacity: 0.85 });
-      const stars = new THREE.Points(geo, mat);
-      scene.add(stars);
-
-      let mx = 0, my = 0;
-      window.addEventListener('mousemove', e => {
-        mx = (e.clientX / window.innerWidth - 0.5) * 0.6;
-        my = (e.clientY / window.innerHeight - 0.5) * 0.4;
-      });
-      function resize() {
-        renderer.setSize(window.innerWidth, window.innerHeight, false);
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-      }
-      window.addEventListener('resize', resize); resize();
-      (function tick(t) {
-        stars.rotation.y = t * 0.00004 + mx;
-        stars.rotation.x = my;
-        renderer.render(scene, camera);
-        requestAnimationFrame(tick);
-      })(0);
-    }
-  } catch (e) { console.warn('3D bg off:', e); }
-
-  // ---- 2. GSAP reveals + contadores + tilt ----
+  // ---- 1. GSAP reveals + contadores + tilt ----
   function fallbackReveal() {
     document.querySelectorAll('.reveal').forEach(el => {
       const r = el.getBoundingClientRect();
@@ -109,7 +60,7 @@
   // Navbar activa según ruta
   try {
     const path = window.location.pathname.toLowerCase();
-    document.querySelectorAll('.navbar-neon .nav-link').forEach(a => {
+    document.querySelectorAll('.navbar-neon .nav-link, .nx-side .nav-link').forEach(a => {
       var href = (a.getAttribute('href') || '').toLowerCase();
       if (href === '/' && (path === '/' || path.includes('index'))) a.classList.add('active');
       else if (href !== '/' && href.startsWith('http') === false && path.startsWith(href)) a.classList.add('active');
