@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Admin - INNOVATE INDUSTRIES WEB STORE (vista est&#225;tica)</title>
+<meta name="description" content="Panel admin estatico de INNOVATE: acceso con key, catalogo publico y accesos al admin local." />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", system-ui, sans-serif;
+    color: #f0f1f5; min-height: 100vh;
+    background: radial-gradient(1000px 500px at 80% -10%, rgba(255,42,109,.14), transparent 60%),
+                radial-gradient(900px 500px at 10% 10%, rgba(0,240,255,.14), transparent 60%),
+                linear-gradient(180deg, #0d0e14 0%, #07080c 60%, #010204 100%);
+    padding: 0 16px 48px;
+  }
+  nav { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; padding: 18px 0; }
+  nav a {
+    font-size: .75rem; letter-spacing: 2px; padding: 6px 14px; border-radius: 100px;
+    border: 1px solid rgba(0,240,255,.4); color: #00f0ff; background: rgba(0,240,255,.06);
+    text-decoration: none;
+  }
+  nav a.active { background: rgba(0,240,255,.18); }
+  .card {
+    max-width: 860px; width: 100%; margin: 12px auto;
+    background: rgba(18,20,29,.92); border: 1px solid rgba(0,240,255,.35);
+    border-radius: 0 14px 0 14px; padding: 32px 28px;
+    box-shadow: 0 0 20px rgba(0,240,255,.35), 0 0 60px rgba(0,240,255,.12);
+  }
+  .brand { font-size: .8rem; letter-spacing: 3px; color: #00f0ff; text-align: center; }
+  h1 { font-size: 1.7rem; margin: 12px 0 8px; letter-spacing: 1px; text-align: center; }
+  h1 .m { color: #ff2a6d; }
+  h2 { font-size: 1.05rem; letter-spacing: 2px; color: #00f0ff; margin: 26px 0 10px; }
+  p.sub { color: #b2b7c7; margin: 8px 0; text-align: center; }
+  p.dim { color: #b2b7c7; font-size: .85rem; }
+  input[type=password], input[type=text] {
+    width: 100%; padding: 12px 14px; margin-top: 12px; font-size: 1rem; letter-spacing: 2px;
+    background: #010204; border: 1px solid #1f2230; border-radius: 8px; color: #05ffa1;
+  }
+  button.btn {
+    display: inline-block; margin-top: 14px; padding: 12px 26px; cursor: pointer;
+    font-size: .85rem; letter-spacing: 2px; color: #001318; font-weight: 700;
+    background: linear-gradient(90deg, #00f0ff, #05ffa1); border: 0; border-radius: 8px;
+  }
+  button.ghost {
+    background: transparent; color: #00f0ff; border: 1px solid rgba(0,240,255,.4);
+    padding: 8px 18px; font-size: .75rem; margin-top: 0;
+  }
+  #lock-err { color: #ff2a6d; margin-top: 10px; min-height: 1.2em; font-size: .85rem; }
+  table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: .85rem; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #1f2230; }
+  th { color: #00f0ff; letter-spacing: 1px; font-size: .75rem; }
+  td.num { text-align: right; font-family: Consolas, monospace; }
+  .links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+  .links a {
+    font-size: .8rem; padding: 8px 16px; border-radius: 8px; text-decoration: none;
+    color: #00f0ff; border: 1px solid rgba(0,240,255,.4); background: rgba(0,240,255,.06);
+  }
+  code { color: #05ffa1; font-size: .85rem; }
+  footer { margin-top: 24px; font-size: .75rem; color: #747d99; text-align: center; }
+  .rowbtn { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+  <nav>
+    <a href="index.html">INICIO</a><a href="store.html">STORE</a><a href="plataforma.html">PLATAFORMA</a><a href="noticias.html">NOTICIAS</a><a href="showcase.html">SHOWCASE</a><a href="admin.html" class="active">ADMIN</a>
+  </nav>
+
+  <div class="card" id="lock">
+    <div class="brand">[ INNOVATE // ADMIN ]</div>
+    <h1>ACCESO <span class="m">RESTRINGIDO</span></h1>
+    <p class="sub">Introduce la key de administrador para ver el panel.</p>
+    <input type="password" id="key" placeholder="KEY-XXXX-XXXX" autocomplete="off" />
+    <button class="btn" id="unlock">DESBLOQUEAR</button>
+    <div id="lock-err"></div>
+  </div>
+
+  <div class="card" id="panel" style="display:none">
+    <div class="rowbtn">
+      <div class="brand">[ INNOVATE // ADMIN ]</div>
+      <button class="ghost btn" id="lockbtn">BLOQUEAR</button>
+    </div>
+    <h1>PANEL <span class="m">ADMIN</span></h1>
+    <p class="sub">Vitrina est&#225;tica: cat&#225;logo p&#250;blico y accesos directos. La gesti&#243;n real vive en el servidor local.</p>
+
+    <h2>// CAT&#193;LOGO P&#218;BLICO</h2>
+    <p class="dim" id="games-meta">Cargando...</p>
+    <table>
+      <thead><tr><th>JUEGO</th><th>PRECIO</th><th>ESTADO</th></tr></thead>
+      <tbody id="games"></tbody>
+    </table>
+
+    <h2>// BUILD DEL LAUNCHER</h2>
+    <p class="dim" id="build">Cargando...</p>
+
+    <h2>// ADMIN LOCAL (SOLO EQUIPO)</h2>
+    <p class="dim">Solo responden en el equipo donde corre el servidor (<code>dotnet run</code> &#8594; <code>http://localhost:5215</code>).</p>
+    <div class="links">
+      <a href="http://localhost:5215/Admin">Usuarios + Keys</a>
+      <a href="http://localhost:5215/Admin/Store">Store + Pedidos</a>
+      <a href="http://localhost:5215/Admin/Launcher">Launcher</a>
+      <a href="http://localhost:5215/Admin/Noticias">Noticias</a>
+      <a href="http://localhost:5215/Admin/Usuarios">Bibliotecas</a>
+      <a href="http://localhost:5215/Admin/Horas">Horas</a>
+    </div>
+    <footer>&copy; 2026 INNOVATE INDUSTRIES · panel est&#225;tico con key</footer>
+  </div>
+
+<script>
+(function () {
+  var KEY_HASH = "25d3304805c0a15071517df3561ebc4777f7f5a718e9200fc6a57dcb6f9e78c5";
+  var lockEl = document.getElementById("lock");
+  var panelEl = document.getElementById("panel");
+  var keyEl = document.getElementById("key");
+  var errEl = document.getElementById("lock-err");
+
+  function hex(buf) {
+    return Array.prototype.map.call(new Uint8Array(buf), function (b) {
+      return ("0" + b.toString(16)).slice(-2);
+    }).join("");
+  }
+  async function sha256(s) {
+    var data = new TextEncoder().encode(s);
+    var digest = await crypto.subtle.digest("SHA-256", data);
+    return hex(digest);
+  }
+  function showPanel() {
+    lockEl.style.display = "none";
+    panelEl.style.display = "block";
+    cargar();
+  }
+  function showLock() {
+    panelEl.style.display = "none";
+    lockEl.style.display = "block";
+    keyEl.value = "";
+    errEl.textContent = "";
+  }
+  async function unlock() {
+    errEl.textContent = "";
+    var v = (keyEl.value || "").trim();
+    if (!v) return;
+    var h;
+    try { h = await sha256(v); }
+    catch (e) { errEl.textContent = "Tu navegador no permite verificar la key (HTTPS requerido)."; return; }
+    if (h === KEY_HASH) {
+      try { sessionStorage.setItem("inn_admin", "1"); } catch (e) {}
+      showPanel();
+    } else {
+      errEl.textContent = "Key incorrecta.";
+    }
+  }
+  document.getElementById("unlock").addEventListener("click", unlock);
+  keyEl.addEventListener("keydown", function (e) { if (e.key === "Enter") unlock(); });
+  document.getElementById("lockbtn").addEventListener("click", function () {
+    try { sessionStorage.removeItem("inn_admin"); } catch (e) {}
+    showLock();
+  });
+
+  function cargar() {
+    fetch("./store.json").then(function (r) { return r.json(); }).then(function (d) {
+      var tb = document.getElementById("games");
+      var meta = document.getElementById("games-meta");
+      var gs = (d && d.games) || [];
+      meta.textContent = gs.length + " juego(s) · exportado " + ((d && d.exportedAtUtc) || "?");
+      tb.innerHTML = "";
+      if (!gs.length) {
+        var tr = document.createElement("tr");
+        var td = document.createElement("td");
+        td.colSpan = 3; td.textContent = "Sin juegos publicados.";
+        tr.appendChild(td); tb.appendChild(tr); return;
+      }
+      gs.forEach(function (g) {
+        var tr = document.createElement("tr");
+        var t1 = document.createElement("td"); t1.textContent = g.title || "?";
+        var t2 = document.createElement("td"); t2.className = "num"; t2.textContent = g.priceText || ("$" + g.price);
+        var t3 = document.createElement("td"); t3.textContent = g.isPreorder ? "PREVENTA" : "DISPONIBLE";
+        tr.appendChild(t1); tr.appendChild(t2); tr.appendChild(t3); tb.appendChild(tr);
+      });
+    }).catch(function () {
+      document.getElementById("games-meta").textContent = "No se pudo cargar store.json.";
+    });
+    fetch("./client.json").then(function (r) { return r.json(); }).then(function (d) {
+      var el = document.getElementById("build");
+      if (!d || !d.version) { el.textContent = "Sin builds publicados."; return; }
+      el.innerHTML = "";
+      var b = document.createElement("b"); b.textContent = d.version; el.appendChild(b);
+      el.appendChild(document.createTextNode(" · " + (d.fileName || "") + " · " + (d.sizeBytes || 0) + " bytes"));
+      if (d.mandatory) el.appendChild(document.createTextNode(" · OBLIGATORIA"));
+      if (d.download) {
+        el.appendChild(document.createTextNode(" · "));
+        var a = document.createElement("a"); a.href = d.download; a.textContent = "Descargar";
+        el.appendChild(a);
+      }
+      if (d.releaseNotes) {
+        var p = document.createElement("div"); p.textContent = d.releaseNotes;
+        el.appendChild(p);
+      }
+    }).catch(function () {
+      document.getElementById("build").textContent = "Sin builds publicados.";
+    });
+  }
+
+  try {
+    if (sessionStorage.getItem("inn_admin") === "1" && KEY_HASH && KEY_HASH.indexOf("__ADMIN") !== 0) showPanel();
+  } catch (e) {}
+})();
+</script>
+</body>
+</html>

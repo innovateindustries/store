@@ -16,3 +16,12 @@ $out = Join-Path $root 'docs/store.json'
 $json = ($doc | ConvertTo-Json -Depth 6)
 [IO.File]::WriteAllText($out, $json, (New-Object Text.UTF8Encoding $false))
 Write-Output ("store.json OK (" + $d.games.Count + " juegos)")
+
+# Manifiesto del launcher (publico, para el panel admin estatico + auto-update).
+try {
+    $m = Invoke-WebRequest -Uri ($BaseUrl.TrimEnd('/') + '/api/launcher/client/manifest') -TimeoutSec 20 -UseBasicParsing
+    [IO.File]::WriteAllText((Join-Path $root 'docs/client.json'), $m.Content, (New-Object Text.UTF8Encoding $false))
+    Write-Output 'client.json OK'
+} catch {
+    Write-Output 'client.json omitido (sin builds publicados)'
+}

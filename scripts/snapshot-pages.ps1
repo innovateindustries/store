@@ -59,7 +59,7 @@ foreach ($p in $pages) {
     # En Pages no hay login: el nav anonimo oculta Showcase; se expone igual
     if ($h -notmatch 'showcase\.html') {
         $h = $h -replace '<a class="nav-link" data-i18n="nav.noticias" href="noticias.html">Noticias</a>',
-            '<a class="nav-link" data-i18n="nav.noticias" href="noticias.html">Noticias</a></li><li class="nav-item"><a class="nav-link" data-i18n="nav.showcase" href="showcase.html">Showcase</a>'
+            '<a class="nav-link" data-i18n="nav.noticias" href="noticias.html">Noticias</a></li><li class="nav-item"><a class="nav-link" data-i18n="nav.showcase" href="showcase.html">Showcase</a></li><li class="nav-item"><a class="nav-link" href="admin.html">Admin</a>'
     }
     # Titulo con contexto Pages
     $h = $h -replace '</title>', ' (vista est&#225;tica)</title>'
