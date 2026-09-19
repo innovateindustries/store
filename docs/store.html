@@ -187,7 +187,7 @@
     return "$" + Number(g.price || 0).toFixed(2);
   }
   function badge(g) {
-    if (g.isPreorder) return { t: "PREVENTA", hot: true };
+    if (g.isPreorder) return { t: "EN DESARROLLO", hot: true };
     if (g.isEarlyAccess) return { t: "ACCESO ANTICIPADO", hot: true };
     return { t: "Juego base", hot: false };
   }
