@@ -791,6 +791,34 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers.Api
             return Ok(new { news = items });
         }
 
+        // Builds publicados del launcher (vitrina pública, sin auth).
+        [HttpGet("/api/builds/public")]
+        public IActionResult BuildsPublicos()
+        {
+            var builds = _db.LauncherBuilds
+                .Where(b => b.IsPublished)
+                .OrderByDescending(b => b.Id)
+                .Take(10)
+                .ToList()
+                .Select(b => new
+                {
+                    id = b.Id,
+                    version = b.Version,
+                    description = b.Description ?? string.Empty,
+                    specs = b.Specs ?? string.Empty,
+                    screenshotPath = b.ScreenshotPath ?? string.Empty,
+                    notes = b.Notes ?? string.Empty,
+                    filePath = b.FilePath,
+                    fileName = b.FileName,
+                    sizeBytes = b.SizeBytes,
+                    isMandatory = b.IsMandatory,
+                    downloads = b.Downloads,
+                    createdAtUtc = b.CreatedAtUtc
+                })
+                .ToList();
+            return Ok(new { builds });
+        }
+
         // ---------- Manifiesto del propio launcher (auto-update) ----------
         [HttpGet("client/manifest")]
         public IActionResult ManifiestoCliente()

@@ -12,12 +12,11 @@ $base = 'http://localhost:5215'
 $pagesHost = 'innovateindustries.github.io'
 
 $pages = @(
-    @('/Home/Plataforma', 'plataforma.html'),
     @('/Home/Privacy', 'privacidad.html')
 )
-# index.html, store.html y noticias.html son NEXUS hechos a mano
-# (datos via store.json/news.json), NO se regeneran.
-# Showcase usa plataforma.html como cascaron de layout.
+# index.html, store.html, noticias.html y plataforma.html son NEXUS hechos a mano
+# (datos via store.json/news.json/builds.json), NO se regeneran.
+# Showcase usa privacidad.html como cascaron de layout.
 # Sin cuentas en Pages (a peticion): no se generan login/registro/planes/interno.
 # El nav anonimo trae Entrar/Crear cuenta/Ajustes: se eliminan del snapshot.
 # Showcase se construye aparte: en anonimo el filtro [CategoryEnabled] redirige
@@ -127,7 +126,7 @@ $showcaseBody = @'
     </div>
 </div>
 '@
-$shell = [IO.File]::ReadAllText((Join-Path $docs 'plataforma.html'))
+$shell = [IO.File]::ReadAllText((Join-Path $docs 'privacidad.html'))
 $openTag = [regex]::Match($shell, '<main[^>]*>').Value
 $rxMain = New-Object regex('<main[^>]*>.*</main>', 'Singleline')
 $show = $rxMain.Replace($shell, ($openTag + $showcaseBody + '</main>'), 1)

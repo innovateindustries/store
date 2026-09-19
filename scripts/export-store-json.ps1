@@ -34,3 +34,12 @@ try {
 } catch {
     Write-Output 'news.json omitido'
 }
+
+# Builds publicados (para la pagina Plataforma estatica).
+try {
+    $bl = Invoke-WebRequest -Uri ($BaseUrl.TrimEnd('/') + '/api/builds/public') -TimeoutSec 20 -UseBasicParsing
+    [IO.File]::WriteAllText((Join-Path $root 'docs/builds.json'), $bl.Content, (New-Object Text.UTF8Encoding $false))
+    Write-Output 'builds.json OK'
+} catch {
+    Write-Output 'builds.json omitido'
+}
