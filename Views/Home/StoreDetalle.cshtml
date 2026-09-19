@@ -63,7 +63,14 @@
             <h1 class="section-title mt-2"><span>@Model.Title</span></h1>
             <p class="store-price store-price-lg">$@Model.Price.ToString("0.00")</p>
             <div class="d-flex flex-wrap gap-3 mt-2">
-                <a class="btn-neon" asp-action="Pagar" asp-route-id="@Model.Id"><span data-i18n="store.pay">Pagar</span></a>
+                @if (Model.IsPreorder)
+                {
+                    <span class="btn-neon-outline" aria-disabled="true"><span data-i18n="store.preorder">EN DESARROLLO</span></span>
+                }
+                else
+                {
+                    <a class="btn-neon" asp-action="Pagar" asp-route-id="@Model.Id"><span data-i18n="store.pay">Pagar</span></a>
+                }
             </div>
             <p class="text-secondary" style="white-space:pre-wrap">@Model.Description</p>
             <small class="text-muted">@Model.CreatedAtUtc.ToString("dd/MM/yyyy") UTC</small>

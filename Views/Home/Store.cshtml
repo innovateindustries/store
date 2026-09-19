@@ -40,7 +40,14 @@ else
                             }
                         </div>
                         <a class="btn-neon-outline btn-sm px-3 py-2 mt-3 w-100 text-center" asp-action="StoreDetalle" asp-route-id="@g.Id"><span data-i18n="store.details">Ver ficha</span></a>
-                        <a class="btn-neon btn-sm px-3 py-2 mt-2 w-100 text-center" asp-action="Pagar" asp-route-id="@g.Id"><span data-i18n="store.pay">Pagar</span></a>
+                        @if (g.IsPreorder)
+                        {
+                            <span class="btn-neon-outline btn-sm px-3 py-2 mt-2 w-100 text-center disabled" aria-disabled="true"><span data-i18n="store.preorder">EN DESARROLLO</span></span>
+                        }
+                        else
+                        {
+                            <a class="btn-neon btn-sm px-3 py-2 mt-2 w-100 text-center" asp-action="Pagar" asp-route-id="@g.Id"><span data-i18n="store.pay">Pagar</span></a>
+                        }
                     </div>
                 </div>
             </div>

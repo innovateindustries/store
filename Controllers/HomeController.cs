@@ -71,13 +71,14 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers
 
         // PAGAR (no "comprar"): resumen del pedido. Requiere login.
         // Sin pasarela conectada: el pago es manual y queda Pendiente.
+        // Los juegos en desarrollo (preventa) no se pueden comprar aún.
         [Authorize]
         public IActionResult Pagar(int id)
         {
             var game = _db.StoreGames
                 .FirstOrDefault(g => g.Id == id && g.IsPublished);
-            if (game == null)
-                return RedirectToAction(nameof(Store));
+            if (game == null || game.IsPreorder)
+                return RedirectToAction(nameof(StoreDetalle), new { id });
             return View(game);
         }
 
@@ -89,7 +90,7 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers
         {
             var game = _db.StoreGames
                 .FirstOrDefault(g => g.Id == id && g.IsPublished);
-            if (game == null)
+            if (game == null || game.IsPreorder)
                 return RedirectToAction(nameof(Store));
 
             string reference;

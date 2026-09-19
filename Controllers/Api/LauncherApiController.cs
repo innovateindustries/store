@@ -492,6 +492,8 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers.Api
             var game = _db.StoreGames.FirstOrDefault(g => g.Id == m.GameId && g.IsPublished);
             if (game == null)
                 return BadRequest(new { error = "GAME_NOT_FOUND" });
+            if (game.IsPreorder)
+                return BadRequest(new { error = "NOT_FOR_SALE" });
             var existente = _db.StoreOrders.FirstOrDefault(o =>
                 o.BuyerUserId == user.Id && o.GameId == game.Id && o.Status == "Pendiente");
             if (existente != null)
