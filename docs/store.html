@@ -186,7 +186,15 @@
     if (g.priceText) return g.priceText;
     return "$" + Number(g.price || 0).toFixed(2);
   }
+  function onSale(g) {
+    return !!g.onSale || (Number(g.salePrice || 0) > 0 && Number(g.salePrice) < Number(g.price));
+  }
+  function coverOf(g) {
+    if (onSale(g) && g.offerCoverPath) return g.offerCoverPath;
+    return g.coverPath;
+  }
   function badge(g) {
+    if (onSale(g)) return { t: "OFERTA", hot: true };
     if (g.isPreorder) return { t: "EN DESARROLLO", hot: true };
     if (g.isEarlyAccess) return { t: "ACCESO ANTICIPADO", hot: true };
     return { t: "Juego base", hot: false };
@@ -197,10 +205,19 @@
     d.setAttribute("data-title", (g.title || "").toLowerCase());
     var cov = document.createElement("div");
     cov.className = "cover";
-    if (g.coverPath) cov.style.backgroundImage = "url('" + fix(g.coverPath) + "')";
+    if (coverOf(g)) cov.style.backgroundImage = "url('" + fix(coverOf(g)) + "')";
     var h = document.createElement("h3"); h.textContent = g.title || "?";
     var row = document.createElement("div"); row.className = "pricerow";
-    var pr = document.createElement("span"); pr.className = "price"; pr.textContent = money(g);
+    var pr = document.createElement("span"); pr.className = "price";
+    if (onSale(g)) {
+      var old = document.createElement("s");
+      old.style.color = "#5d636e"; old.style.marginRight = "8px";
+      old.textContent = "$" + Number(g.price || 0).toFixed(2);
+      pr.appendChild(old);
+      pr.appendChild(document.createTextNode(money(g)));
+    } else {
+      pr.textContent = money(g);
+    }
     var b = badge(g);
     var bg = document.createElement("span"); bg.className = "badge" + (b.hot ? " hot" : ""); bg.textContent = b.t;
     row.appendChild(pr); row.appendChild(bg);
@@ -225,7 +242,7 @@
     }
     list.slice(0, 4).forEach(function (g) { dest.appendChild(card(g)); });
     list.slice(0, 4).forEach(function (g) { nw.appendChild(card(g)); });
-    var offers = list.filter(function (g) { return g.isPreorder || g.isEarlyAccess; });
+    var offers = list.filter(function (g) { return onSale(g); });
     if (!offers.length) off.appendChild(empty("Sin ofertas por ahora."));
     else offers.slice(0, 4).forEach(function (g) { off.appendChild(card(g)); });
     var f = list[0];

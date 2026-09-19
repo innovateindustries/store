@@ -61,7 +61,14 @@
                 }
             </div>
             <h1 class="section-title mt-2"><span>@Model.Title</span></h1>
-            <p class="store-price store-price-lg">$@Model.Price.ToString("0.00")</p>
+            @if (Model.EnOferta)
+            {
+                <p><span class="price-old">$@Model.Price.ToString("0.00")</span> <span class="store-price store-price-lg">$@Model.PrecioEfectivo.ToString("0.00")</span> <span class="card-tag tag-magenta" data-i18n="store.offer">OFERTA</span></p>
+            }
+            else
+            {
+                <p class="store-price store-price-lg">$@Model.Price.ToString("0.00")</p>
+            }
             <div class="d-flex flex-wrap gap-3 mt-2">
                 @if (Model.IsPreorder)
                 {

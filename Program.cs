@@ -250,6 +250,10 @@ using (var scope = app.Services.CreateScope())
         db.Database.ExecuteSqlRaw("ALTER TABLE \"StoreGames\" ADD COLUMN \"Regions\" TEXT NOT NULL DEFAULT ''");
     if (!gameCols.Contains("InPass"))
         db.Database.ExecuteSqlRaw("ALTER TABLE \"StoreGames\" ADD COLUMN \"InPass\" INTEGER NOT NULL DEFAULT 0");
+    if (!gameCols.Contains("SalePrice"))
+        db.Database.ExecuteSqlRaw("ALTER TABLE \"StoreGames\" ADD COLUMN \"SalePrice\" TEXT NULL");
+    if (!gameCols.Contains("OfferCoverPath"))
+        db.Database.ExecuteSqlRaw("ALTER TABLE \"StoreGames\" ADD COLUMN \"OfferCoverPath\" TEXT NULL");
 
     // Roles del sistema.
     var roles = sp.GetRequiredService<RoleManager<IdentityRole>>();

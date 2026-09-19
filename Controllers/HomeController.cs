@@ -103,7 +103,7 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers
             {
                 GameId = game.Id,
                 GameTitle = game.Title,
-                Price = game.Price,
+                Price = game.PrecioEfectivo,
                 Reference = reference,
                 Status = "Pendiente",
                 CreatedAtUtc = DateTime.UtcNow,

@@ -181,8 +181,8 @@
     var h = document.createElement("h3"); h.textContent = g.title || "?";
     var row = document.createElement("div"); row.className = "pricerow";
     var pr = document.createElement("span"); pr.className = "price"; pr.textContent = money(g);
-    var bg = document.createElement("span"); bg.className = "badge" + (g.isPreorder ? " hot" : "");
-    bg.textContent = g.isPreorder ? "EN DESARROLLO" : "Juego base";
+    var bg = document.createElement("span"); bg.className = "badge" + ((g.onSale || g.isPreorder) ? " hot" : "");
+    bg.textContent = (g.onSale || Number(g.salePrice || 0) > 0) ? "OFERTA" : (g.isPreorder ? "EN DESARROLLO" : "Juego base");
     row.appendChild(pr); row.appendChild(bg);
     d.appendChild(cov); d.appendChild(h); d.appendChild(row);
     return d;

@@ -32,6 +32,17 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Models
 
         public decimal Price { get; set; }
 
+        // Precio en oferta (null = sin oferta). Si es > 0 y menor que Price,
+        // la tienda muestra el precio tachado + oferta y se cobra la oferta.
+        public decimal? SalePrice { get; set; }
+
+        // Portada de la oferta (ej. /uploads/store/offer-*.png). Null = la normal.
+        public string? OfferCoverPath { get; set; }
+
+        public bool EnOferta => SalePrice.HasValue && SalePrice.Value > 0 && SalePrice.Value < Price;
+
+        public decimal PrecioEfectivo => EnOferta ? SalePrice!.Value : Price;
+
         // Ruta pública de la portada (carátula, ej. /uploads/store/<guid>.png).
         public string CoverPath { get; set; } = string.Empty;
 
