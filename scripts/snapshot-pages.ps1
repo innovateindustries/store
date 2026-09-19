@@ -14,9 +14,8 @@ $pagesHost = 'innovateindustries.github.io'
 $pages = @(
     @('/Home/Privacy', 'privacidad.html')
 )
-# index.html, store.html, noticias.html y plataforma.html son NEXUS hechos a mano
-# (datos via store.json/news.json/builds.json), NO se regeneran.
-# Showcase usa privacidad.html como cascaron de layout.
+# index.html, store.html, noticias.html, plataforma.html y showcase.html
+# son NEXUS hechos a mano, NO se regeneran. Solo privacidad sale del snapshot.
 # Sin cuentas en Pages (a peticion): no se generan login/registro/planes/interno.
 # El nav anonimo trae Entrar/Crear cuenta/Ajustes: se eliminan del snapshot.
 # Showcase se construye aparte: en anonimo el filtro [CategoryEnabled] redirige
@@ -94,43 +93,5 @@ if (Test-Path -LiteralPath $upSrc) {
     Write-Output 'uploads copiados'
 }
 
-# Showcase: mismo layout + contenido real de Views/Home/Showcase.cshtml
-# (canal tarloox, parent del dominio Pages, estado desconocido en estatico).
-$showcaseBody = @'
-<section class="hero-neon" style="padding-top:50px">
-    <span class="badge-neon"><span class="pulse-dot"></span><span data-i18n="sc.badge">En vivo &#183; Twitch &#183; directo</span></span>
-    <h1 class="section-title mt-3"><small data-i18n="sc.eyebrow">// Showcase en Twitch</small><span data-i18n="sc.ta">Showcase</span> <span class="text-magenta-neon" data-i18n="sc.tb">en vivo</span></h1>
-    <p class="lead-muted" data-i18n="sc.lead">El directo de INNOVATE INDUSTRIES en Twitch, sin salir de aqu&#237;. Si estamos en vivo lo ves abajo; si no, el player avisa y puedes seguirnos para no perd&#233;rtelo.</p>
-    <div class="d-flex flex-wrap align-items-center gap-3 mt-3">
-        <span class="badge-neon" style="border-color:rgba(178,183,199,.4);color:var(--text-secondary)"><span data-i18n="sc.live_unknown">&#9675; Estado del directo no disponible</span></span>
-    </div>
-    <div class="d-flex flex-wrap gap-3 mt-3">
-        <a class="btn-neon btn-neon-magenta" href="https://www.twitch.tv/tarloox" target="_blank" rel="noopener" data-i18n="sc.follow">Seguir en Twitch &#8599;</a>
-        <a class="btn-neon-outline" href="index.html" data-i18n="sc.home">&#8592; Inicio</a>
-    </div>
-</section>
-<div class="row g-4">
-    <div class="col-lg-8">
-        <div class="neon-card p-2 h-100">
-            <div class="ratio ratio-16x9">
-                <iframe src="https://player.twitch.tv/?channel=tarloox&parent=innovateindustries.github.io&muted=true" title="Twitch live: tarloox" allowfullscreen loading="lazy" style="border:0;border-radius:8px"></iframe>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-4">
-        <div class="neon-card p-3 h-100">
-            <span class="card-tag tag-magenta" data-i18n="sc.chat">Chat en vivo</span>
-            <iframe src="https://www.twitch.tv/embed/tarloox/chat?parent=innovateindustries.github.io&darkpopout" title="Twitch chat" loading="lazy" style="border:0;border-radius:8px;width:100%;height:480px"></iframe>
-            <a class="btn-neon-outline w-100 text-center mt-2" href="https://www.twitch.tv/tarloox" target="_blank" rel="noopener" data-i18n="sc.open">Abrir en Twitch &#8599;</a>
-        </div>
-    </div>
-</div>
-'@
-$shell = [IO.File]::ReadAllText((Join-Path $docs 'privacidad.html'))
-$openTag = [regex]::Match($shell, '<main[^>]*>').Value
-$rxMain = New-Object regex('<main[^>]*>.*</main>', 'Singleline')
-$show = $rxMain.Replace($shell, ($openTag + $showcaseBody + '</main>'), 1)
-$show = $show -replace '<title>.*?</title>', '<title>Showcase - INNOVATE INDUSTRIES WEB STORE (vista est&#225;tica)</title>'
-[IO.File]::WriteAllText((Join-Path $docs 'showcase.html'), $show, [Text.UTF8Encoding]::new($false))
-Write-Output 'OK showcase.html (estatico desde la vista real)'
+# Showcase es NEXUS hecho a mano (docs/showcase.html), NO se regenera.
 Write-Output 'Snapshot listo en docs/'

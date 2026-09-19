@@ -1,121 +1,133 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="INNOVATE INDUSTRIES WEB STORE - Tienda gamer con estilo neon, periféricos, PC y comunidad." />
-    <title>Showcase - INNOVATE INDUSTRIES WEB STORE (vista est&#225;tica)</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&family=Rajdhani:wght@500;600;700&family=Exo+2:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="./css/site.css?v=wbwjaMRoFQ7_DDWkVNEkNaMwkQ7Wk1wMqVPvCTL8WuQ" />
-    <link rel="icon" type="image/x-icon" href="./favicon.ico" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SHOWCASE - NEXUS</title>
+<meta name="description" content="NEXUS SHOWCASE: directo de INNOVATE INDUSTRIES en Twitch." />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0a0b0e; --bg2: #101216; --panel: #14161b; --line: #1e2128;
+    --txt: #f2f3f5; --dim: #9aa0ab; --faint: #5d636e; --red: #c8102e;
+  }
+  body {
+    font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+    background: var(--bg); color: var(--txt); min-height: 100vh;
+  }
+  .topbar {
+    display: flex; align-items: center; height: 64px;
+    background: #0d0e12; border-bottom: 1px solid var(--line);
+    position: sticky; top: 0; z-index: 20;
+  }
+  .brand {
+    font-weight: 800; letter-spacing: 4px; font-size: 1.05rem; color: #fff;
+    padding: 0 28px; height: 64px; display: flex; align-items: center;
+    border-right: 1px solid var(--line); text-decoration: none;
+  }
+  .storename {
+    letter-spacing: 5px; font-size: .85rem; color: var(--dim); font-weight: 500;
+    padding: 0 28px; height: 64px; display: flex; align-items: center;
+  }
+  .icons { margin-left: auto; display: flex; align-items: center; gap: 18px; padding: 0 26px; }
+  .icons a { color: #d7dae0; text-decoration: none; font-size: 1.15rem; }
+  .layout { display: flex; min-height: calc(100vh - 64px); }
+  .side {
+    width: 228px; flex-shrink: 0; background: #0d0e12;
+    border-right: 1px solid var(--line); padding: 18px 0;
+  }
+  .side a {
+    display: flex; align-items: center; gap: 14px; padding: 13px 28px;
+    color: var(--dim); text-decoration: none; font-size: .9rem;
+  }
+  .side a .ic { width: 22px; text-align: center; font-size: 1.05rem; }
+  .side a.on { background: #1a1d23; color: #fff; }
+  .side a:hover { color: #fff; }
+  .main { flex: 1; padding: 26px 34px 60px; max-width: 1240px; }
+  .pagehead { margin: 6px 0 20px; }
+  .eyebrow { letter-spacing: 4px; font-size: .68rem; color: var(--faint); }
+  .pagehead h1 { font-size: 2rem; font-weight: 800; letter-spacing: 2px; margin-top: 8px; }
+  .pagehead p { color: var(--dim); font-size: .9rem; margin-top: 8px; }
+  .btns { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
+  .btn-solid {
+    display: inline-block; padding: 12px 30px; border-radius: 8px;
+    background: #fff; color: #0a0b0e; text-decoration: none; font-weight: 700; font-size: .85rem;
+  }
+  .btn-solid:hover { background: #e8eaee; }
+  .btn-outline {
+    display: inline-block; padding: 12px 30px; border-radius: 8px;
+    border: 1px solid #8a8f99; color: #fff; text-decoration: none; font-size: .85rem;
+  }
+  .btn-outline:hover { border-color: #fff; }
+  .grid { display: grid; grid-template-columns: 2fr 1fr; gap: 22px; margin-top: 22px; }
+  .frame {
+    border: 1px solid var(--line); border-radius: 10px; overflow: hidden;
+    background: var(--panel); padding: 8px;
+  }
+  .frame .ratio { position: relative; width: 100%; padding-top: 56.25%; }
+  .frame .ratio iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; border-radius: 6px; }
+  .frame.chat iframe { height: 560px; }
+  .tag {
+    display: inline-block; font-size: .68rem; letter-spacing: 2px; color: var(--dim);
+    border: 1px solid #2c313a; border-radius: 999px; padding: 4px 12px; margin-bottom: 10px;
+  }
+  footer { margin-top: 50px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--faint); font-size: .75rem; display: flex; gap: 18px; flex-wrap: wrap; }
+  footer a { color: var(--dim); text-decoration: none; }
+  @media (max-width: 900px) {
+    .layout { flex-direction: column; }
+    .side { width: 100%; display: flex; overflow-x: auto; padding: 0; border-right: 0; border-bottom: 1px solid var(--line); }
+    .side a { padding: 12px 18px; white-space: nowrap; }
+    .main { padding: 20px 16px 50px; }
+    .grid { grid-template-columns: 1fr; }
+  }
+</style>
 </head>
 <body>
-    <canvas b-nmn324jza5 id="bg-3d" aria-hidden="true"></canvas>
-    <div b-nmn324jza5 class="bg-grid" aria-hidden="true"></div>
-    <div b-nmn324jza5 class="scanlines" aria-hidden="true"></div>
+  <header class="topbar">
+    <a class="brand" href="index.html">NEXUS</a>
+    <span class="storename">SHOWCASE</span>
+    <div class="icons">
+      <a href="http://localhost:5215/Account/Login" title="Cuenta">&#128100;</a>
+    </div>
+  </header>
 
-    <header b-nmn324jza5>
-        <nav b-nmn324jza5 class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark navbar-neon mb-3">
-            <div b-nmn324jza5 class="container-fluid">
-                <a class="navbar-brand" href="index.html">
-                    <span b-nmn324jza5 class="brand-bracket">[</span> INNOVATE <span b-nmn324jza5 class="brand-accent">//</span> STORE <span b-nmn324jza5 class="brand-bracket">]</span>
-                </a>
-                <button b-nmn324jza5 class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation" data-i18n-aria="nav.toggle">
-                    <span b-nmn324jza5 class="navbar-toggler-icon"></span>
-                </button>
-                <div b-nmn324jza5 class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul b-nmn324jza5 class="navbar-nav flex-grow-1">
-                        <li b-nmn324jza5 class="nav-item">
-                            <a class="nav-link" data-i18n="nav.home" href="index.html">Inicio</a>
-                        </li>
-                        <li b-nmn324jza5 class="nav-item">
-                            <a class="nav-link" data-i18n="nav.store" href="store.html">STORE</a>
-                        </li>
-                        <li b-nmn324jza5 class="nav-item">
-                            <a class="nav-link" data-i18n="nav.plataforma" href="plataforma.html">Plataforma</a>
-                        </li>
-                        <li b-nmn324jza5 class="nav-item">
-                            <a class="nav-link" data-i18n="nav.noticias" href="noticias.html">Noticias</a></li><li class="nav-item"><a class="nav-link" data-i18n="nav.showcase" href="showcase.html">Showcase</a></li><li class="nav-item"><a class="nav-link" href="admin.html">Admin</a>
-                        </li>
-                        
-                        </li>
-                    </ul>
-                    <ul b-nmn324jza5 class="navbar-nav align-items-center gap-2">
-                            
-                            
-                        <li b-nmn324jza5 class="nav-item dropdown">
-                            <button b-nmn324jza5 type="button" class="btn btn-sm btn-neon-outline dropdown-toggle" id="langDrop" aria-expanded="false" data-i18n-aria="nav.lang" aria-label="Cambiar idioma">
-                                <img b-nmn324jza5 id="langFlag" src="https://flagcdn.com/w40/es.png" width="22" height="16" alt="ES"> <span b-nmn324jza5 id="langCode">ES</span>
-                            </button>
-                            <ul b-nmn324jza5 class="dropdown-menu dropdown-menu-end dropdown-menu-dark" id="langMenu" aria-labelledby="langDrop">
-                                <li b-nmn324jza5><button b-nmn324jza5 type="button" class="dropdown-item" data-setlang="es"><img b-nmn324jza5 class="flag" src="https://flagcdn.com/w40/es.png" width="22" height="16" alt="ES"> Español</button></li>
-                                <li b-nmn324jza5><button b-nmn324jza5 type="button" class="dropdown-item" data-setlang="en"><img b-nmn324jza5 class="flag" src="https://flagcdn.com/w40/us.png" width="22" height="16" alt="EN"> English</button></li>
-                                <li b-nmn324jza5><button b-nmn324jza5 type="button" class="dropdown-item" data-setlang="ja"><img b-nmn324jza5 class="flag" src="https://flagcdn.com/w40/jp.png" width="22" height="16" alt="JA"> 日本語</button></li>
-                                <li b-nmn324jza5><button b-nmn324jza5 type="button" class="dropdown-item" data-setlang="zh"><img b-nmn324jza5 class="flag" src="https://flagcdn.com/w40/cn.png" width="22" height="16" alt="ZH"> 中文</button></li>
-                                <li b-nmn324jza5><button b-nmn324jza5 type="button" class="dropdown-item" data-setlang="ru"><img b-nmn324jza5 class="flag" src="https://flagcdn.com/w40/ru.png" width="22" height="16" alt="RU"> Русский</button></li>
-                                <li b-nmn324jza5><button b-nmn324jza5 type="button" class="dropdown-item" data-setlang="ko"><img b-nmn324jza5 class="flag" src="https://flagcdn.com/w40/kr.png" width="22" height="16" alt="KO"> 한국어</button></li>
-                                <li b-nmn324jza5><button b-nmn324jza5 type="button" class="dropdown-item" data-setlang="ptBR"><img b-nmn324jza5 class="flag" src="https://flagcdn.com/w40/br.png" width="22" height="16" alt="BR"> Português (BR)</button></li>
-                                <li b-nmn324jza5><button b-nmn324jza5 type="button" class="dropdown-item" data-setlang="ptPT"><img b-nmn324jza5 class="flag" src="https://flagcdn.com/w40/pt.png" width="22" height="16" alt="PT"> Português (PT)</button></li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
-    <div b-nmn324jza5 class="container">
-        <main b-nmn324jza5 role="main" class="pb-3"><section class="hero-neon" style="padding-top:50px">
-    <span class="badge-neon"><span class="pulse-dot"></span><span data-i18n="sc.badge">En vivo &#183; Twitch &#183; directo</span></span>
-    <h1 class="section-title mt-3"><small data-i18n="sc.eyebrow">// Showcase en Twitch</small><span data-i18n="sc.ta">Showcase</span> <span class="text-magenta-neon" data-i18n="sc.tb">en vivo</span></h1>
-    <p class="lead-muted" data-i18n="sc.lead">El directo de INNOVATE INDUSTRIES en Twitch, sin salir de aqu&#237;. Si estamos en vivo lo ves abajo; si no, el player avisa y puedes seguirnos para no perd&#233;rtelo.</p>
-    <div class="d-flex flex-wrap align-items-center gap-3 mt-3">
-        <span class="badge-neon" style="border-color:rgba(178,183,199,.4);color:var(--text-secondary)"><span data-i18n="sc.live_unknown">&#9675; Estado del directo no disponible</span></span>
-    </div>
-    <div class="d-flex flex-wrap gap-3 mt-3">
-        <a class="btn-neon btn-neon-magenta" href="https://www.twitch.tv/tarloox" target="_blank" rel="noopener" data-i18n="sc.follow">Seguir en Twitch &#8599;</a>
-        <a class="btn-neon-outline" href="index.html" data-i18n="sc.home">&#8592; Inicio</a>
-    </div>
-</section>
-<div class="row g-4">
-    <div class="col-lg-8">
-        <div class="neon-card p-2 h-100">
-            <div class="ratio ratio-16x9">
-                <iframe src="https://player.twitch.tv/?channel=tarloox&parent=innovateindustries.github.io&muted=true" title="Twitch live: tarloox" allowfullscreen loading="lazy" style="border:0;border-radius:8px"></iframe>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-4">
-        <div class="neon-card p-3 h-100">
-            <span class="card-tag tag-magenta" data-i18n="sc.chat">Chat en vivo</span>
-            <iframe src="https://www.twitch.tv/embed/tarloox/chat?parent=innovateindustries.github.io&darkpopout" title="Twitch chat" loading="lazy" style="border:0;border-radius:8px;width:100%;height:480px"></iframe>
-            <a class="btn-neon-outline w-100 text-center mt-2" href="https://www.twitch.tv/tarloox" target="_blank" rel="noopener" data-i18n="sc.open">Abrir en Twitch &#8599;</a>
-        </div>
-    </div>
-</div></main>
-    </div>
+  <div class="layout">
+    <nav class="side">
+      <a href="index.html"><span class="ic">&#8962;</span>Inicio</a>
+      <a href="store.html"><span class="ic">&#127918;</span>Juegos</a>
+      <a href="store.html#dlc"><span class="ic">&#128230;</span>DLC</a>
+      <a href="store.html#ofertas"><span class="ic">&#127991;</span>Ofertas</a>
+      <a href="store.html#biblio"><span class="ic">&#128214;</span>Mi biblioteca</a>
+    </nav>
 
-    <footer b-nmn324jza5 class="footer-neon">
-        <div b-nmn324jza5 class="container d-flex flex-wrap justify-content-between align-items-center gap-2">
-            <span b-nmn324jza5>&copy; 2026 - <b b-nmn324jza5 class="text-white">INNOVATE INDUSTRIES WEB STORE</b> - <span b-nmn324jza5 class="text-green-neon" data-i18n="footer.online">&#9679; ONLINE</span></span>
-            <span b-nmn324jza5>
-                <a data-i18n="footer.privacy" href="privacidad.html">Privacidad</a> ·
-                <a b-nmn324jza5 href="https://discord.com" target="_blank" rel="noopener">Discord</a> ·
-                <a b-nmn324jza5 href="https://rawg.io" target="_blank" rel="noopener">RAWG API</a>
-            </span>
+    <main class="main">
+      <div class="pagehead">
+        <div class="eyebrow">DIRECTO EN TWITCH</div>
+        <h1>SHOWCASE</h1>
+        <p>El directo de INNOVATE INDUSTRIES sin salir de aqu&#237;. Si estamos en vivo lo ves abajo; si no, s&#237;guenos para no perd&#233;rtelo.</p>
+        <div class="btns">
+          <a class="btn-solid" href="https://www.twitch.tv/tarloox" target="_blank" rel="noopener">Seguir en Twitch</a>
+          <a class="btn-outline" href="index.html">Inicio</a>
         </div>
-    </footer>
-    <script src="./lib/jquery/dist/jquery.min.js"></script>
-    <script src="./lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.149.0/three.min.js"></script>
-    <script src="./js/i18n.js?v=tNTtVaTIJSYHDeKHtjG5CLCPk968elMbD7lP9At6930"></script>
-    <script src="./js/site.js?v=mN2-tu6CZFVH-_0tkQwb1w_P6-GR1jeIU7j1TujbsKc"></script>
-    
+      </div>
+
+      <div class="grid">
+        <div class="frame">
+          <div class="ratio">
+            <iframe src="https://player.twitch.tv/?channel=tarloox&parent=innovateindustries.github.io&muted=true" title="Twitch live: tarloox" allowfullscreen loading="lazy"></iframe>
+          </div>
+        </div>
+        <div class="frame chat">
+          <span class="tag">CHAT EN VIVO</span>
+          <iframe src="https://www.twitch.tv/embed/tarloox/chat?parent=innovateindustries.github.io&darkpopout" title="Twitch chat" loading="lazy" style="border:0;border-radius:6px;width:100%;height:480px"></iframe>
+        </div>
+      </div>
+
+      <footer>
+        <span>&copy; 2026 NEXUS · INNOVATE INDUSTRIES</span>
+        <a href="index.html">Inicio</a><a href="store.html">Tienda</a><a href="plataforma.html">Plataforma</a><a href="noticias.html">Noticias</a><a href="admin.html">Admin</a>
+      </footer>
+    </main>
+  </div>
 </body>
 </html>
