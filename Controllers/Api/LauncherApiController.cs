@@ -768,8 +768,30 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers.Api
             return PhysicalFile(full, "application/octet-stream", enableRangeProcessing: true);
         }
 
-        // ---------- Manifiesto del propio launcher (auto-update) ----------
+        // Noticias publicadas (vitrina pública, sin auth).
+        [HttpGet("/api/news/public")]
+        public IActionResult NoticiasPublicas()
+        {
+            var items = _db.NewsItems
+                .Where(n => n.IsPublished)
+                .OrderByDescending(n => n.Id)
+                .Take(20)
+                .ToList()
+                .Select(n => new
+                {
+                    id = n.Id,
+                    title = n.Title,
+                    body = n.Body,
+                    imagePath = n.ImagePath ?? string.Empty,
+                    linkUrl = n.LinkUrl ?? string.Empty,
+                    linkText = n.LinkText ?? string.Empty,
+                    createdAtUtc = n.CreatedAtUtc
+                })
+                .ToList();
+            return Ok(new { news = items });
+        }
 
+        // ---------- Manifiesto del propio launcher (auto-update) ----------
         [HttpGet("client/manifest")]
         public IActionResult ManifiestoCliente()
         {

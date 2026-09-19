@@ -25,3 +25,12 @@ try {
 } catch {
     Write-Output 'client.json omitido (sin builds publicados)'
 }
+
+# Noticias publicadas (para la portada estatica).
+try {
+    $n = Invoke-WebRequest -Uri ($BaseUrl.TrimEnd('/') + '/api/news/public') -TimeoutSec 20 -UseBasicParsing
+    [IO.File]::WriteAllText((Join-Path $root 'docs/news.json'), $n.Content, (New-Object Text.UTF8Encoding $false))
+    Write-Output 'news.json OK'
+} catch {
+    Write-Output 'news.json omitido'
+}

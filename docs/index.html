@@ -1,215 +1,233 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="INNOVATE INDUSTRIES WEB STORE - Tienda gamer con estilo neon, periféricos, PC y comunidad." />
-    <title>Inicio - INNOVATE INDUSTRIES WEB STORE (vista est&#225;tica)</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&family=Rajdhani:wght@500;600;700&family=Exo+2:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="./css/site.css?v=wbwjaMRoFQ7_DDWkVNEkNaMwkQ7Wk1wMqVPvCTL8WuQ" />
-    <link rel="icon" type="image/x-icon" href="./favicon.ico" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NEXUS - INNOVATE INDUSTRIES</title>
+<meta name="description" content="NEXUS: tienda de juegos, launcher oficial, directos y noticias." />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0a0b0e; --bg2: #101216; --panel: #14161b; --line: #1e2128;
+    --txt: #f2f3f5; --dim: #9aa0ab; --faint: #5d636e; --red: #c8102e;
+  }
+  body {
+    font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+    background: var(--bg); color: var(--txt); min-height: 100vh;
+  }
+  .topbar {
+    display: flex; align-items: center; height: 64px;
+    background: #0d0e12; border-bottom: 1px solid var(--line);
+    position: sticky; top: 0; z-index: 20;
+  }
+  .brand {
+    font-weight: 800; letter-spacing: 4px; font-size: 1.05rem; color: #fff;
+    padding: 0 28px; height: 64px; display: flex; align-items: center;
+    border-right: 1px solid var(--line); text-decoration: none;
+  }
+  .storename {
+    letter-spacing: 5px; font-size: .85rem; color: var(--dim); font-weight: 500;
+    padding: 0 28px; height: 64px; display: flex; align-items: center;
+  }
+  .icons { margin-left: auto; display: flex; align-items: center; gap: 18px; padding: 0 26px; }
+  .icons a { color: #d7dae0; text-decoration: none; font-size: 1.15rem; }
+  .layout { display: flex; min-height: calc(100vh - 64px); }
+  .side {
+    width: 228px; flex-shrink: 0; background: #0d0e12;
+    border-right: 1px solid var(--line); padding: 18px 0;
+  }
+  .side a {
+    display: flex; align-items: center; gap: 14px; padding: 13px 28px;
+    color: var(--dim); text-decoration: none; font-size: .9rem;
+  }
+  .side a .ic { width: 22px; text-align: center; font-size: 1.05rem; }
+  .side a.on { background: #1a1d23; color: #fff; }
+  .side a:hover { color: #fff; }
+  .main { flex: 1; padding: 26px 34px 60px; max-width: 1240px; }
+  .hero {
+    position: relative; border-radius: 10px; overflow: hidden;
+    min-height: 380px; display: flex; align-items: flex-end;
+    background: #15171c center/cover no-repeat;
+    border: 1px solid var(--line);
+  }
+  .hero .shade {
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, rgba(5,6,8,.94) 0%, rgba(5,6,8,.72) 42%, rgba(5,6,8,.15) 100%);
+  }
+  .hero .txt { position: relative; padding: 44px; max-width: 560px; }
+  .eyebrow { letter-spacing: 4px; font-size: .68rem; color: var(--faint); }
+  .hero h1 { font-size: 3rem; font-weight: 800; letter-spacing: 2px; margin: 10px 0 2px; color: #fff; }
+  .hero h1 span { display: block; font-size: 1.5rem; letter-spacing: 8px; color: var(--red); font-weight: 600; }
+  .hero p { color: #c6cbd4; font-size: .92rem; line-height: 1.55; margin: 14px 0 22px; }
+  .btns { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn-outline {
+    display: inline-block; padding: 12px 34px; border-radius: 8px;
+    border: 1px solid #8a8f99; color: #fff; text-decoration: none; font-size: .85rem;
+  }
+  .btn-outline:hover { border-color: #fff; }
+  .sechead { display: flex; align-items: baseline; margin: 38px 0 16px; }
+  .sechead h2 { font-size: 1.25rem; font-weight: 500; letter-spacing: 1px; }
+  .sechead a { margin-left: auto; color: var(--faint); font-size: .8rem; text-decoration: none; }
+  .sechead a:hover { color: #fff; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
+  .card { min-width: 0; }
+  .cover {
+    aspect-ratio: 4/4.6; border-radius: 6px; overflow: hidden; background: #171a20 center/cover;
+    border: 1px solid var(--line);
+  }
+  .card h3 { font-size: .78rem; letter-spacing: 1px; margin: 12px 0 8px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pricerow { display: flex; align-items: center; justify-content: space-between; }
+  .price { font-size: .95rem; color: #e8eaee; }
+  .badge { font-size: .68rem; color: var(--dim); border: 1px solid #2c313a; border-radius: 999px; padding: 4px 12px; white-space: nowrap; }
+  .badge.hot { color: #ffb3c0; border-color: rgba(200,16,46,.55); }
+  .empty { border: 1px dashed #2c313a; border-radius: 8px; padding: 30px; text-align: center; color: var(--faint); font-size: .85rem; grid-column: 1 / -1; }
+  .news { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  .ncard { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--panel); }
+  .ncard .img { aspect-ratio: 16/8; background: #171a20 center/cover; }
+  .ncard .body { padding: 16px; }
+  .ncard small { color: var(--faint); font-size: .72rem; letter-spacing: 1px; }
+  .ncard h3 { font-size: .9rem; margin: 8px 0; font-weight: 600; }
+  .ncard p { color: var(--dim); font-size: .82rem; line-height: 1.5; }
+  .hub { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 4px; }
+  .hub a {
+    border: 1px solid var(--line); border-radius: 8px; padding: 22px; text-decoration: none;
+    background: var(--panel); color: var(--txt);
+  }
+  .hub a b { display: block; letter-spacing: 2px; font-size: .85rem; margin-bottom: 6px; }
+  .hub a span { color: var(--dim); font-size: .8rem; }
+  .hub a:hover { border-color: #3a3f48; }
+  footer { margin-top: 50px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--faint); font-size: .75rem; display: flex; gap: 18px; flex-wrap: wrap; }
+  footer a { color: var(--dim); text-decoration: none; }
+  @media (max-width: 1020px) { .grid { grid-template-columns: repeat(2, 1fr); } .news, .hub { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 900px) {
+    .layout { flex-direction: column; }
+    .side { width: 100%; display: flex; overflow-x: auto; padding: 0; border-right: 0; border-bottom: 1px solid var(--line); }
+    .side a { padding: 12px 18px; white-space: nowrap; }
+    .main { padding: 20px 16px 50px; }
+    .hero h1 { font-size: 2.1rem; }
+    .news, .hub { grid-template-columns: 1fr; }
+  }
+</style>
 </head>
 <body>
-    <canvas b-nmn324jza5 id="bg-3d" aria-hidden="true"></canvas>
-    <div b-nmn324jza5 class="bg-grid" aria-hidden="true"></div>
-    <div b-nmn324jza5 class="scanlines" aria-hidden="true"></div>
-
-    <header b-nmn324jza5>
-        <nav b-nmn324jza5 class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark navbar-neon mb-3">
-            <div b-nmn324jza5 class="container-fluid">
-                <a class="navbar-brand" href="index.html">
-                    <span b-nmn324jza5 class="brand-bracket">[</span> INNOVATE <span b-nmn324jza5 class="brand-accent">//</span> STORE <span b-nmn324jza5 class="brand-bracket">]</span>
-                </a>
-                <button b-nmn324jza5 class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation" data-i18n-aria="nav.toggle">
-                    <span b-nmn324jza5 class="navbar-toggler-icon"></span>
-                </button>
-                <div b-nmn324jza5 class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul b-nmn324jza5 class="navbar-nav flex-grow-1">
-                        <li b-nmn324jza5 class="nav-item">
-                            <a class="nav-link" data-i18n="nav.home" href="index.html">Inicio</a>
-                        </li>
-                        <li b-nmn324jza5 class="nav-item">
-                            <a class="nav-link" data-i18n="nav.store" href="store.html">STORE</a>
-                        </li>
-                        <li b-nmn324jza5 class="nav-item">
-                            <a class="nav-link" data-i18n="nav.plataforma" href="plataforma.html">Plataforma</a>
-                        </li>
-                        <li b-nmn324jza5 class="nav-item">
-                            <a class="nav-link" data-i18n="nav.noticias" href="noticias.html">Noticias</a></li><li class="nav-item"><a class="nav-link" data-i18n="nav.showcase" href="showcase.html">Showcase</a></li><li class="nav-item"><a class="nav-link" href="admin.html">Admin</a>
-                        </li>
-                        
-                        </li>
-                    </ul>
-                    <ul b-nmn324jza5 class="navbar-nav align-items-center gap-2">
-                            
-                            
-                        <li b-nmn324jza5 class="nav-item dropdown">
-                            <button b-nmn324jza5 type="button" class="btn btn-sm btn-neon-outline dropdown-toggle" id="langDrop" aria-expanded="false" data-i18n-aria="nav.lang" aria-label="Cambiar idioma">
-                                <img b-nmn324jza5 id="langFlag" src="https://flagcdn.com/w40/es.png" width="22" height="16" alt="ES"> <span b-nmn324jza5 id="langCode">ES</span>
-                            </button>
-                            <ul b-nmn324jza5 class="dropdown-menu dropdown-menu-end dropdown-menu-dark" id="langMenu" aria-labelledby="langDrop">
-                                <li b-nmn324jza5><button b-nmn324jza5 type="button" class="dropdown-item" data-setlang="es"><img b-nmn324jza5 class="flag" src="https://flagcdn.com/w40/es.png" width="22" height="16" alt="ES"> Español</button></li>
-                                <li b-nmn324jza5><button b-nmn324jza5 type="button" class="dropdown-item" data-setlang="en"><img b-nmn324jza5 class="flag" src="https://flagcdn.com/w40/us.png" width="22" height="16" alt="EN"> English</button></li>
-                                <li b-nmn324jza5><button b-nmn324jza5 type="button" class="dropdown-item" data-setlang="ja"><img b-nmn324jza5 class="flag" src="https://flagcdn.com/w40/jp.png" width="22" height="16" alt="JA"> 日本語</button></li>
-                                <li b-nmn324jza5><button b-nmn324jza5 type="button" class="dropdown-item" data-setlang="zh"><img b-nmn324jza5 class="flag" src="https://flagcdn.com/w40/cn.png" width="22" height="16" alt="ZH"> 中文</button></li>
-                                <li b-nmn324jza5><button b-nmn324jza5 type="button" class="dropdown-item" data-setlang="ru"><img b-nmn324jza5 class="flag" src="https://flagcdn.com/w40/ru.png" width="22" height="16" alt="RU"> Русский</button></li>
-                                <li b-nmn324jza5><button b-nmn324jza5 type="button" class="dropdown-item" data-setlang="ko"><img b-nmn324jza5 class="flag" src="https://flagcdn.com/w40/kr.png" width="22" height="16" alt="KO"> 한국어</button></li>
-                                <li b-nmn324jza5><button b-nmn324jza5 type="button" class="dropdown-item" data-setlang="ptBR"><img b-nmn324jza5 class="flag" src="https://flagcdn.com/w40/br.png" width="22" height="16" alt="BR"> Português (BR)</button></li>
-                                <li b-nmn324jza5><button b-nmn324jza5 type="button" class="dropdown-item" data-setlang="ptPT"><img b-nmn324jza5 class="flag" src="https://flagcdn.com/w40/pt.png" width="22" height="16" alt="PT"> Português (PT)</button></li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
-    <div b-nmn324jza5 class="container">
-        <main b-nmn324jza5 role="main" class="pb-3">
-            
-<section class="hero-neon">
-    <div class="row align-items-center g-4">
-        <div class="col-lg-7">
-            <span class="badge-neon"><span class="pulse-dot"></span><span data-i18n="home.hero_badge">Temporada 2026 · Drops cada viernes</span></span>
-            <h1 class="display-neon display-4 mt-3" id="hero-title">
-                <span data-i18n="home.hero_l1">Sube de nivel</span><br />
-                <span data-i18n="home.hero_l2a">tu</span> <span class="text-cyan-neon" data-i18n="home.hero_l2b">setup</span><br />
-                <span class="text-magenta-neon" data-i18n="home.hero_l3">domina el juego</span>
-            </h1>
-            <p class="lead-muted mt-3" data-i18n="home.hero_lead">
-                Periféricos, PC gamer y gear con estética neón. Conectado en vivo con APIs externas
-                y con la comunidad en Steam, Twitch y Discord.
-            </p>
-            <div class="d-flex flex-wrap gap-3 mt-4">
-                <a class="btn-neon" data-i18n="home.hero_cta1" href="plataforma.html">⚡ Explorar la plataforma</a>
-                <a class="btn-neon-outline" href="https://store.steampowered.com" target="_blank" rel="noopener" data-i18n="home.hero_cta2">Explorar en Steam ↗</a>
-            </div>
-            <div class="hero-stats">
-                <div class="stat"><b data-count="240">0</b><span data-i18n="home.hero_s1">FPS estables</span></div>
-                <div class="stat"><b data-count="12">0</b><span data-i18n="home.hero_s2">k jugadores</span></div>
-                <div class="stat"><b data-count="350">0</b><span data-i18n="home.hero_s3">Productos</span></div>
-            </div>
-        </div>
-        <div class="col-lg-5">
-            <div class="hero-visual">
-                <div class="hero-card-float" id="hero-card">
-                    <span class="card-tag tag-magenta" data-i18n="home.card_tag">Drop exclusivo</span>
-                    <h4 class="text-white" style="font-family:var(--font-display)">AURORA X9 · RTX NEON</h4>
-                    <p class="text-secondary mb-2" data-i18n="home.card_desc">PC Gamer · 32GB · 2TB NVMe · RGB sincronizado</p>
-                    <div class="d-flex align-items-end gap-2">
-                        <span class="price">$1,899</span>
-                        <span class="price-old text-muted">$2,299</span>
-                    </div>
-                    <div class="mt-2 fps-tag" data-i18n="home.card_fps">▲ +17% FPS EN WARZONE</div>
-                    <a class="btn-neon btn-neon-magenta mt-3 w-100 text-center" data-i18n="home.card_btn" href="plataforma.html">Ver la plataforma</a>
-                </div>
-            </div>
-        </div>
+  <header class="topbar">
+    <a class="brand" href="index.html">NEXUS</a>
+    <span class="storename">INNOVATE INDUSTRIES</span>
+    <div class="icons">
+      <a href="http://localhost:5215/Account/Login" title="Cuenta">&#128100;</a>
     </div>
-</section>
+  </header>
 
-<div class="marquee" aria-hidden="true">
-    <div class="marquee-track">
-        <span><b>◆</b> <span data-i18n="home.m1">ENVÍO 24H</span></span><span><b>◆</b> <span data-i18n="home.m2">GARANTÍA 2 AÑOS</span></span><span><b>◆</b> <span data-i18n="home.m3">PAGA CON TARJETA / PAYPAL / CRIPTO</span></span><span><b>◆</b> <span data-i18n="home.m4">SOPORTE DISCORD 24/7</span></span>
-        <span><b>◆</b> <span data-i18n="home.m1">ENVÍO 24H</span></span><span><b>◆</b> <span data-i18n="home.m2">GARANTÍA 2 AÑOS</span></span><span><b>◆</b> <span data-i18n="home.m3">PAGA CON TARJETA / PAYPAL / CRIPTO</span></span><span><b>◆</b> <span data-i18n="home.m4">SOPORTE DISCORD 24/7</span></span>
-    </div>
-</div>
+  <div class="layout">
+    <nav class="side">
+      <a href="index.html" class="on"><span class="ic">&#8962;</span>Inicio</a>
+      <a href="store.html"><span class="ic">&#127918;</span>Juegos</a>
+      <a href="store.html#dlc"><span class="ic">&#128230;</span>DLC</a>
+      <a href="store.html#ofertas"><span class="ic">&#127991;</span>Ofertas</a>
+      <a href="store.html#biblio"><span class="ic">&#128214;</span>Mi biblioteca</a>
+    </nav>
 
-<section id="plataforma" class="my-5">
-    <h2 class="section-title reveal"><small data-i18n="home.plat_eyebrow">// Nuestra plataforma</small><span data-i18n="home.plat_ta">Nuestra</span> <span class="text-magenta-neon" data-i18n="home.plat_tb">plataforma</span></h2>
-    <p class="text-secondary reveal" data-i18n="home.plat_lead">INNOVATE INDUSTRIES WEB STORE no es solo una tienda: es una plataforma gamer que combina catálogo, datos en vivo de otras webs y comunidad en un solo hub neón.</p>
-    <div class="row g-3 mt-1">
-        <div class="col-md-4 reveal"><div class="neon-card p-4 h-100"><span class="card-tag tag-cyan" data-i18n="home.plat_c1tag">01 · Catálogo</span><h6 class="text-white" data-i18n="home.plat_c1t">Gear seleccionado</h6><small class="text-secondary" data-i18n="home.plat_c1d">Periféricos, PC, setup y streaming curados para competir.</small></div></div>
-        <div class="col-md-4 reveal"><div class="neon-card p-4 h-100"><span class="card-tag tag-magenta" data-i18n="home.plat_c2tag">02 · Tiempo real</span><h6 class="text-white" data-i18n="home.plat_c2t">API en vivo</h6><small class="text-secondary" data-i18n="home.plat_c2d">Productos sincronizados con webs externas vía HttpClient.</small></div></div>
-        <div class="col-md-4 reveal"><div class="neon-card p-4 h-100"><span class="card-tag tag-green" data-i18n="home.plat_c3tag">03 · Comunidad</span><h6 class="text-white" data-i18n="home.plat_c3t">Multiverso gamer</h6><small class="text-secondary" data-i18n="home.plat_c3d">Steam, Twitch y Discord conectados desde un solo lugar.</small></div></div>
-    </div>
-    <div class="mt-4 d-flex flex-wrap gap-3 reveal">
-        <a class="btn-neon" data-i18n="home.plat_btn" href="plataforma.html">Explorar la plataforma</a>
-    </div>
-</section>
+    <main class="main">
+      <section class="hero" id="hero">
+        <div class="shade"></div>
+        <div class="txt">
+          <div class="eyebrow">DESTACADO</div>
+          <h1 id="hero-title">NEXUS<span>STORE</span></h1>
+          <p id="hero-desc">Tienda oficial: juegos, launcher, directos y comunidad.</p>
+          <div class="btns">
+            <a class="btn-outline" href="store.html">Explorar tienda</a>
+            <a class="btn-outline" href="plataforma.html">Descargar launcher</a>
+          </div>
+        </div>
+      </section>
 
-    <section id="noticias" class="my-5">
-        <h2 class="section-title reveal"><small data-i18n="news.eyebrow">// Desarrollo</small><span data-i18n="news.ta">Sigue el</span> <span class="text-cyan-neon" data-i18n="news.tb">desarrollo</span></h2>
-        <p class="text-secondary reveal" data-i18n="news.lead">Últimas noticias del equipo, directo del panel interno.</p>
-        <div class="row g-4 mt-1">
-                <div class="col-md-4 reveal">
-                    <div class="neon-card h-100">
-                            <img class="card-img-top" src="./uploads/news/1d1a55c884f8430fa821419af506c3df.png" alt="" loading="lazy" style="height:170px;object-fit:cover" />
-                        <div class="card-body">
-                            <small class="text-muted">12/09/2026</small>
-                            <h5 class="text-white mt-1">DEMO DISPONIBLE</h5>
-                            <p class="text-secondary small" style="white-space:pre-wrap">Hey! Hola a todos el d&#xED;a de ayer 25 de junio del 2026 reabrimos la demo para recibir su opini&#xF3;n y no nada m&#xE1;s reabriremos la demo , tambi&#xE9;n &#x2026;</p>
-                                    <a class="btn-neon-outline btn-sm px-3 py-2" href="https://innovate-industries.itch.io/vapol-spanish-edition/devlog/1565310/demo-disponible" target="_blank" rel="noopener"><span data-i18n="news.open">Abrir enlace ↗</span></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 reveal">
-                    <div class="neon-card h-100">
-                            <img class="card-img-top" src="./uploads/news/de7696e5e2e24f8c8e587b9c82039bad.jpeg" alt="" loading="lazy" style="height:170px;object-fit:cover" />
-                        <div class="card-body">
-                            <small class="text-muted">11/09/2026</small>
-                            <h5 class="text-white mt-1">COMPATIBILIDAD CON MANDOS: VAPOL ORIGINS</h5>
-                            <p class="text-secondary small" style="white-space:pre-wrap">Durante el desarrollo continuo del juego hemos priorizado una funci&#xF3;n para conectar mandos para poder jugar a este juego pero de momento est&#x2026;</p>
-                                    <a class="btn-neon-outline btn-sm px-3 py-2" href="https://innovate-industries.itch.io/vapol-spanish-edition/devlog/1532242/compatibilidad-con-mandos" target="_blank" rel="noopener"><span data-i18n="news.open">Abrir enlace ↗</span></a>
-                        </div>
-                    </div>
-                </div>
-        </div>
-        <div class="mt-4 reveal">
-            <a class="btn-neon-outline" data-i18n="nw.all" href="noticias.html">Ver todas ↗</a>
-        </div>
-    </section>
+      <div class="sechead"><h2>Juegos destacados</h2><a href="store.html">Ver todos &rarr;</a></div>
+      <div class="grid" id="grid"></div>
 
-<section id="comunidad" class="my-5">
-    <h2 class="section-title reveal"><small data-i18n="home.com_eyebrow">// Conexión multiverso</small><span data-i18n="home.com_ta">Conectado con</span> <span class="text-magenta-neon" data-i18n="home.com_tb">otras webs</span></h2>
-    <p class="text-secondary reveal" data-i18n="home.com_lead">Esta plataforma no vive aislada: el Launcher se sincroniza en vivo desde itch.io y la comunidad vive en Steam, Twitch y Discord.</p>
-    <div class="row g-3 mt-1">
-        <div class="col-md-4 reveal">
-            <a class="neon-card ext-card p-3" href="https://store.steampowered.com" target="_blank" rel="noopener">
-                <span class="card-tag tag-cyan" data-i18n="home.com_s_tag">Tienda externa</span><h6 class="text-white" data-i18n="home.com_s_t">Steam ↗</h6><small class="text-secondary" data-i18n="home.com_s_d">Compara precios y wishlist</small>
-            </a>
-        </div>
-        <div class="col-md-4 reveal">
-            <a class="neon-card ext-card p-3" href="https://www.twitch.tv" target="_blank" rel="noopener">
-                <span class="card-tag tag-magenta" data-i18n="home.com_t_tag">Streaming</span><h6 class="text-white" data-i18n="home.com_t_t">Twitch ↗</h6><small class="text-secondary" data-i18n="home.com_t_d">Drops y reviews en vivo</small>
-            </a>
-        </div>
-        <div class="col-md-4 reveal">
-            <a class="neon-card ext-card p-3" href="https://discord.com" target="_blank" rel="noopener">
-                <span class="card-tag tag-green" data-i18n="home.com_d_tag">Comunidad</span><h6 class="text-white" data-i18n="home.com_d_t">Discord ↗</h6><small class="text-secondary" data-i18n="home.com_d_d">Soporte y torneos 24/7</small>
-            </a>
-        </div>
-    </div>
-    <div class="mt-4 d-flex flex-wrap gap-3 reveal">
-        <a class="btn-neon" data-i18n="home.com_btn1" href="plataforma.html">Abrir INNOVATE Launcher</a>
-        <a class="btn-neon-outline" href="https://rawg.io" target="_blank" rel="noopener" data-i18n="home.com_btn2">Ver RAWG Games API ↗</a>
-    </div>
-</section>
+      <div class="sechead"><h2>&#218;ltimas noticias</h2><a href="noticias.html">Ver todas &rarr;</a></div>
+      <div class="news" id="news"></div>
 
-        </main>
-    </div>
+      <div class="sechead"><h2>Plataforma</h2></div>
+      <div class="hub">
+        <a href="plataforma.html"><b>LAUNCHER</b><span>Descarga oficial y builds.</span></a>
+        <a href="showcase.html"><b>SHOWCASE</b><span>Directos de Twitch.</span></a>
+        <a href="noticias.html"><b>NOTICIAS</b><span>Anuncios del equipo.</span></a>
+      </div>
 
-    <footer b-nmn324jza5 class="footer-neon">
-        <div b-nmn324jza5 class="container d-flex flex-wrap justify-content-between align-items-center gap-2">
-            <span b-nmn324jza5>&copy; 2026 - <b b-nmn324jza5 class="text-white">INNOVATE INDUSTRIES WEB STORE</b> - <span b-nmn324jza5 class="text-green-neon" data-i18n="footer.online">&#9679; ONLINE</span></span>
-            <span b-nmn324jza5>
-                <a data-i18n="footer.privacy" href="privacidad.html">Privacidad</a> ·
-                <a b-nmn324jza5 href="https://discord.com" target="_blank" rel="noopener">Discord</a> ·
-                <a b-nmn324jza5 href="https://rawg.io" target="_blank" rel="noopener">RAWG API</a>
-            </span>
-        </div>
-    </footer>
-    <script src="./lib/jquery/dist/jquery.min.js"></script>
-    <script src="./lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.149.0/three.min.js"></script>
-    <script src="./js/i18n.js?v=tNTtVaTIJSYHDeKHtjG5CLCPk968elMbD7lP9At6930"></script>
-    <script src="./js/site.js?v=mN2-tu6CZFVH-_0tkQwb1w_P6-GR1jeIU7j1TujbsKc"></script>
-    
+      <footer>
+        <span>&copy; 2026 NEXUS · INNOVATE INDUSTRIES</span>
+        <a href="store.html">Tienda</a><a href="plataforma.html">Plataforma</a><a href="showcase.html">Showcase</a><a href="noticias.html">Noticias</a><a href="admin.html">Admin</a>
+      </footer>
+    </main>
+  </div>
+
+<script>
+(function () {
+  function fix(p) {
+    if (!p) return "";
+    if (/^https?:\/\//i.test(p)) return p;
+    return p.charAt(0) === "/" ? "." + p : p;
+  }
+  function money(g) {
+    if (g.priceText) return g.priceText;
+    return "$" + Number(g.price || 0).toFixed(2);
+  }
+  function card(g) {
+    var d = document.createElement("div");
+    d.className = "card";
+    var cov = document.createElement("div");
+    cov.className = "cover";
+    if (g.coverPath) cov.style.backgroundImage = "url('" + fix(g.coverPath) + "')";
+    var h = document.createElement("h3"); h.textContent = g.title || "?";
+    var row = document.createElement("div"); row.className = "pricerow";
+    var pr = document.createElement("span"); pr.className = "price"; pr.textContent = money(g);
+    var bg = document.createElement("span"); bg.className = "badge" + (g.isPreorder ? " hot" : "");
+    bg.textContent = g.isPreorder ? "PREVENTA" : "Juego base";
+    row.appendChild(pr); row.appendChild(bg);
+    d.appendChild(cov); d.appendChild(h); d.appendChild(row);
+    return d;
+  }
+  function empty(msg) {
+    var d = document.createElement("div");
+    d.className = "empty"; d.textContent = msg;
+    return d;
+  }
+  fetch("./store.json").then(function (r) { return r.json(); }).then(function (d) {
+    var list = (d && d.games) || [];
+    var grid = document.getElementById("grid");
+    if (!list.length) { grid.appendChild(empty("Sin juegos publicados.")); return; }
+    list.slice(0, 4).forEach(function (g) { grid.appendChild(card(g)); });
+    var f = list[0];
+    var h1 = document.getElementById("hero-title");
+    h1.innerHTML = "";
+    h1.appendChild(document.createTextNode((f.title || "NEXUS").toUpperCase()));
+    var sp = document.createElement("span"); sp.textContent = "DESTACADO";
+    h1.appendChild(sp);
+    document.getElementById("hero-desc").textContent = (f.description || "").slice(0, 140) || "Tienda oficial: juegos, launcher, directos y comunidad.";
+    if (f.coverPath) document.getElementById("hero").style.backgroundImage = "url('" + fix(f.coverPath) + "')";
+  }).catch(function () {
+    document.getElementById("grid").appendChild(empty("Sin juegos publicados."));
+  });
+  fetch("./news.json").then(function (r) { return r.json(); }).then(function (d) {
+    var list = (d && d.news) || [];
+    var box = document.getElementById("news");
+    if (!list.length) { box.appendChild(empty("Sin noticias.")); return; }
+    list.slice(0, 3).forEach(function (n) {
+      var c = document.createElement("div"); c.className = "ncard";
+      var img = document.createElement("div"); img.className = "img";
+      if (n.imagePath) img.style.backgroundImage = "url('" + fix(n.imagePath) + "')";
+      var b = document.createElement("div"); b.className = "body";
+      var s = document.createElement("small"); s.textContent = (n.createdAtUtc || "").slice(0, 10);
+      var h = document.createElement("h3"); h.textContent = n.title || "";
+      var p = document.createElement("p"); p.textContent = (n.body || "").slice(0, 120);
+      b.appendChild(s); b.appendChild(h); b.appendChild(p);
+      c.appendChild(img); c.appendChild(b);
+      box.appendChild(c);
+    });
+  }).catch(function () {
+    document.getElementById("news").appendChild(empty("Sin noticias."));
+  });
+})();
+</script>
 </body>
 </html>
