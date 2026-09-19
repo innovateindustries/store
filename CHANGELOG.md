@@ -23,6 +23,10 @@ Documento vivo de la evolución del proyecto. Última actualización: checkpoint
   vía `docs/api.json` (`scripts/set-pages-api.ps1`, localhost o túnel). CORS `Pages`.
   Endpoints nuevos: `api/admin/users/{id}/ban`, `invite-keys/*`, `founder-keys/*`,
   `builds`, `news/*`. Smoke `scripts/verify-admin-api.ps1`: 16/16 en vivo.
+- Estética NEXUS oscura (no retro) en Pages: `store.html` literal al mockup (sidebar,
+  hero DESTACADO, destacados/nuevos/DLC/ofertas/biblioteca, buscador) + `index.html`
+  a juego (héroe, destacados, noticias). Datos vía `store.json`/`news.json`
+  (`GET api/news/public` nuevo); `index/store` ya no salen del snapshot.
 
 ## 2026-09-18 — Pages: vitrina estática REAL de la tienda
 - `docs/` ya no es un cartel de "ejecuta dotnet run": es un snapshot de la tienda real
