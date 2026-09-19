@@ -2,6 +2,12 @@
 
 Documento vivo de la evolución del proyecto. Última actualización: checkpoint actual.
 
+## 2026-09-19 — Tema NEXUS en app local (no retro)
+- `_Layout` con topbar + sidebar (mismo nav/roles/claims/i18n en 8 idiomas, responsive).
+  `site.css` plano oscuro premium (mismas clases, sin glows): botones blancos/borde,
+  cards planas, footer plano. Fuera fondo 3D/grid/scanlines (`site.js` sin Three.js;
+  se quitó el script CDN, GSAP intacto). Vistas sin cambios.
+
 ## 2026-09-19 — Backend canónico del launcher (Fases 1-2)
 - **Founder Key server-side:** tabla `FounderKeys` (`FND-XXXXXXXX`, usos, expiración) +
   `POST api/launcher/register-founder` (otorga FOUNDER, validación 100% servidor) +
