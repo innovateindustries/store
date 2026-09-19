@@ -14,6 +14,9 @@ Documento vivo de la evolución del proyecto. Última actualización: checkpoint
   `StoreGames(Genre/Regions/InPass)` + `LauncherBuilds.IsMandatory` (checkbox en Admin).
 - `ToggleOrder` otorga 1 USD = 100 pts al pagar (solo primera key). Smoke
   `scripts/smoke_launcher_api.ps1`: 27/27 en vivo. Build 0 warnings.
+- Catálogo público para el launcher: `scripts/export-store-json.ps1` genera
+  `docs/store.json` (https://innovateindustries.github.io/store/store.json).
+  Regenerar al publicar juegos.
 
 ## 2026-09-18 — Pages: vitrina estática REAL de la tienda
 - `docs/` ya no es un cartel de "ejecuta dotnet run": es un snapshot de la tienda real
