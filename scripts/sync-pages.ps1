@@ -23,6 +23,10 @@ try {
 & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $root 'scripts/export-store-json.ps1') | Out-Null
 & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $root 'scripts/snapshot-pages.ps1') | Out-Null
 
+# 2b) Marcador de frescura: el panel admin lo muestra para probar que ves lo último.
+$marcador = '{"syncedAtUtc": "' + (Get-Date).ToUniversalTime().ToString('o') + '"}'
+[IO.File]::WriteAllText((Join-Path $root 'docs/version.json'), $marcador, (New-Object Text.UTF8Encoding $false))
+
 # 3) Subir solo docs/ si cambio algo.
 git add -A -- docs 2>&1 | Out-Null
 $st = git status --porcelain -- docs 2>&1 | Out-String
