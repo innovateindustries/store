@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text.Json;
 
@@ -45,6 +46,7 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers
                     Nombres = claims.FirstOrDefault(c => c.Type == "Nombres")?.Value ?? "—",
                     Roles = string.Join(", ", roles),
                     IsBanned = u.LockoutEnabled && u.LockoutEnd > DateTimeOffset.UtcNow,
+                    IsRestricted = claims.Any(c => c.Type == "BanLevel" && c.Value == "Restringido"),
                     IsSelf = u.Id == _users.GetUserId(User)
                 };
 
@@ -223,6 +225,41 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers
             if (user != null)
             {
                 await _users.SetLockoutEndDateAsync(user, null);
+                await _users.UpdateSecurityStampAsync(user);
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+        // Restringir: solo biblioteca local, sin online ni STORE (claim BanLevel).
+        // No cierra sesión ni bloquea el login (a diferencia del baneo total).
+        // Solo CEO/FOUNDER. Nadie puede restringirse a sí mismo.
+        [HttpPost]
+        [Authorize(Roles = "CEO,FOUNDER")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RestringirUser(string id)
+        {
+            var user = await _users.FindByIdAsync(id);
+            if (user != null && user.Id != _users.GetUserId(User))
+            {
+                var claims = await _users.GetClaimsAsync(user);
+                if (!claims.Any(c => c.Type == "BanLevel"))
+                    await _users.AddClaimAsync(user, new Claim("BanLevel", "Restringido"));
+                await _users.UpdateSecurityStampAsync(user);
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "CEO,FOUNDER")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> QuitarRestriccion(string id)
+        {
+            var user = await _users.FindByIdAsync(id);
+            if (user != null)
+            {
+                var claims = await _users.GetClaimsAsync(user);
+                foreach (var c in claims.Where(c => c.Type == "BanLevel").ToList())
+                    await _users.RemoveClaimAsync(user, c);
                 await _users.UpdateSecurityStampAsync(user);
             }
             return RedirectToAction(nameof(Index));

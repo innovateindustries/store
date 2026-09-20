@@ -15,6 +15,15 @@ Documento vivo de la evolución del proyecto. Última actualización: checkpoint
   cards planas, footer plano. Fuera fondo 3D/grid/scanlines (`site.js` sin Three.js;
   se quitó el script CDN, GSAP intacto). Vistas sin cambios.
 
+## 2026-09-19 — Baneo en dos niveles (Restringido / Total)
+- Nuevo nivel **Restringido** (claim `BanLevel`): entra al launcher pero SOLO
+  biblioteca local — sin multijugador online (heartbeat 403), sin STORE
+  (redeem/pedidos/puntos/manifiestos 403 `BANNED_RESTRICTED`), sin descargas.
+  Biblioteca, perfil y login siguen abiertos.
+- Admin → Usuarios: botones Restringir / Quitar restricción (CEO/FOUNDER, sin
+  auto-restricción) + insignia. `login/me` devuelven `banLevel`.
+-   El baneo total (lockout) no cambia: sin acceso al launcher.
+
 ## 2026-09-19 — Backend canónico del launcher (Fases 1-2)
 - **Founder Key server-side:** tabla `FounderKeys` (`FND-XXXXXXXX`, usos, expiración) +
   `POST api/launcher/register-founder` (otorga FOUNDER, validación 100% servidor) +

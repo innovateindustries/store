@@ -49,6 +49,23 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers.Api
         private static bool Baneado(IdentityUser u) =>
             u.LockoutEnabled && u.LockoutEnd > DateTimeOffset.UtcNow;
 
+        // Nivel de baneo: "" (limpio), "Restringido" (claim BanLevel: solo
+        // biblioteca local, sin online ni STORE) o "Total" (lockout: sin acceso).
+        private async Task<string> NivelBanAsync(IdentityUser u)
+        {
+            if (Baneado(u)) return "Total";
+            var claims = await _users.GetClaimsAsync(u);
+            if (claims.Any(c => c.Type == "BanLevel" && c.Value == "Restringido"))
+                return "Restringido";
+            return string.Empty;
+        }
+
+        // 403 si la cuenta está restringida (solo biblioteca local).
+        private async Task<bool> SoloBibliotecaAsync(IdentityUser u)
+        {
+            return (await NivelBanAsync(u)) == "Restringido";
+        }
+
         // Registro desde el launcher: crea el usuario web (username + email).
         // Plan PUBLISHER otorga ese rol (sin acceso admin). TRABAJADOR lo da un admin.
         [HttpPost("register")]
@@ -211,7 +228,8 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers.Api
                 Token = raw,
                 UserName = user.UserName ?? string.Empty,
                 Email = user.Email ?? string.Empty,
-                Roles = roles
+                Roles = roles,
+                BanLevel = await NivelBanAsync(user)
             });
         }
 
@@ -224,7 +242,7 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers.Api
             if (Baneado(user))
                 return StatusCode(403, new { banned = true });
             var roles = (await _users.GetRolesAsync(user)).ToList();
-            return Ok(new { userName = user.UserName, email = user.Email, roles });
+            return Ok(new { userName = user.UserName, email = user.Email, roles, banLevel = await NivelBanAsync(user) });
         }
 
         // Latido cada ~60s mientras se juega. Crea o extiende la sesión abierta.
@@ -236,6 +254,8 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers.Api
                 return Unauthorized();
             if (Baneado(user))
                 return StatusCode(403, new { banned = true });
+            if (await SoloBibliotecaAsync(user))
+                return StatusCode(403, new { error = "BANNED_RESTRICTED" });
             var slug = (m.GameSlug ?? string.Empty).Trim().ToLowerInvariant();
             if (slug.Length == 0)
                 return BadRequest();
@@ -361,6 +381,8 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers.Api
                 return Unauthorized(new { error = "NO_AUTH" });
             if (Baneado(user))
                 return StatusCode(403, new { banned = true });
+            if (await SoloBibliotecaAsync(user))
+                return StatusCode(403, new { error = "BANNED_RESTRICTED" });
             var raw = m.KeyCode;
             if (string.IsNullOrWhiteSpace(raw)) raw = m.Key;
             if (string.IsNullOrWhiteSpace(raw)) raw = m.Code;
@@ -504,6 +526,8 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers.Api
                 return Unauthorized(new { error = "NO_AUTH" });
             if (Baneado(user))
                 return StatusCode(403, new { banned = true });
+            if (await SoloBibliotecaAsync(user))
+                return StatusCode(403, new { error = "BANNED_RESTRICTED" });
             var game = _db.StoreGames.FirstOrDefault(g => g.Id == m.GameId && g.IsPublished);
             if (game == null)
                 return BadRequest(new { error = "GAME_NOT_FOUND" });
@@ -541,6 +565,8 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers.Api
                 return Unauthorized(new { error = "NO_AUTH" });
             if (Baneado(user))
                 return StatusCode(403, new { banned = true });
+            if (await SoloBibliotecaAsync(user))
+                return StatusCode(403, new { error = "BANNED_RESTRICTED" });
             var ordenes = _db.StoreOrders
                 .Where(o => o.BuyerUserId == user.Id)
                 .OrderByDescending(o => o.CreatedAtUtc)
@@ -557,6 +583,8 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers.Api
                 return Unauthorized(new { error = "NO_AUTH" });
             if (Baneado(user))
                 return StatusCode(403, new { banned = true });
+            if (await SoloBibliotecaAsync(user))
+                return StatusCode(403, new { error = "BANNED_RESTRICTED" });
             var orden = _db.StoreOrders.FirstOrDefault(o =>
                 o.Reference == reference && o.BuyerUserId == user.Id);
             if (orden == null)
@@ -585,6 +613,8 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers.Api
                 return Unauthorized();
             if (Baneado(user))
                 return StatusCode(403, new { banned = true });
+            if (await SoloBibliotecaAsync(user))
+                return StatusCode(403, new { error = "BANNED_RESTRICTED" });
             return Ok(new { points = await PuntosDeAsync(user.Id), userName = user.UserName });
         }
 
@@ -596,6 +626,8 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers.Api
                 return Unauthorized();
             if (Baneado(user))
                 return StatusCode(403, new { banned = true });
+            if (await SoloBibliotecaAsync(user))
+                return StatusCode(403, new { error = "BANNED_RESTRICTED" });
             var pts = await PuntosDeAsync(user.Id);
             return Ok(new
             {
@@ -617,6 +649,8 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers.Api
                 return Unauthorized();
             if (Baneado(user))
                 return StatusCode(403, new { banned = true });
+            if (await SoloBibliotecaAsync(user))
+                return StatusCode(403, new { error = "BANNED_RESTRICTED" });
             var premio = CatalogoPremios.FirstOrDefault(r => r.Id == (m.RewardId ?? string.Empty).Trim());
             if (premio == null)
                 return NotFound(new { error = "REWARD_NOT_FOUND" });
@@ -663,6 +697,8 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers.Api
                 return Unauthorized();
             if (Baneado(user))
                 return StatusCode(403, new { banned = true });
+            if (await SoloBibliotecaAsync(user))
+                return StatusCode(403, new { error = "BANNED_RESTRICTED" });
             var b64 = (m.PhotoB64 ?? string.Empty).Trim();
             if (string.IsNullOrWhiteSpace(b64) || b64.Length < 60)
                 return BadRequest(new { error = "PHOTO_REQUIRED" });
@@ -702,6 +738,8 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers.Api
                 return Unauthorized();
             if (Baneado(user))
                 return StatusCode(403, new { banned = true });
+            if (await SoloBibliotecaAsync(user))
+                return StatusCode(403, new { error = "BANNED_RESTRICTED" });
             var perfil = await _db.LauncherProfiles.FirstOrDefaultAsync(p => p.UserId == user.Id);
             if (perfil != null && !string.IsNullOrWhiteSpace(perfil.ImagePath))
             {
@@ -748,6 +786,8 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers.Api
                 return Unauthorized();
             if (Baneado(user))
                 return StatusCode(403, new { banned = true });
+            if (await SoloBibliotecaAsync(user))
+                return StatusCode(403, new { error = "BANNED_RESTRICTED" });
             var game = _db.StoreGames.FirstOrDefault(g => g.Id == id && g.IsPublished);
             if (game == null)
                 return NotFound(new { error = "GAME_NOT_FOUND" });
@@ -767,6 +807,8 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers.Api
                 return Unauthorized();
             if (Baneado(user))
                 return StatusCode(403, new { banned = true });
+            if (await SoloBibliotecaAsync(user))
+                return StatusCode(403, new { error = "BANNED_RESTRICTED" });
             var game = _db.StoreGames.FirstOrDefault(g => g.Id == id && g.IsPublished);
             if (game == null)
                 return NotFound(new { error = "GAME_NOT_FOUND" });

@@ -18,6 +18,9 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Models
         public bool IsBanned { get; set; }
 
         public bool IsSelf { get; set; }
+
+        // Nivel Restringido (claim BanLevel): solo biblioteca, sin online ni STORE.
+        public bool IsRestricted { get; set; }
     }
 
     public class AdminKeyRow

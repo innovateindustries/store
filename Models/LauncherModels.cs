@@ -52,6 +52,9 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Models
         public string Email { get; set; } = string.Empty;
 
         public List<string> Roles { get; set; } = new();
+
+        // "" | "Restringido" | "Total"
+        public string BanLevel { get; set; } = string.Empty;
     }
 
     public class LauncherHeartbeatRequest
