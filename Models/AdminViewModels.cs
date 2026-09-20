@@ -93,7 +93,8 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Models
 
         public IFormFile? Archivo { get; set; }
 
-        public IFormFile? Screenshot { get; set; }
+        // Capturas del launcher (máx. 4, ≤5 MB c/u). La primera es la principal.
+        public List<IFormFile> Screenshots { get; set; } = new();
 
         public bool IsPublished { get; set; } = true;
 

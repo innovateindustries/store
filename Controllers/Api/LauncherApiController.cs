@@ -450,6 +450,18 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers.Api
             catch { return new(); }
         }
 
+        private static List<string> ScreenshotsBuild(LauncherBuild b)
+        {
+            try
+            {
+                var lista = JsonSerializer.Deserialize<List<string>>(b.ScreenshotsJson ?? "[]") ?? new();
+                if (lista.Count == 0 && !string.IsNullOrWhiteSpace(b.ScreenshotPath))
+                    lista.Add(b.ScreenshotPath);
+                return lista;
+            }
+            catch { return new(); }
+        }
+
         private async Task<int> PuntosDeAsync(string userId)
         {
             var row = await _db.LauncherPoints.FirstOrDefaultAsync(p => p.UserId == userId);
@@ -812,6 +824,7 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers.Api
                     description = b.Description ?? string.Empty,
                     specs = b.Specs ?? string.Empty,
                     screenshotPath = b.ScreenshotPath ?? string.Empty,
+                    screenshots = ScreenshotsBuild(b),
                     notes = b.Notes ?? string.Empty,
                     filePath = b.FilePath,
                     fileName = b.FileName,

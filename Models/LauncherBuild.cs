@@ -14,8 +14,11 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Models
         // Ficha técnica: una especificación por línea.
         public string? Specs { get; set; }
 
-        // Ruta pública de la captura (ej. /uploads/launcher/<guid>.png) o null.
+        // Ruta pública de la captura principal (o null). La primera de la galería.
         public string? ScreenshotPath { get; set; }
+
+        // JSON con la galería de capturas (máx. 4). La primera es la principal.
+        public string ScreenshotsJson { get; set; } = "[]";
 
         public string? Notes { get; set; }
 

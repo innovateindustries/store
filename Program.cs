@@ -216,6 +216,8 @@ using (var scope = app.Services.CreateScope())
         db.Database.ExecuteSqlRaw("ALTER TABLE \"LauncherBuilds\" ADD COLUMN \"ScreenshotPath\" TEXT NULL");
     if (!buildCols.Contains("IsMandatory"))
         db.Database.ExecuteSqlRaw("ALTER TABLE \"LauncherBuilds\" ADD COLUMN \"IsMandatory\" INTEGER NOT NULL DEFAULT 0");
+    if (!buildCols.Contains("ScreenshotsJson"))
+        db.Database.ExecuteSqlRaw("ALTER TABLE \"LauncherBuilds\" ADD COLUMN \"ScreenshotsJson\" TEXT NOT NULL DEFAULT '[]'");
 
     // Puntos canjeables del launcher (1 USD = 100 pts).
     db.Database.ExecuteSqlRaw(

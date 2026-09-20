@@ -421,26 +421,32 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers
             var dir = Path.Combine(_env.WebRootPath, "uploads", "launcher");
             Directory.CreateDirectory(dir);
 
-            string? shotPath = null;
-            if (m.Screenshot != null && m.Screenshot.Length > 0)
+            // Galería (máx. 4). La primera es la principal (compat: ScreenshotPath).
+            var shots = (m.Screenshots ?? new()).Where(s => s != null && s.Length > 0).Take(4).ToList();
+            var shotAllowed = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+            var shotPaths = new List<string>();
+            foreach (var shot in shots)
             {
-                var shotExt = Path.GetExtension(m.Screenshot.FileName).ToLowerInvariant();
-                var shotAllowed = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
-                if (!shotAllowed.Contains(shotExt) || !m.Screenshot.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase))
+                var shotExt = Path.GetExtension(shot.FileName).ToLowerInvariant();
+                if (!shotAllowed.Contains(shotExt) || !shot.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase))
                 {
-                    ModelState.AddModelError("Screenshot", "Solo imágenes JPG, PNG, GIF o WEBP.");
+                    ModelState.AddModelError("Screenshots", "Solo imágenes JPG, PNG, GIF o WEBP.");
                     return VistaLauncher(m);
                 }
-                if (m.Screenshot.Length > 5 * 1024 * 1024)
+                if (shot.Length > 5 * 1024 * 1024)
                 {
-                    ModelState.AddModelError("Screenshot", "Máximo 5 MB.");
+                    ModelState.AddModelError("Screenshots", "Máximo 5 MB por captura.");
                     return VistaLauncher(m);
                 }
-                var shotName = Guid.NewGuid().ToString("N") + shotExt;
-                await using (var stream = System.IO.File.Create(Path.Combine(dir, shotName)))
-                    await m.Screenshot.CopyToAsync(stream);
-                shotPath = "/uploads/launcher/" + shotName;
             }
+            foreach (var shot in shots)
+            {
+                var shotName = Guid.NewGuid().ToString("N") + Path.GetExtension(shot.FileName).ToLowerInvariant();
+                await using (var stream = System.IO.File.Create(Path.Combine(dir, shotName)))
+                    await shot.CopyToAsync(stream);
+                shotPaths.Add("/uploads/launcher/" + shotName);
+            }
+            string? shotPath = shotPaths.FirstOrDefault();
             var fileName = Guid.NewGuid().ToString("N") + Path.GetExtension(m.Archivo!.FileName).ToLowerInvariant();
             await using (var stream = System.IO.File.Create(Path.Combine(dir, fileName)))
                 await m.Archivo.CopyToAsync(stream);
@@ -451,6 +457,7 @@ namespace INNOVATE_INDUSTRIES_WEB_STORE.Controllers
                 Description = string.IsNullOrWhiteSpace(m.Description) ? null : m.Description.Trim(),
                 Specs = string.IsNullOrWhiteSpace(m.Specs) ? null : m.Specs.Trim(),
                 ScreenshotPath = shotPath,
+                ScreenshotsJson = JsonSerializer.Serialize(shotPaths),
                 Notes = string.IsNullOrWhiteSpace(m.Notes) ? null : m.Notes.Trim(),
                 FilePath = "/uploads/launcher/" + fileName,
                 FileName = Path.GetFileName(m.Archivo.FileName),

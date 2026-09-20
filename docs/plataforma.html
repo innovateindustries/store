@@ -170,9 +170,22 @@
     a.href = fix(b.filePath);
     body.appendChild(a);
     dl.appendChild(body);
-    var shot = el("div", "shot");
-    if (b.screenshotPath) shot.style.backgroundImage = "url('" + fix(b.screenshotPath) + "')";
-    dl.appendChild(shot);
+    var shots = (b.screenshots && b.screenshots.length ? b.screenshots : (b.screenshotPath ? [b.screenshotPath] : []));
+    if (shots.length) {
+      var shot = el("div", "shot");
+      shot.style.backgroundImage = "url('" + fix(shots[0]) + "')";
+      dl.appendChild(shot);
+      if (shots.length > 1) {
+        var thumbs = el("div", "");
+        thumbs.style.cssText = "display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:0 20px 20px;";
+        shots.slice(1, 4).forEach(function (s) {
+          var t = el("div", "");
+          t.style.cssText = "aspect-ratio:16/9;border-radius:6px;background:#171a20 center/cover;border:1px solid #1e2128;background-image:url('" + fix(s) + "')";
+          thumbs.appendChild(t);
+        });
+        dl.appendChild(thumbs);
+      }
+    }
     wrap.appendChild(dl);
 
     if (b.specs) {

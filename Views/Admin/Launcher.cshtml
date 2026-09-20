@@ -24,8 +24,8 @@
                 <input asp-for="Archivo" class="form-control" type="file" accept=".zip,.exe,.msi" />
             </div>
             <div class="col-md-4">
-                <label asp-for="Screenshot" class="form-label text-white" data-i18n="adm.up_shot">Captura (JPG/PNG/GIF/WEBP · máx. 5 MB)</label>
-                <input asp-for="Screenshot" class="form-control" type="file" accept=".jpg,.jpeg,.png,.gif,.webp" />
+                <label asp-for="Screenshots" class="form-label text-white" data-i18n="adm.up_shots">Capturas (hasta 4 · JPG/PNG/GIF/WEBP · máx. 5 MB c/u)</label>
+                <input asp-for="Screenshots" class="form-control" type="file" accept=".jpg,.jpeg,.png,.gif,.webp" multiple />
             </div>
             <div class="col-12">
                 <label asp-for="Description" class="form-label text-white" data-i18n="adm.up_desc">Descripción</label>

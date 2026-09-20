@@ -1,7 +1,18 @@
 @model INNOVATE_INDUSTRIES_WEB_STORE.Models.LauncherBuild?
 @using System.Linq
+@using System.Text.Json
 @{
     ViewData["Title"] = "Plataforma";
+    List<string> galeria = new();
+    try
+    {
+        galeria = JsonSerializer.Deserialize<List<string>>(Model?.ScreenshotsJson ?? "[]") ?? new();
+    }
+    catch { }
+    if (galeria.Count == 0 && !string.IsNullOrEmpty(Model?.ScreenshotPath))
+    {
+        galeria.Add(Model!.ScreenshotPath);
+    }
 }
 
 <section class="hero-neon" style="padding-top:50px">
@@ -22,9 +33,18 @@
         {
             <p class="text-secondary" style="white-space:pre-wrap">@Model.Description</p>
         }
-        @if (!string.IsNullOrEmpty(Model.ScreenshotPath))
+        @if (galeria.Count > 0)
         {
-            <img src="@Model.ScreenshotPath" alt="Captura @Model.Version" class="img-fluid rounded mt-2" loading="lazy" style="max-width:720px;width:100%" />
+            <img src="@galeria[0]" alt="Captura @Model.Version" class="img-fluid rounded mt-2" loading="lazy" style="max-width:720px;width:100%" />
+            @if (galeria.Count > 1)
+            {
+                <div class="d-flex flex-wrap gap-2 mt-2" style="max-width:720px">
+                    @foreach (var shot in galeria.Skip(1).Take(3))
+                    {
+                        <img src="@shot" alt="Captura @Model.Version" class="img-fluid rounded" loading="lazy" style="width:32%;min-width:140px" />
+                    }
+                </div>
+            }
         }
         var specs = (Model.Specs ?? string.Empty)
             .Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
