@@ -1,7 +1,26 @@
 {
-    "exportedAtUtc":  "2026-09-20T16:08:12.7578321Z",
+    "exportedAtUtc":  "2026-09-20T16:13:12.9709089Z",
     "source":  "INNOVATE INDUSTRIES WEB STORE /api/launcher/store/games",
     "games":  [
+                  {
+                      "id":  4,
+                      "title":  "VAPOL",
+                      "description":  "In 1978, Victor Blackwell founded Blackwell Psychiatric Hospital with the goal of helping people suffering from mental illnesses. However, his obsession with finding a definitive cure led him to develop a secret project known as V.A.P.O.L., a supposed solution capable of eliminating any psychological disorder.\r\nIn 1984, the BAY Program was created, a classified experiment led by Dr. Ollivan Mildenhall. The center of the research was BAY 09, a facility where the limits of science were pushed far beyond what should have been possible.\r\n\r\nEverything changed on December 26, 1990, when a malfunction in BAY 09 released experimental gases throughout the hospital. Within hours, patients began behaving strangely, and dozens died under unexplained circumstances. The incident became known as The Red Rain.\r\n\r\nNo proper investigation was ever conducted. Corruption buried the truth, the hospital was abandoned, and the case was forgotten.",
+                      "price":  3.0,
+                      "priceText":  "$3",
+                      "salePrice":  null,
+                      "offerCoverPath":  "",
+                      "onSale":  false,
+                      "coverPath":  "/uploads/store/cover-340a78fa5ae741dda0cb0fde69904521.png",
+                      "isPreorder":  false,
+                      "isEarlyAccess":  false,
+                      "genre":  "",
+                      "trailerUrl":  "https://www.youtube.com/watch?v=jQhwLKjPYQI",
+                      "screenshots":  "/uploads/store/shot-bf91e98a518e4a5fa64593111c185bfd.png",
+                      "regions":  "",
+                      "inPass":  false,
+                      "owned":  false
+                  },
                   {
                       "id":  3,
                       "title":  "VAPOL ORIGINS",
