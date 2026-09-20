@@ -2,6 +2,13 @@
 
 Documento vivo de la evolución del proyecto. Última actualización: checkpoint actual.
 
+## 2026-09-19 — Sync auto Admin local → GitHub Pages
+- `scripts/sync-pages.ps1`: exporta JSONs + snapshot + `uploads` (con espejo:
+  borra en `docs/` lo eliminado) y hace push SOLO de `docs/` si hubo cambios.
+- `scripts/install-sync-task.ps1`: tarea cada 5 min (log `%TEMP%\innovate-sync.log`).
+  Todo lo publicado en http://localhost:5215/Admin aparece solo en el link
+  (tarda ~5 min + 1-2 min de Pages).
+
 ## 2026-09-19 — Tema NEXUS en app local (no retro)
 - `_Layout` con topbar + sidebar (mismo nav/roles/claims/i18n en 8 idiomas, responsive).
   `site.css` plano oscuro premium (mismas clases, sin glows): botones blancos/borde,

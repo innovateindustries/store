@@ -90,6 +90,16 @@ $upDst = Join-Path $docs 'uploads'
 if (Test-Path -LiteralPath $upSrc) {
     if (-not (Test-Path -LiteralPath $upDst)) { New-Item -ItemType Directory -Path $upDst -Force | Out-Null }
     Copy-Item -Path (Join-Path $upSrc '*') -Destination $upDst -Recurse -Force
+    # Espejo: borra en docs/uploads lo que ya no existe en wwwroot/uploads.
+    $origen = @{}
+    Get-ChildItem -Path $upSrc -Recurse -File | ForEach-Object {
+        $origen[$_.FullName.Substring($upSrc.Length)] = $true
+    }
+    Get-ChildItem -Path $upDst -Recurse -File | ForEach-Object {
+        if (-not $origen.ContainsKey($_.FullName.Substring($upDst.Length))) {
+            Remove-Item -LiteralPath $_.FullName -Force
+        }
+    }
     Write-Output 'uploads copiados'
 }
 
