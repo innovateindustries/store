@@ -1,12 +1,12 @@
-﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Identity
 @inject SignInManager<IdentityUser> SignInManager
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="NEXUS - Tienda oficial de INNOVATE INDUSTRIES: juegos, launcher y comunidad." />
-    <title>@ViewData["Title"] - NEXUS</title>
+    <meta name="description" content="INNOVATE - Tienda oficial de INNOVATE INDUSTRIES: juegos, launcher y comunidad." />
+    <title>@ViewData["Title"] - INNOVATE</title>
     <script type="importmap"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,7 +20,7 @@
         <nav class="navbar navbar-expand navbar-dark navbar-neon">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
-                    NEXUS
+                    INNOVATE
                 </a>
                 <ul class="navbar-nav ms-auto align-items-center gap-2 flex-row">
                     @if (SignInManager.IsSignedIn(User))
@@ -89,7 +89,7 @@
 
     <footer class="footer-neon">
         <div class="container d-flex flex-wrap justify-content-between align-items-center gap-2">
-            <span>&copy; 2026 - <b class="text-white">NEXUS · INNOVATE INDUSTRIES</b> - <span class="text-green-neon" data-i18n="footer.online">&#9679; ONLINE</span></span>
+            <span>&copy; 2026 - <b class="text-white">INNOVATE · INNOVATE INDUSTRIES</b> - <span class="text-green-neon" data-i18n="footer.online">&#9679; ONLINE</span></span>
             <span>
                 <a asp-area="" asp-controller="Home" asp-action="Privacy" data-i18n="footer.privacy">Privacidad</a> ·
                 <a href="https://discord.com" target="_blank" rel="noopener">Discord</a> ·
