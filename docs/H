@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="NEXUS - Tienda oficial de INNOVATE INDUSTRIES: juegos, launcher y comunidad." />
-    <title>Inicio - NEXUS (vista est&#225;tica)</title>
+    <meta name="description" content="INNOVATE - Tienda oficial de INNOVATE INDUSTRIES: juegos, launcher y comunidad." />
+    <title>Inicio - INNOVATE (vista est&#225;tica)</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,7 +18,7 @@
         <nav b-nmn324jza5 class="navbar navbar-expand navbar-dark navbar-neon">
             <div b-nmn324jza5 class="container-fluid">
                 <a class="navbar-brand" href="index.html">
-                    NEXUS
+                    INNOVATE
                 </a>
                 <ul b-nmn324jza5 class="navbar-nav ms-auto align-items-center gap-2 flex-row">
                         
@@ -180,7 +180,7 @@
 
     <footer b-nmn324jza5 class="footer-neon">
         <div b-nmn324jza5 class="container d-flex flex-wrap justify-content-between align-items-center gap-2">
-            <span b-nmn324jza5>&copy; 2026 - <b b-nmn324jza5 class="text-white">NEXUS · INNOVATE INDUSTRIES</b> - <span b-nmn324jza5 class="text-green-neon" data-i18n="footer.online">&#9679; ONLINE</span></span>
+            <span b-nmn324jza5>&copy; 2026 - <b b-nmn324jza5 class="text-white">INNOVATE · INNOVATE INDUSTRIES</b> - <span b-nmn324jza5 class="text-green-neon" data-i18n="footer.online">&#9679; ONLINE</span></span>
             <span b-nmn324jza5>
                 <a data-i18n="footer.privacy" href="privacidad.html">Privacidad</a> ·
                 <a b-nmn324jza5 href="https://discord.com" target="_blank" rel="noopener">Discord</a> ·
@@ -192,7 +192,7 @@
     <script src="./lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-    <script src="./js/i18n.js?v=tNTtVaTIJSYHDeKHtjG5CLCPk968elMbD7lP9At6930"></script>
+    <script src="./js/i18n.js?v=wEarYhx9UUAWtkt9R4ePLrUCdxJyZoYiSjRK7HcYw9w"></script>
     <script src="./js/site.js?v=x4ZY1-kaOy6aYkkRVdsSx9gv9cessYp-oSSOfCTZhQs"></script>
     
 </body>
