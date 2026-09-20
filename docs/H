@@ -121,6 +121,16 @@
         <div class="row g-4 mt-1">
                 <div class="col-md-4 reveal">
                     <div class="neon-card h-100">
+                            <img class="card-img-top" src="./uploads/news/0adb77ed62de4ed79f00902b0c364083.png" alt="" loading="lazy" style="height:170px;object-fit:cover" />
+                        <div class="card-body">
+                            <small class="text-muted">20/09/2026</small>
+                            <h5 class="text-white mt-1">LAUNCHER YA DISPONIBLE</h5>
+                            <p class="text-secondary small" style="white-space:pre-wrap">&#x1F680; &#xA1;INNOVATE LAUNCHER YA EST&#xC1; DISPONIBLE!&#xD;&#xA;&#xD;&#xA;Nos complace anunciar que INNOVATE LAUNCHER ya se encuentra disponible para su descarga.&#xD;&#xA;&#xD;&#xA;Sab&#x2026;</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 reveal">
+                    <div class="neon-card h-100">
                             <img class="card-img-top" src="./uploads/news/1d1a55c884f8430fa821419af506c3df.png" alt="" loading="lazy" style="height:170px;object-fit:cover" />
                         <div class="card-body">
                             <small class="text-muted">12/09/2026</small>
