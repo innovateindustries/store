@@ -189,8 +189,15 @@
       <br /><button class="btn" id="pt-go">OTORGAR</button>
     </div>
 
-    <footer>&copy; 2026 INNOVATE INDUSTRIES · admin web contra API real</footer>
+    <footer>&copy; 2026 INNOVATE INDUSTRIES · admin web contra API real · <span id="syncmark"></span></footer>
   </div>
+
+<script>
+(function () {
+  fetch("./version.json", {cache: "no-store"}).then(function (r) { return r.json(); }).then(function (d) {
+    if (d && d.syncedAtUtc) document.getElementById("syncmark").textContent = "sync " + String(d.syncedAtUtc).slice(0, 16).replace("T", " ") + " UTC";
+  }).catch(function () {});
+})();
 
 <script>
 (function () {
@@ -230,7 +237,7 @@
   async function init() {
     var base = "http://localhost:5215";
     try {
-      var r = await fetch("./api.json");
+      var r = await fetch("./api.json", {cache: "no-store"});
       if (r.ok) {
         var j = await r.json();
         if (j && j.apiBase) base = String(j.apiBase).replace(/\/+$/, "");

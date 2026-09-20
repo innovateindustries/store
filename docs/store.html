@@ -266,7 +266,7 @@
     e.preventDefault();
     alert("El carrito vive en la app local: http://localhost:5215");
   });
-  fetch("./store.json").then(function (r) { return r.json(); }).then(function (d) {
+  fetch("./store.json", {cache: "no-store"}).then(function (r) { return r.json(); }).then(function (d) {
     paint((d && d.games) || []);
   }).catch(function () { paint([]); });
 })();
