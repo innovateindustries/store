@@ -1,7 +1,25 @@
 {
-    "exportedAtUtc":  "2026-09-20T04:03:12.7382327Z",
+    "exportedAtUtc":  "2026-09-20T04:08:12.7894672Z",
     "source":  "INNOVATE INDUSTRIES WEB STORE /api/launcher/store/games",
     "games":  [
-
+                  {
+                      "id":  3,
+                      "title":  "VAPOL ORIGINS",
+                      "description":  "En 1978, Victor Blackwell fundó el Hospital Psiquiátrico Blackwell con el objetivo de ayudar a personas con enfermedades mentales. Sin embargo, su obsesión por encontrar una cura definitiva lo llevó a desarrollar un proyecto secreto conocido como V.A.P.O.L., una supuesta solución capaz de eliminar cualquier trastorno psicológico.\r\n\r\nEn 1984 se creó el Programa BAY, un experimento clasificado dirigido por el Dr. Ollivan Mildenhall. El centro de las investigaciones fue BAY 09, una instalación donde los límites de la ciencia fueron llevados demasiado lejos.\r\n\r\nTodo cambió el 26 de diciembre de 1990, cuando una falla en BAY 09 liberó gases experimentales por todo el hospital. Horas después, los pacientes comenzaron a actuar de forma extraña y decenas de ellos murieron en circunstancias inexplicables. El incidente pasó a la historia como La Lluvia Roja.\r\n\r\nLas investigaciones nunca llegaron a realizarse. La corrupción enterró la verdad, el hospital fue abandonado y el caso quedó olvidado.",
+                      "price":  9.0,
+                      "priceText":  "$9",
+                      "salePrice":  null,
+                      "offerCoverPath":  "",
+                      "onSale":  false,
+                      "coverPath":  "/uploads/store/cover-dd1383c33dfc474fb26efc837af86417.png",
+                      "isPreorder":  false,
+                      "isEarlyAccess":  false,
+                      "genre":  "",
+                      "trailerUrl":  "https://www.youtube.com/watch?v=jQhwLKjPYQI",
+                      "screenshots":  "/uploads/store/shot-4a721b1a2cdd42e68dbc7ff2490b7885.png",
+                      "regions":  "",
+                      "inPass":  false,
+                      "owned":  false
+                  }
               ]
 }
