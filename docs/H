@@ -1,40 +1,35 @@
-<!DOCTYPE html>
+
 <html lang="es">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>INNOVATE API — localhost:5215 (vista est&#225;tica)</title>
-<style>
-  body { font-family: Segoe UI, Arial, sans-serif; background: #0b0e17; color: #d7e3ff; margin: 0; padding: 32px; }
-  .card { max-width: 640px; margin: auto; background: #12172a; border: 1px solid #2b3a67; border-radius: 12px; padding: 28px; }
-  h1 { margin: 0 0 4px; font-size: 22px; }
-  p.sub { color: #8ea0c9; margin-top: 0; }
-  .ok { color: #4ade80; font-weight: bold; }
-  .err { color: #f87171; font-weight: bold; }
-  ul { line-height: 2; padding-left: 20px; }
-  a { color: #7dd3fc; }
-  code { background: #0b0e17; padding: 2px 6px; border-radius: 6px; }
-</style>
+<title>Tienda — INNOVATE (vista est&#225;tica)</title>
+<link rel="stylesheet" href="./panel/style.css">
 </head>
 <body>
-<div class="card">
-  <h1>INNOVATE API</h1>
-  <p class="sub">Servidor del launcher en <code>http://localhost:5215</code></p>
-  <p>Estado: <span id="st">comprobando…</span></p>
-  <ul>
-    <li><a href="./api/launcher/ping">/api/launcher/ping</a> — prueba de vida</li>
-    <li><code>GET /store/games</code> — catálogo de la tienda</li>
-    <li><code>GET /store/library</code> — biblioteca (requiere token)</li>
-    <li><code>POST /api/launcher/login</code> — login del launcher</li>
-  </ul>
-  <p class="sub">El panel de administración del launcher vive dentro de la app WPF (vista ADMIN). Esta página solo confirma que el servidor local responde.</p>
-</div>
+<header class="top"><b class="logo">INNOVATE</b><nav><a href="store.html">Tienda</a><a href="./Admin">Admin</a></nav><span class="sp"></span><span class="user" id="user"></span></header>
+<main>
+  <h2>Tienda</h2>
+  <p class="meta" id="st">Cargando catálogo…</p>
+  <div class="grid" id="grid"></div>
+</main>
 <script>
-fetch('/api/launcher/ping').then(r => r.json()).then(j => {
-  document.getElementById('st').innerHTML = '<span class="ok">● EN LÍNEA</span> (' + j.server + ' — ' + j.time + ')';
-}).catch(() => {
-  document.getElementById('st').innerHTML = '<span class="err">● SIN RESPUESTA</span>';
-});
+(function () {
+  var grid = document.getElementById('grid'), st = document.getElementById('st');
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  fetch('/api/launcher/store/games').then(function (r) { return r.json(); }).then(function (j) {
+    var gs = j.games || [];
+    st.textContent = gs.length + (gs.length === 1 ? ' juego' : ' juegos');
+    grid.innerHTML = gs.map(function (g) {
+      var cover = g.coverPath ? '<img class="cover" src="' + esc(g.coverPath) + '" alt="">' : '';
+      return '<div class="card">' + cover + '<div class="pad"><h3>' + esc(g.title) + '</h3>' +
+        '<div class="meta">' + esc(g.genre || '') + '</div>' +
+        '<div class="price">' + esc(g.priceText || '') + '</div>' +
+        '<div><a class="btn primary" href="./Home/StoreDetalle/' + g.id + '">Ver / Comprar</a></div>' +
+        '</div></div>';
+    }).join('') || '<p>No hay juegos publicados.</p>';
+  }).catch(function () { st.textContent = 'No se pudo cargar el catálogo. ¿Está corriendo el servidor?'; });
+})();
 </script>
 </body>
 </html>
